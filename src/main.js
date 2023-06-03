@@ -63,6 +63,13 @@ Vue.use(plugins)
 Vue.use(VueMeta)
 DictData.install()
 
+import Axios from 'axios'
+
+Vue.prototype.$axios = Axios
+Axios.defaults.baseURL = 'http://localhost:8004'
+Axios.defaults.headers.post['Content-Type'] = 'application/json';
+Vue.config.productionTip = false
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

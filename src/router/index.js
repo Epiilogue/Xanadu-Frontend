@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 Vue.use(Router)
 
 /* Layout */
@@ -51,6 +50,7 @@ export const constantRoutes = [
     component: () => import('@/views/register'),
     hidden: true
   },
+
   {
     path: '/404',
     component: () => import('@/views/error/404'),
