@@ -1,41 +1,78 @@
 import request from '@/utils/request'
+import axios from 'axios'
+import * as http from 'http'
 
+/* const service = axios.create({
+  // axios中请求配置有baseURL选项，表示请求URL公共部分
+  baseURL: 'http://localhost:8004',
+  // 超时
+  timeout: 10000
+}) */
 export function fetchList(query) {
   return request({
-    url: '/vue-element-admin/article/list',
+    url: '/listAll',
     method: 'get',
-    params: query
+    //params: { pageNum, pageSize },
+    //params: query,
+    baseURL: 'http://localhost:8004/dbc/product'
   })
 }
 
-export function fetchArticle(id) {
+/* export function policy() {
   return request({
-    url: '/vue-element-admin/article/detail',
-    method: 'get',
-    params: { id }
-  })
-}
+    url:'oss/policy',
+    method:'get',
+    baseURL: 'http://localhost:8004/dbc/'
 
-export function fetchPv(pv) {
-  return request({
-    url: '/vue-element-admin/article/pv',
-    method: 'get',
-    params: { pv }
   })
-}
+} */
+  /* export function fetchList(query) {
+    return request({
+      url: `/list/${query.pageNum}/${query.pageSize}`,
+      method: 'get',
+      //params: { pageNum, pageSize },
+      //params: query,
+      baseURL: 'http://localhost:8004/dbc/product'
+    })
+  } */
+  export function fetchPage(id) {
+    return request({
+      url: '/vue-element-admin/article/detail',
+      method: 'get',
+      params: { id }
+    })
+  }
 
-export function createArticle(data) {
-  return request({
-    url: '/vue-element-admin/article/create',
-    method: 'post',
-    data
-  })
-}
+  export function fetchArticle(id) {
+    return request({
+      url: '/vue-element-admin/article/detail',
+      method: 'get',
+      params: { id }
+    })
+  }
 
-export function updateArticle(data) {
-  return request({
-    url: '/vue-element-admin/article/update',
-    method: 'post',
-    data
-  })
-}
+  export function deleteProduct(id) {
+    return request({
+      url: `delete/${id}`,
+      method: 'get',
+      baseURL: 'http://localhost:8004/dbc/product',
+    })
+  }
+
+  export function createArticle(data) {
+    return request({
+      url: '/add',
+      method: 'post',
+      baseURL: 'http://localhost:8004/dbc/product',
+      data
+    })
+  }
+
+  export function updateArticle(data) {
+    return request({
+      url: '/update',
+      method: 'post',
+      baseURL: 'http://localhost:8004/dbc/product',
+      data
+    })
+  }
