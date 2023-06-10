@@ -70,6 +70,9 @@ Axios.defaults.baseURL = 'http://localhost:8004'
 Axios.defaults.headers.post['Content-Type'] = 'application/json';
 Vue.config.productionTip = false
 
+import moment from "moment";
+Vue.prototype.$moment = moment; //UTC时间格式转换
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
