@@ -78,11 +78,12 @@ export default {
       editCity:'',
       editX:'',
       editY:'',
+
+      dialogFormVisible: false,
+      dialogFormVisible1:false,
       tableData: [],
       currentPage: 1,
       pagesize: 10,
-      dialogFormVisible: false,
-      dialogFormVisible1:false
     }
   },
 

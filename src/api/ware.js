@@ -51,3 +51,19 @@ export function subwareDetele(id) {
     baseURL: 'http://localhost:8005/ware/subware'
   })
 }
+export function centerware(id) {
+  return request({
+    url: 'info',
+    method: 'get',
+    baseURL: 'http://localhost:8015/ware/centerware'
+  })
+}
+
+export function centerwareupdate(data) {
+  return request({
+    url: '/edit',
+    method: 'post',
+    baseURL: 'http://localhost:8015/ware/centerware',
+    data
+  })
+}

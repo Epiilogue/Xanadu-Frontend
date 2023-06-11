@@ -1,9 +1,11 @@
 <template>
   <div class="custom-tree-container">
-    <div class="block">
-      <div>
-        <p style="margin-left: 50px;font-size: large; width: 200px">商品分类</p>
-        <el-button type="primary" @click="showDialog(null,'create')">添加商品大类</el-button>
+
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>卡片名称</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="showDialog(null,'create')">操作按钮
+        </el-button>
       </div>
       <el-tree
         :data="category"
@@ -40,7 +42,13 @@
         </span>
       </span>
       </el-tree>
+    </el-card>
 
+    <div class="block">
+      <div>
+        <p style="margin-left: 50px;font-size: large; width: 200px">商品分类</p>
+        <el-button type="primary" @click="showDialog(null,'create')">添加商品大类</el-button>
+      </div>
       <el-dialog :title="dialogName" width="30%" :visible.sync="dialogFormVisible">
         <el-form :model="form">
           <el-form-item label="分类名称" :label-width="formLabelWidth">
@@ -65,7 +73,7 @@ let id = 1000
 export default {
   data() {
     return {
-      dialogName:'',
+      dialogName: '',
       currentNode: [],
       showForm: false,
       category: [],
@@ -99,11 +107,11 @@ export default {
       //this.category = cate
     },
 
-    change(data,name) {
+    change(data, name) {
       const that = this
       const node = this.currentNode
       console.log(node)
-      if(name === 'create'){
+      if (name === 'create') {
         axios.post('dbc/categary/add', {
           category: data,
           level: 1,
@@ -112,8 +120,7 @@ export default {
           .then(function() {
             that.getCategory()
           })
-      }
-      else if(name === 'append'){
+      } else if (name === 'append') {
         axios.post('dbc/categary/add', {
           category: data,
           level: node.level + 1,
@@ -122,9 +129,9 @@ export default {
           .then(function() {
             that.getCategory()
           })
-      }else{
+      } else {
         axios.post('dbc/categary/update/', {
-          id:node.id,
+          id: node.id,
           category: data,
           level: data.level,
           parentId: data.id
@@ -137,20 +144,6 @@ export default {
       that.dialogFormVisible = false
     },
 
-/*     edit(node, data) {
-      console.log(data)
-      const that = this
-      if (!node.data.children) {
-        axios.get('dbc/categary/update/', {
-          category: data.category,
-          level: data.level,
-          parentId: data.id
-        })
-          .then(function(res) {
-            that.getCategory()
-          })
-      }
-    }, */
     remove(node, data) {
       console.log(node)
       const that = this
@@ -178,19 +171,35 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.custom-tree-container {
+  margin-left: 27%;
+  padding-top: 3%;
+}
+
 .custom-tree-node {
   flex: 1;
+  line-height: 80px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
   font-size: 20px;
-  padding-right: 8px;
-  margin-left: 10px;
+  padding-right: 30px;
+  margin-left: 30px;
 }
-.filter-item {
-  display: inline-block;
-  vertical-align: middle;
-  margin-bottom: 10px;
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both
+}
+
+.box-card {
+  width: 800px;
+  height: 800px;
+  align-items: center;
 }
 </style>
