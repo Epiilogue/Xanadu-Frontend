@@ -149,6 +149,16 @@
             style="width: 100%"
           />
         </el-form-item>
+        <el-form-item label="付款方式">
+          <el-select v-model="form.newType">
+            <el-option
+              v-for="item of newTypeOption"
+              :label="item"
+              :value="item"
+              :key="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="是否需要发票" prop="invoiceNeed">
           <el-radio-group v-model="form.invoiceNeed">
             <el-radio label="1">是</el-radio>
@@ -205,6 +215,7 @@ export default {
         deadline: "",
         deliveryTime: "",
         comment: "",
+        newType:"", //新订类型
         deleted: false,
       },
       products:undefined,
@@ -217,7 +228,9 @@ export default {
           { required: true, message: "请选择是否需要发票", trigger: "change" },
         ],
       },
+      // 和操作类型相同
       orderTypeOption: ["新订", "退订", "退货", "撤销", "换货"],
+      newTypeOption:['付款送货','货到付款'],
       substationIdOption: [
         { label: "华东", value: 1 },
         { label: "华北", value: 2 },
