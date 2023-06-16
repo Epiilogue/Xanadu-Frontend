@@ -37,7 +37,7 @@
     </el-card>
 
     <!--子页面添加仓库-->
-    <el-dialog title="添加仓库" v-if="dialogFormVisible" :visible.sync="dialogFormVisible">
+    <el-dialog title="添加仓库" v-if="dialogFormVisible" :visible.sync="dialogFormVisible1">
       <mapview @showMapView="showMapView"></mapview>
     </el-dialog>
 

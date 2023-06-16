@@ -217,9 +217,9 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle, deleteProduct } from '@/api/article'
+import { fetchList, fetchPv, createArticle, updateArticle, deleteProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
-import Pagination from '@/components/Pagination'
+import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
 import { timestampToTime } from '@/utils/ruoyi'
 import ImageUpload from '@/components/ImageUpload/index.vue'
@@ -486,15 +486,15 @@ export default {
     handleDelete(row, index) {
       console.log(row)
       deleteProduct(row.id).then((res)=>{
-        console.log(res)
-        if(res.code === 200){
-          this.$notify({
-            title: 'Success',
-            message: 'Delete Successfully',
-            type: 'success',
-            duration: 2000
-          })
-        }
+          console.log(res)
+          if(res.code === 200){
+            this.$notify({
+              title: 'Success',
+              message: 'Delete Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          }
         }
       )
 

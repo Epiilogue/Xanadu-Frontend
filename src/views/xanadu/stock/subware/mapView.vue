@@ -57,7 +57,7 @@ export default {
       map: '', // 地图实例
       mk: '', // Marker实例
       locationPoint: null,
-      subware :{
+      list :{
         id:'',
         name:'',
         address:'',
@@ -75,24 +75,24 @@ export default {
   methods: {
     //添加仓库
     addStock() {
-      this.subware.address = this.form.address
-      this.subware.x = this.form.addrPoint.lat
-      this.subware.y = this.form.addrPoint.lng
-      this.subware.city = this.form.city
-      console.log(this.subware)
-      if (!this.subware.id){
+      this.list.address = this.form.address
+      this.list.x = this.form.addrPoint.lat
+      this.list.y = this.form.addrPoint.lng
+      this.list.city = this.form.city
+      console.log(this.list)
+      if (!this.list.id){
         this.$message.error('请输入仓库id')
-      } else if (!this.subware.name){
+      } else if (!this.list.name){
         this.$message.error('请输入仓库名称')
-      } else if (!this.subware.master){
+      } else if (!this.list.master){
         this.$message.error('请输入仓库管理员')
-      } else if (!this.subware.address){
+      } else if (!this.list.address){
         this.$message.error('请输入仓库地址')
-      } else if (!this.subware.city){
+      } else if (!this.list.city){
         this.$message.error('请选择仓库位置')
       }
       else {
-        addSubware(this.subware).then((res)=>{
+        addSubware(this.list).then((res)=>{
           if (res.msg == '创建分库成功'){
             this.$message({
               message:'创建分库成功',

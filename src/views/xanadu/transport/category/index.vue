@@ -45,10 +45,7 @@
     </el-card>
 
     <div class="block">
-      <div>
-        <p style="margin-left: 50px;font-size: large; width: 200px">商品分类</p>
-        <el-button type="primary" @click="showDialog(null,'create')">添加商品大类</el-button>
-      </div>
+
       <el-dialog :title="dialogName" width="30%" :visible.sync="dialogFormVisible">
         <el-form :model="form">
           <el-form-item label="分类名称" :label-width="formLabelWidth">
