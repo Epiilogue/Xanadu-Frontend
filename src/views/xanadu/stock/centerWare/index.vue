@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" v-if="showPage">
+  <div class="app-container">
     <el-form ref="form" :model="form" label-width="110px">
       <el-form-item label="仓库地址:" prop="address">
         <el-autocomplete v-model="form.address" style="width:100%;" popper-class="autoAddressClass"
@@ -40,7 +40,7 @@
 <script>
 /* eslint-disable */
 import loadBMap from '@/utils/loadBMap.js'
-
+//import { BMap } from 'vue-baidu-map'
 import { centerware, centerwareupdate, subwareEdit } from '@/api/ware'
 
 import axios from 'axios'
@@ -87,22 +87,27 @@ export default {
         y: '',
         maxNumber: '',
         city: '',
-        warnNumber:'',
+        warnNumber: ''
       },
-      showPage:false
+      showPage: false
     }
-  },
-  mounted() {
-
   },
   created() {
     this.getList()
-
+    loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
+    console.log(this.subware.x+'******')
+    this.initMap(subware.x,subware.y)
   },
+/*   mounted() {
+    loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
+    console.log(this.subware.x+'******')
+    this.initMap(this.subware.x,this.subware.y)
+  }, */
   methods: {
     async getList() {
       this.listLoading = true
       await centerware().then(response => {
+        console.log(response.data)
         this.subware.name = response.data.name
         this.subware.address = response.data.address
         this.subware.city = response.data.city
@@ -115,13 +120,12 @@ export default {
         this.form.addrPoint.lng = this.subware.y
         this.form.city = this.subware.city
         this.showPage = true
+        return this.subware
       })
-      loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
-      this.initMap()
     },
     //修改仓库
     addStock() {
-      this.subware.id = 1;
+      this.subware.id = 1
       this.subware.x = this.form.addrPoint.lat
       this.subware.y = this.form.addrPoint.lng
       this.subware.address = this.form.address
@@ -144,12 +148,12 @@ export default {
       }
     },
     // 初始化地图
-    initMap() {
+    initMap(x, y) {
       var that = this
       // 1、挂载地图
       this.map = new BMap.Map('map-container', { enableMapClick: false })
-      var point = new BMap.Point(this.form.addrPoint.lat, this.form.addrPoint.lng)
-      this.map.centerAndZoom(point, 12)
+      var point = new BMap.Point(x, y)
+      this.map.centerAndZoom(point, 5)
       // 3、设置图像标注并绑定拖拽标注结束后事件
       this.mk = new BMap.Marker(point, { enableDragging: true })
       this.map.addOverlay(this.mk)
@@ -161,7 +165,6 @@ export default {
         anchor: BMAP_ANCHOR_TOP_RIGHT,
         type: BMAP_NAVIGATION_CONTROL_SMALL
       }))
-
       // 7、绑定点击地图任意点事件
       this.map.addEventListener('click', function(e) {
         that.getAddrByPoint(e.point)
