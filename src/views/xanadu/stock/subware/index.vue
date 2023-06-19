@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-card style="height: 80px">
-      <el-form :inline="true" class="form">
+      <el-form :inline="true" >
         <el-form-item label="仓库ID:">
           <el-input type="text" placeholder="请输入你要搜索的仓库ID" v-model="stockID" clearable @clear="reset"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="default" icon="el-icon-search" @click="search">搜索</el-button>
-          <el-button type="primary" size="default" icon="el-icon-refresh" @click="reset">重置</el-button>
+        <el-form-item style="margin-left: 10px">
+          <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
+          <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -17,17 +17,19 @@
       <el-button type="primary" size="default" icon="el-icon-refresh-right" @click="refreshform">刷  新</el-button>
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
-        <el-table-column label="仓库ID" align="center" width="100" prop="id"></el-table-column>
-        <el-table-column label="仓库名称" align="center" width="150" prop="name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="ID" align="center" width="100" prop="id" show-overflow-tooltip></el-table-column>
+        <el-table-column label="仓库名称" align="center" width="100" prop="name" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库地址" align="center" width="150" prop="address" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库城市地址" align="center" width="150" prop="city" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库经度" align="center" width="150" prop="x" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库纬度" align="center" width="150" prop="y" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库管理员" align="center" width="150" prop="master" show-overflow-tooltip></el-table-column>
+        <el-table-column label="仓库城市地址" align="center" width="100" prop="city" show-overflow-tooltip></el-table-column>
+        <el-table-column label="仓库经度" align="center" width="100" prop="x" show-overflow-tooltip></el-table-column>
+        <el-table-column label="仓库纬度" align="center" width="100" prop="y" show-overflow-tooltip></el-table-column>
+        <el-table-column label="仓库管理员" align="center" width="100" prop="master" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-edit" @click="editStock(scope.row)" >编辑</el-button>
-            <el-button type="primary" size="default" icon="el-icon-delete" style="background-color: red; border: red" @click="deleteStock(scope.row)">删除</el-button>
+            <el-button type="primary" size="default" icon="el-icon-delete" style="background-color: red; border: red" @click="open(scope.row)">删除</el-button>
+            <el-button type="primary" size="default" icon="el-icon-files" style="background-color: green; border: green">库存量查询</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" style="background-color: orange; border: orange">出/入库单查询</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -120,6 +122,26 @@ export default {
         this.dialogFormVisible1 = true
       })
     },
+
+    open(row){
+      this.$confirm('此操作将永久删除该仓库，若该仓库存在订单则无法删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+        this.deleteStock(row)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+
     //删除仓库
     deleteStock(row) {
       console.log(row.id)
@@ -158,13 +180,5 @@ export default {
 </script>
 
 <style scoped>
-.form{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.dialog-footer{
-  display: flex;
-  justify-content: center;
-}
+
 </style>
