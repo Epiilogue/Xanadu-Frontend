@@ -19,9 +19,6 @@
       </el-form-item>
 
       <el-form :model="subware">
-        <el-form-item label="仓库ID">
-          <el-input v-model="subware.id" autocomplete="off"></el-input>
-        </el-form-item>
         <el-form-item label="仓库名称">
           <el-input v-model="subware.name" autocomplete="off"></el-input>
         </el-form-item>
@@ -80,9 +77,7 @@ export default {
       this.subware.y = this.form.addrPoint.lng
       this.subware.city = this.form.city
       console.log(this.subware)
-      if (!this.subware.id){
-        this.$message.error('请输入仓库id')
-      } else if (!this.subware.name){
+      if (!this.subware.name){
         this.$message.error('请输入仓库名称')
       } else if (!this.subware.master){
         this.$message.error('请输入仓库管理员')
@@ -110,6 +105,7 @@ export default {
       this.map = new BMap.Map('map-container', { enableMapClick: false })
       var point = new BMap.Point(123.47110,41.68383)
       this.map.centerAndZoom(point, 19)
+      this.map.enableScrollWheelZoom(true);
       // 3、设置图像标注并绑定拖拽标注结束后事件
       this.mk = new BMap.Marker(point, { enableDragging: true })
       this.map.addOverlay(this.mk)
