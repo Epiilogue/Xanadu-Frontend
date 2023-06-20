@@ -28,8 +28,9 @@
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-edit" @click="editStock(scope.row)" >编辑</el-button>
             <el-button type="primary" size="default" icon="el-icon-delete" style="background-color: red; border: red" @click="open(scope.row)">删除</el-button>
-            <el-button type="primary" size="default" icon="el-icon-files" style="background-color: green; border: green">库存量查询</el-button>
-            <el-button type="primary" size="default" icon="el-icon-printer" style="background-color: orange; border: orange">出/入库单查询</el-button>
+            <el-button type="primary" size="default" icon="el-icon-files" style="background-color: green; border: green" @click="goto(scope.row)">库存量查询</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto1(scope.row)">出库查询</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" style="background-color: orange; border: orange">入库查询</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,6 +62,7 @@
 
 import mapview from './mapView.vue'
 import updateView from './updateView'
+import personal from '../subStorage/personal'
 
 import { subwareByID,subwareAll ,subwareDetele} from '@/api/ware'
 
@@ -89,6 +91,24 @@ export default {
   },
 
   methods: {
+
+    //跳转库存量
+    goto(row){
+      this.$router.push(({
+        path:'/stock/subwareStorage1',
+        query:{stockId:row.id}
+      }))
+    },
+
+    //跳转出库
+    goto1(row){
+      this.$router.push(({
+        path:'/stock/subOutput/subOutput1',
+        query:{stockId:row.id}
+      }))
+    },
+
+
     //搜索
     search() {
       if (this.stockID === ''){
@@ -129,10 +149,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
         this.deleteStock(row)
       }).catch(() => {
         this.$message({
@@ -147,6 +163,12 @@ export default {
       console.log(row.id)
       subwareDetele(row.id).then(res=>{
         console.log(res)
+        if (res.msg === '删除分库成功'){
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }
       })
     },
     //分页

@@ -50,7 +50,6 @@
         <el-table-column label="退回数量" align="center" prop="refundNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="已分配量" align="center" prop="allocatedNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="可分配量" align="center" prop="allocateAbleNum" show-overflow-tooltip></el-table-column>
-        <el-table-column label="锁定数量" align="center" prop="lockNum" show-overflow-tooltip></el-table-column>
       </el-table>
 
       <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
@@ -62,13 +61,13 @@
 </template>
 
 <script>
-
-import {cenlist, cenGoodById} from '@/api/ware'
+import { subList } from '@/api/ware'
 
 export default {
-  name: 'index',
+  name: 'personal',
   data(){
     return {
+      stockID:'',
       goodID: '',
       tableData: [],
       currentPage: 1,
@@ -79,7 +78,80 @@ export default {
   },
 
   methods:{
-    //时间戳转换
+    //搜索
+    search() {
+      if (this.goodID === '' && this.datevalue === '' && this.datevalue1 === ''){
+        this.$message.error('请输入筛选信息')
+      } else {
+        subList().then(res=>{
+          var list = []
+          list = res.data
+          if (this.stockID !== ''){
+            this.tableData = []
+            for (let i = 0;i < list.length;i++) {
+              if (list.at(i).subwareId == this.stockID)
+                this.tableData.push(list.at(i))
+            }
+            list = this.tableData
+          }
+          if (this.goodID !== ''){
+            this.tableData = []
+            for (let i = 0;i < list.length;i++) {
+              if (list.at(i).productId == this.goodID)
+                this.tableData.push(list.at(i))
+            }
+            list = this.tableData
+          }
+          if (this.datevalue !== ''){
+            this.tableData = []
+            let start = this.todate(this.datevalue.at(0))
+            let end = this.todate(this.datevalue.at(1))
+            for (let i = 0;i < list.length;i++){
+              if (list.at(i).createTime > start && list.at(i).createTime < end)
+                this.tableData.push(list.at(i))
+            }
+            list = this.tableData
+          }
+          if (this.datevalue1 !== ''){
+            this.tableData = []
+            let start = this.todate(this.datevalue1.at(0))
+            let end = this.todate(this.datevalue1.at(1))
+            for (let i = 0;i < list.length;i++){
+              if (list.at(i).createTime > start && list.at(i).createTime < end)
+                this.tableData.push(list.at(i))
+            }
+          }
+
+          for (let i = 0;i < this.tableData.length;i++){
+            this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
+            this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
+          }
+        })
+
+      }
+    },
+    //重置
+    reset() {
+      this.goodID=''
+      this.datevalue=''
+      this.datevalue1=''
+      this.tableData = []
+      subList().then(res=>{
+        var list = []
+        list = res.data;
+        for (let i = 0;i < list.length;i++){
+          if (list.at(i).subwareId == this.stockID)
+            this.tableData.push(list.at(i))
+        }
+        for (let i = 0;i < this.tableData.length;i++){
+          this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
+          this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
+        }
+      })
+    },
+
+
+//时间戳转换
     getLocalTime(nS) {
       var date = new Date(nS);
       var Y = date.getFullYear() + '-';
@@ -100,106 +172,6 @@ export default {
       return s
     },
 
-    //搜索 id time
-    search(){
-      if (this.goodID !== ''){//商品id查找
-        cenGoodById(this.goodID).then(res=>{
-          var list = []
-          list.push(res.data)
-          //现在筛选时间
-          if (this.datevalue === '' && this.datevalue1 === ''){//没有
-            this.tableData = list
-          } else if (this.datevalue !== '' && this.datevalue1 === ''){//创建
-            this.tableData = []
-            for (let i = 0;i < list.length;i++){
-              let start = this.todate(this.datevalue.at(0))
-              let end = this.todate(this.datevalue.at(1))
-              if (list.at(i).createTime > start && list.at(i).createTime < end)
-                this.tableData.push(list.at(i))
-            }
-          } else if (this.datevalue === '' && this.datevalue1 !== ''){//更新
-            this.tableData = []
-            for (let i = 0;i < list.length;i++){
-              let start = this.todate(this.datevalue1.at(0))
-              let end = this.todate(this.datevalue1.at(1))
-              if (list.at(i).updateTime > start && list.at(i).updateTime < end)
-                this.tableData.push(list.at(i))
-            }
-          } else { //同时
-            this.tableData = []
-            for (let i = 0;i < list.length;i++){
-              let start = this.todate(this.datevalue.at(0))
-              let end = this.todate(this.datevalue.at(1))
-              let start1 = this.todate(this.datevalue1.at(0))
-              let end1 = this.todate(this.datevalue1.at(1))
-              if (list.at(i).createTime > start && list.at(i).createTime < end && list.at(i).updateTime > start1 && list.at(i).updateTime < end1)
-                this.tableData.push(list.at(i))
-            }
-          }
-
-          for (let i = 0;i < this.tableData.length;i++){
-            this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
-            this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
-          }
-        })
-      } else {//不需要id筛选
-        cenlist().then(res=>{
-          var list =[]
-          list.push(res.data)
-          //现在筛选时间
-          if (this.datevalue === '' && this.datevalue1 === ''){//没有
-            this.tableData = list[0]
-          } else if (this.datevalue !== '' && this.datevalue1 === ''){//创建
-            this.tableData = []
-            for (let i = 0;i < list[0].length;i++){
-              let start = this.todate(this.datevalue.at(0))
-              let end = this.todate(this.datevalue.at(1))
-              if (list[0].at(i).createTime > start && list[0].at(i).createTime < end)
-                this.tableData.push(list[0].at(i))
-            }
-          } else if (this.datevalue === '' && this.datevalue1 !== ''){//更新
-            this.tableData = []
-            for (let i = 0;i < list[0].length;i++){
-              let start = this.todate(this.datevalue1.at(0))
-              let end = this.todate(this.datevalue1.at(1))
-              if (list[0].at(i).updateTime > start && list[0].at(i).updateTime < end)
-                this.tableData.push(list[0].at(i))
-            }
-          } else { //同时
-            this.tableData = []
-            for (let i = 0;i < list[0].length;i++){
-              let start = this.todate(this.datevalue.at(0))
-              let end = this.todate(this.datevalue.at(1))
-              let start1 = this.todate(this.datevalue1.at(0))
-              let end1 = this.todate(this.datevalue1.at(1))
-              if (list[0].at(i).createTime > start && list[0].at(i).createTime < end && list[0].at(i).updateTime > start1 && list[0].at(i).updateTime < end1)
-                this.tableData.push(list[0].at(i))
-            }
-          }
-
-          for (let i = 0;i < this.tableData.length;i++){
-            this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
-            this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
-          }
-        })
-      }
-    },
-
-    //重置
-    reset() {
-      this.goodID=''
-      this.datevalue=''
-      this.datevalue1=''
-      cenlist().then(res=>{
-        this.tableData = res.data;
-        for (let i = 0;i < this.tableData.length;i++){
-          this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
-          this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
-        }
-      })
-    },
-
-
     //分页
     handleSizeChange(newSize) {
       this.pagesize = newSize
@@ -210,8 +182,14 @@ export default {
     },
   },
   mounted() {
-    cenlist().then(res=>{
-      this.tableData = res.data;
+    this.stockID = this.$route.query.stockId;
+    subList().then(res=>{
+      var list = []
+      list = res.data;
+      for (let i = 0;i < list.length;i++){
+        if (list.at(i).subwareId == this.stockID)
+          this.tableData.push(list.at(i))
+      }
       for (let i = 0;i < this.tableData.length;i++){
         this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
         this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)

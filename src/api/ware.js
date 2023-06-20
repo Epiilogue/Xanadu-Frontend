@@ -114,4 +114,41 @@ export function cenInput(id,number){
   })
 }
 
+//分库库存量
+export function subList(){
+  return request({
+    url: 'list',
+    method: 'get',
+    baseURL: 'http://localhost:8015/ware/subStorageRecord'
+  })
+}
 
+//分库出库
+  //获取所有列表
+export function subInputList(type){
+  return request({
+    url: '/list/'+type,
+    method:'get',
+    baseURL:'http://localhost:8015/ware/subOutput'
+  })
+}
+
+  //确认出库
+export function subConfirmOut(id, number){
+  return request({
+    url: '/confirm/'+id+'/'+number,
+    method:'put',
+    baseURL:'http://localhost:8015/ware/subOutput'
+  })
+}
+
+  //删除退货记录
+export function deleteReturnRecord(id){
+  return request({
+    url:'/delete/'+id,
+    method:'delete',
+    baseURL:'http://localhost:8015/ware/subOutput'
+  })
+}
+
+//分库入库

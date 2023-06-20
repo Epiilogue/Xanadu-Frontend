@@ -20,7 +20,7 @@
           </template>
         </el-table-column>
         <el-table-column label="入库数量" align="center" prop="inputNum" show-overflow-tooltip></el-table-column>
-        <el-table-column label="实际出库数量" align="center" prop="actualNum" show-overflow-tooltip></el-table-column>
+        <el-table-column label="实际入库数量" align="center" prop="actualNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)" :disabled="scope.row.status==='已入库'">入库</el-button>
