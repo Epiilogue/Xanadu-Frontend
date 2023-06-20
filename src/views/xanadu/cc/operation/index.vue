@@ -58,12 +58,12 @@
                         </el-table-column>
                     </el-table>
                     <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum"
-                        :limit.sync="listQuery.pageSize" @pagination="getList" />
+                        :limit.sync="listQuery.pageSize" @pagination="getList('')" />
                 </el-card>
             </el-tab-pane>
             <el-tab-pane label="工作量" name="work">
                 <!-- 工作量表格 -->
-                <WorkList :list="workList" v-if="activeName!=='operation'"></WorkList>
+                <WorkList :list="workList" :total="workList.length" v-if="activeName!=='operation'"></WorkList>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -71,7 +71,7 @@
 
 <script>
 
-import { getOperation, getWork } from '@/api/operation'
+import { getOperation, getWork } from '@/api/cc-operation'
 import WorkList from './Work.vue'
 import waves from "@/directive/waves"; // waves directive
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -137,7 +137,7 @@ export default {
     },
     methods: {
         // 分页加载操作记录
-        getList(op) {
+        getList(op,$event) {
             //将起止日期添加到请求参数中
             let query = this.addDateRange(this.listQuery, this.CreateRange);
             query.startTime = query.params.beginTime
@@ -167,7 +167,7 @@ export default {
         },
 
         // 查询操作员工作量(未分页)
-        getWorkList() {
+        getWorkList(show) {
             //检查输入
             if (!this.CreateRange || this.CreateRange.length === 0) {
                 this.$message({
@@ -226,7 +226,7 @@ export default {
         },
 
         handleFilterWork() {
-            this.getWorkList();
+            this.getWorkList(true);
             this.activeName='work'
         },
     }

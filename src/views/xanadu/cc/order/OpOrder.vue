@@ -130,8 +130,8 @@
 </template>
 
 <script>
-import { getCustomer } from "@/api/customer";
-import { unSubscribe, Return, change } from "@/api/order";
+import { getCustomer } from "@/api/cc-customer";
+import { unSubscribe, Return, change } from "@/api/cc-order";
 export default {
   data() {
     return {

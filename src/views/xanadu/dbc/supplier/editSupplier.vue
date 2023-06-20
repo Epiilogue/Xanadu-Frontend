@@ -205,7 +205,7 @@
 </div></template>
 
 <script>
-import { createSup, updateSup } from "@/api/supplier";
+import { createSup, updateSup } from "@/api/dbc-supplier";
 export default {
   name: "editSup",
   props: ['originSup', 'title'],

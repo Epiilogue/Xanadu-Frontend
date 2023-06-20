@@ -72,14 +72,14 @@
 
     <!--新增或编辑客户信息-->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
-      <editCustomer :v-if="dialogFormVisible" :originCustomer="editCustomer" :title="title" @hideUpdateView="hideUpdateView">
+      <editCustomer v-if="dialogFormVisible" :originCustomer="editCustomer" :title="title" @hideUpdateView="hideUpdateView">
       </editCustomer>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getCustomerList, deleteCustomer, getCustomer } from "@/api/customer";
+import { getCustomerList, deleteCustomer, getCustomer } from "@/api/cc-customer";
 import editCustomer from "./updateView.vue";
 import waves from "@/directive/waves"; // waves directive
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination

@@ -34,7 +34,7 @@
 
 <script>
 
-import { createCustomer, updateCustomer } from '@/api/customer'
+import { createCustomer, updateCustomer } from '@/api/cc-customer'
 
 export default {
     name: "editCustomer",

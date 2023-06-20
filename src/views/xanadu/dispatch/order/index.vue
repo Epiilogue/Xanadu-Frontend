@@ -52,8 +52,8 @@
 
 <script>
 import Info from "./DispatchOrder.vue"
-import { fetchList, getOrder } from "@/api/order"
-import { dispatchOrder,checkAllArrival } from '@/api/dispatch'
+import { fetchList, getOrder } from "@/api/cc-order"
+import { dispatchOrder,checkAllArrival } from '@/api/dpc-dispatch'
 export default {
     components: { Info },
     data() {
@@ -111,11 +111,11 @@ export default {
                 this.total = response.data.total;
                 this.listLoading = false;
             }).catch(() => {
-                this.$message({
-                    message: "获取订单列表失败",
-                    type: "error",
-                    duration: 1000,
-                });
+                // this.$message({
+                //     message: "获取订单列表失败",
+                //     type: "error",
+                //     duration: 1000,
+                // });
                 this.listLoading = false;
             })
         },

@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <el-tabs tab-position="left" v-model="activeName" @tab-click="changeTab" style="height: 100%;">
-            <el-tab-pane label="商品调度记录" name="dispatch">
+            <el-tab-pane v-if="false" label="商品调度记录" name="dispatch">
                 <el-table :key="0" :row-key="(row) => row.id" :data="centerList" ref="table" border fit
                     highlight-current-row style="width: 100%" v-loading="listLoading">
                     <!-- 商品调度记录 -->
@@ -94,8 +94,8 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <pagination v-show="subTotal > 0" :total="subTotal" :page.sync="listQuery.pageNum"
-                    :limit.sync="listQuery.pageSize" @pagination="getSubList" />
+                <pagination v-show="subTotal > 0" :total="subTotal" :page.sync="subwareListQuery.pageNum"
+                    :limit.sync="subwareListQuery.pageSize" @pagination="getSubList" />
 
                 <el-dialog title="调度信息" :visible.sync="dialogFormVisible">
                     <el-form>
@@ -126,9 +126,9 @@
     
 <script>
 
-import { centerStorageList, getCenterStorage, subList } from '@/api/ware.js'
-import { getProduct } from '@/api/dbc_product.js'
-import { dispatchProduct } from '@/api/dispatch.js'
+import { centerStorageList,cenGoodById, subList } from '@/api/ware.js'
+import { getProduct } from '@/api/dbc-product.js'
+import { dispatchProduct } from '@/api/dpc-dispatch.js'
 import Pagination from "@/components/Pagination";
 export default {
     name: "DispatchProduct",
@@ -146,8 +146,10 @@ export default {
             listQuery: {
                 pageNum: 1,
                 pageSize: 20,
-                // productId: "",
-                subwareId: "",
+            },
+            subwareListQuery: {
+                pageNum: 1,
+                pageSize: 20,
             },
 
             productId: "",
@@ -177,7 +179,7 @@ export default {
         // 分库分页列表
         getSubList() {
             this.listLoading = true;
-            subList(this.listQuery).then((response) => {
+            subList(this.subwareListQuery).then((response) => {
                 this.subList = response.data;
                 this.subTotal = response.data.length;
                 this.listLoading = false;
@@ -268,7 +270,7 @@ export default {
                 });
             } else if (isNum) {
                 // 查询可分配库存
-                getCenterStorage(newVal).then(res => {
+                cenGoodById(newVal).then(res => {
                     this.centerStorage = res.data.allocateAbleNum
                 }).catch(this.centerStorage =0)
             }

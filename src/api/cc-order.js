@@ -5,7 +5,7 @@ export function fetchList(query) {
   return request({
     url: `/cc/order/list`+(query.customerId?`/${query.customerId}`:''),
     method: 'get',
-    // params: query.customerId
+    params: query
   })
 }
 

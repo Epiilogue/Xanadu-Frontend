@@ -44,6 +44,7 @@
 
 <script>
 import { getToken } from "@/utils/auth";
+import { policy } from '@/api/distribution'
 
 export default {
   props: {

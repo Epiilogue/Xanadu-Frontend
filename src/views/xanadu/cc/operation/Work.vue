@@ -55,7 +55,7 @@
 
 export default {
     name: 'WorkList',
-    props: ['list'],
+    props: ['list','total'],
     data() {
         return {
             // 工作量分页

@@ -187,7 +187,7 @@
 </template>
 
 <script>
-import { createNewOrder } from "@/api/order";
+import { createNewOrder } from "@/api/cc-order";
 import OrderInfo from "./OrderInfo.vue";
 export default {
   components: { OrderInfo },

@@ -5,73 +5,31 @@
         提交商品订单
       </el-button>
     </div>
-    <el-table
-      :key="tableKey"
-      :row-key="(row) => row.id"
-      :data="list"
-      ref="table"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-      @select="selectOne"
-    >
-      <el-table-column
-        type="selection"
-        width="120"
-        align="center"
-        fixed
-        reserve-selection
-      >
+    <el-table :key="tableKey" :row-key="(row) => row.id" :data="list" ref="table" border fit highlight-current-row
+      style="width: 100%" @select="selectOne">
+      <el-table-column type="selection" width="120" align="center" fixed reserve-selection>
       </el-table-column>
-      <el-table-column
-        v-if="newOrder"
-        label="ID"
-        prop="id"
-        align="center"
-        width="100"
-      >
+      <el-table-column v-if="newOrder" label="ID" prop="id" align="center" width="100">
         <template slot-scope="{ row }">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="newOrder"
-        label="商品名称"
-        width="100"
-        align="center"
-      >
+      <el-table-column v-if="newOrder" label="商品名称" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="newOrder"
-        label="商品图片"
-        width="100"
-        align="center"
-      >
+      <el-table-column v-if="newOrder" label="商品图片" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.picture }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="!newOrder"
-        label="ID"
-        prop="id"
-        align="center"
-        width="100"
-      >
+      <el-table-column v-if="!newOrder" label="ID" prop="id" align="center" width="100">
         <template slot-scope="{ row }">
           <span>{{ row.productId }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="!newOrder"
-        label="商品名称"
-        width="100"
-        align="center"
-      >
+      <el-table-column v-if="!newOrder" label="商品名称" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.productName }}</span>
         </template>
@@ -87,22 +45,12 @@
           <span>{{ row.categary }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="newOrder"
-        label="一级分类ID"
-        width="200"
-        align="center"
-      >
+      <el-table-column v-if="newOrder" label="一级分类ID" width="200" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.firstCategray }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="newOrder"
-        label="二级分类ID"
-        width="200"
-        align="center"
-      >
+      <el-table-column v-if="newOrder" label="二级分类ID" width="200" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.secondCategray }}</span>
         </template>
@@ -126,48 +74,28 @@
           <span>{{ row.comment }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="!newOrder"
-        label="原购买数量"
-        width="100"
-        align="center"
-      >
+      <el-table-column v-if="!newOrder" label="原购买数量" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.number }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        :label="`${this.opType}数量`"
-        min-width="200"
-        align="center"
-        fixed="right"
-      >
+      <el-table-column :label="`${this.opType}数量`" min-width="200" align="center" fixed="right">
         <template slot-scope="{ row }">
-          <el-input-number
-            v-model="row.opNumber"
-            :min="0"
-            :max="row.number ? row.number : maxNum"
-            :disabled="row.disabled === undefined ? true : row.disabled"
-            width="80"
-            size="small"
-            @change="changeNum(row)"
-          ></el-input-number>
+          <el-input-number v-model="row.opNumber" :min="0" :max="row.number ? row.number : maxNum"
+            :disabled="row.disabled === undefined ? true : row.disabled" width="80" size="small"
+            @change="changeNum(row)"></el-input-number>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0 && this.newOrder"
-      :total="total"
-      :page.sync="listQuery.pageNum"
-      :limit.sync="listQuery.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0 && this.newOrder" :total="total" :page.sync="listQuery.pageNum"
+      :limit.sync="listQuery.pageSize" @pagination="getList" />
   </div>
 </template>
 
 <script>
-import { getProductList, getOrder } from "@/api/order";
+
+import { getProductList, getOrder } from "@/api/cc-order";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination

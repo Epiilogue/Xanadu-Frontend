@@ -117,7 +117,7 @@
 
 <script>
 
-import { fetchList, withdrawOrder, getOrder } from "@/api/order";
+import { fetchList, withdrawOrder, getOrder } from "@/api/cc-order";
 import OrderInfo from "./OrderInfo.vue";
 import waves from "@/directive/waves"; // waves directive
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
