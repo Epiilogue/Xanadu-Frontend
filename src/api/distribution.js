@@ -98,11 +98,18 @@ export function fetchList(query) {
     })
   }
 //更新商品
-  export function updateArticle(data) {
+  export function updateProduct(data) {
     return request({
       url: '/update',
       method: 'post',
       baseURL: 'http://localhost:8004/dbc/product',
       data
+    })
+  }
+  export function getOneProduct(id){
+    return request({
+      url: `get/${id}`,
+      method: 'get',
+      baseURL: 'http://localhost:8004/dbc/product',
     })
   }

@@ -122,7 +122,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle, deleteProduct } from '@/api/distribution'
+import { fetchList, fetchPv, createArticle, updateProduct, deleteProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'

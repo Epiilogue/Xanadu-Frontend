@@ -29,10 +29,9 @@
         style="width: 100%;"
         @sort-change="sortChange"
       >
-        <el-table-column label="ID" prop="id" align="center" width="80"
-        >
+        <el-table-column label="ID" prop="id" align="center" width="80">
           <template slot-scope="{row}">
-            <span>{{ row.id }}</span>
+            <product :id="row.id"></product>
           </template>
         </el-table-column>
 
@@ -60,9 +59,9 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="供应商ID" min-width="50px" prop="upplierId " align="center">
+        <el-table-column label="供应商ID" min-width="50px" prop="supplierId " align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.upplierId }}</span>
+            <span class="link-type" @click="handleUpdate(row)">{{ row.supplierId }}</span>
           </template>
         </el-table-column>
 
@@ -135,8 +134,7 @@
         :page-sizes="[1, 2, 5, 7]"
         :page-size="5"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
+        :total="total">
       </el-pagination>
 
     </el-card>
@@ -153,8 +151,8 @@
         <el-form-item label="成本" prop="cost">
           <el-input v-model="temp.cost"/>
         </el-form-item>
-        <el-form-item label="供应商ID" prop="upplierId">
-          <el-input v-model="temp.upplierId"/>
+        <el-form-item label="供应商ID" prop="supplierId">
+          <el-input v-model="temp.supplierId"/>
         </el-form-item>
 
         <el-form-item label="是否可退货" prop="refundAble">
@@ -192,7 +190,6 @@
           </el-cascader>
         </el-form-item>
 
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -207,13 +204,14 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle, deleteProduct } from '@/api/distribution'
+import { fetchList, fetchPv, createArticle, updateProduct, deleteProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
 import { timestampToTime } from '@/utils/ruoyi'
 import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
+import Product from '@/components/detail/product.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -230,7 +228,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { SingleUpload, Pagination },
+  components: { Product, SingleUpload, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -277,7 +275,7 @@ export default {
         name: '',
         price: '',
         cost: '',
-        upplierId: '',
+        supplierId: '',
         firstCategray: '',
         secondCategray: '',
         refundAble: false,
@@ -328,7 +326,10 @@ export default {
     this.getList()
   },
   methods: {
-
+    getOne(id){
+      console.log(this.$children)
+      //this.$children[0].getProduct(id);
+    },
     timestampToTime() {
       return timestampToTime
     },
@@ -364,6 +365,7 @@ export default {
     getList(name) {
       this.listLoading = true
       fetchList().then(response => {
+        console.log(response)
         this.list = response.data
         this.total = response.data.length
         setTimeout(() => {
@@ -459,7 +461,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateArticle(tempData).then(() => {
+          updateProduct(tempData).then(() => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false

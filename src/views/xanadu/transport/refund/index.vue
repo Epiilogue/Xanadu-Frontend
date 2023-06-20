@@ -190,7 +190,7 @@
 import {
   fetchList,
   createArticle,
-  updateArticle,
+  updateProduct,
   deleteProduct,
   fetchLackRecordList,
   getRefundList

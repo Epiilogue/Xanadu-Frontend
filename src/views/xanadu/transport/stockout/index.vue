@@ -29,7 +29,7 @@
       >
         <el-table-column label="商品ID" prop="id" align="center" width="90">
           <template slot-scope="{row}">
-            <span>{{ row.product.id }}</span>
+            <product :id="row.product.id"></product>
           </template>
         </el-table-column>
         <el-table-column label="商品名称" prop="orderId" min-width="80px" align="center">
@@ -168,6 +168,7 @@ import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import { arrivalStockOut, commitStockOut, fetchStockOut, updateStockOut } from '@/api/customer'
 import { update } from 'script-ext-html-webpack-plugin/lib/elements'
+import Product from '@/components/detail/product.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -184,7 +185,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { SingleUpload, Pagination },
+  components: { Product, SingleUpload, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {

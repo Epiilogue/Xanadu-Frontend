@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import { fetchList, createArticle, updateArticle, deleteProduct, fetchLackRecordList } from '@/api/distribution'
+import { fetchList, createArticle, updateProduct, deleteProduct, fetchLackRecordList } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'

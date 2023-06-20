@@ -17,7 +17,11 @@
       <el-button type="primary" size="default" icon="el-icon-refresh-right" @click="refreshform">刷  新</el-button>
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
-        <el-table-column label="ID" align="center" width="100" prop="id" show-overflow-tooltip></el-table-column>
+        <el-table-column label="ID" align="center" width="100" prop="id" >
+          <template slot-scope="{row}">
+            <ware :id="row.id"></ware>
+          </template>
+        </el-table-column>
         <el-table-column label="仓库名称" align="center" width="100" prop="name" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库地址" align="center" width="150" prop="address" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库城市地址" align="center" width="100" prop="city" show-overflow-tooltip></el-table-column>
@@ -63,9 +67,11 @@ import mapview from './mapView.vue'
 import updateView from './updateView'
 
 import { subwareByID,subwareAll ,subwareDetele} from '@/api/ware'
+import Ware from '@/components/detail/ware.vue'
 
 export default {
   components:{
+    Ware,
     mapview:mapview,
     updateView:updateView
   },
@@ -174,6 +180,7 @@ export default {
   mounted() {
     subwareAll().then(res=>{
       this.tableData = res.data;
+      console.log(res)
     })
   }
 }

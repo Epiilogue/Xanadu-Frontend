@@ -25,8 +25,9 @@
         <el-table-column label="缺货记录ID" prop="id" align="center" width="90"
         >
           <template slot-scope="{row}">
-            <span>{{ row.id }}</span>
+          <stock-out :id="row.id"></stock-out>
           </template>
+
         </el-table-column>
 
         <el-table-column label="缺货订单号" prop="orderId" min-width="80px" align="center">
@@ -127,7 +128,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle, deleteProduct } from '@/api/distribution'
+import { fetchList, fetchPv, createArticle, updateProduct, deleteProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
@@ -136,6 +137,7 @@ import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import { arrivalStockOut, commitStockOut, fetchStockOut, updateStockOut } from '@/api/customer'
 import { update } from 'script-ext-html-webpack-plugin/lib/elements'
+import StockOut from '@/components/detail/stockout.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -152,7 +154,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { SingleUpload, Pagination },
+  components: { StockOut, SingleUpload, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
