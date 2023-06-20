@@ -117,10 +117,10 @@
 
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
           <template slot-scope="{row,$index}">
-            <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            <el-button type="primary" @click="handleUpdate(row)">
               Edit
             </el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+            <el-button type="danger" @click="handleDelete(row,$index)">
               Delete
             </el-button>
           </template>
@@ -202,16 +202,6 @@
           提交
         </el-button>
       </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel"/>
-        <el-table-column prop="pv" label="Pv"/>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">提交</el-button>
-      </span>
     </el-dialog>
   </div>
 </template>

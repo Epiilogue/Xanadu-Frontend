@@ -20,13 +20,13 @@
 
       <el-form :model="subware">
         <el-form-item label="仓库ID">
-          <el-input v-model="subware.id" autocomplete="off" :disabled="true">{{ this.subware.id }}</el-input>
+          <el-input v-model="subware.id" autocomplete="off" :disabled="true">{{this.subware.id}}</el-input>
         </el-form-item>
         <el-form-item label="仓库名称">
-          <el-input v-model="subware.name" autocomplete="off">{{ this.subware.name }}</el-input>
+          <el-input v-model="subware.name" autocomplete="off">{{this.subware.name}}</el-input>
         </el-form-item>
         <el-form-item label="仓库管理员">
-          <el-input v-model="subware.master" autocomplete="off">{{ this.subware.master }}</el-input>
+          <el-input v-model="subware.master" autocomplete="off">{{this.subware.master}}</el-input>
         </el-form-item>
       </el-form>
       <el-form-item class="sumbit">

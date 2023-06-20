@@ -157,10 +157,6 @@
 
 <script>
 import {
-  fetchList,
-  createArticle,
-  updateArticle,
-  deleteProduct,
   LackRecordInspect,
   fetchLackRecordList, generatePurchaseRecord
 } from '@/api/distribution'
@@ -289,6 +285,7 @@ export default {
         fetchLackRecordList().then(response => {
           if (that.isCheck === '') {
             let res = response.data
+            console.log(res)
             res.forEach(function(item) {
               let singleRecord = item.singleLackRecordVos
               for (let i = 0; i < singleRecord.length; i++) {
@@ -359,8 +356,8 @@ export default {
           tmp.forEach(function(key) {
             if (key.id === -1) {
               key.createBy = '系统创建'
-              key.id = '无'
-              key.orderId = '无'
+              key.id = -1
+              key.orderId = -1
             }
           })
           this.singleLackRecord = this.list[i].singleLackRecordVos
@@ -378,6 +375,7 @@ export default {
     //todo 生成进货单后,系统生成缺货单不再显示
     updateData() {
       this.oneAllLackRecord.inputCount = this.inputCount
+      console.log(this.oneAllLackRecord)
       generatePurchaseRecord(this.oneAllLackRecord).then(response => {
         console.log(response)
         if (response.code === 200) {
@@ -388,6 +386,7 @@ export default {
             duration: 2000
           })
           this.generateVisible = false
+          this.getList()
         }
       })
     }

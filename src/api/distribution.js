@@ -27,6 +27,24 @@ export function generatePurchaseRecord(data){
     data
   })
 }
+//查询所有退货
+export function getRefundList(){
+  return request({
+    url: '/list',
+    method:'get',
+    baseURL:'http://localhost:8004/dbc/refund'
+  })
+}
+
+//
+/* export function getRefundList(){
+  return request({
+    url: '/searchForReturn',
+    method:'get',
+    baseURL:'http://localhost:8004/dbc/refund'
+  })
+} */
+
 export function LackRecordInspect(id,isCheck){
   return request({
     url: `getLackRecord/${id}/${true}`,

@@ -74,9 +74,9 @@
             <el-button size="medium" type="danger" @click="handleCommit(row.id)">
               提交
             </el-button>
-            <el-button @click="handleArrival(row.id)">
+<!--            <el-button @click="handleArrival(row.id)">
               到货
-            </el-button>
+            </el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -121,6 +121,8 @@
         <el-button type="primary" @click="dialogPvVisible = false">提交</el-button>
       </span>
     </el-dialog>
+
+
   </div>
 </template>
 
