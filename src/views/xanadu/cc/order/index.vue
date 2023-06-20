@@ -1,74 +1,51 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-date-picker
-        v-model="listQuery.customerName"
-        type="date"
-        placeholder="录入时间"
-        style="width: 200px; margin-right: 5px"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-input
-        v-model="listQuery.customerName"
-        placeholder="客户姓名"
-        style="width: 200px; margin-right: 5px"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-select
-        v-model="listQuery.orderType"
-        placeholder="订单类型"
-        style="width: 200px; margin-right: 5px"
-        class="filter-item"
-        @change="handleFilter"
-      >
-        <el-option
-          v-for="item in orderTypeOption"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
-      </el-select>
-      <el-button
-        v-waves
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >
-        查询
-      </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 5px"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
-        新订
-      </el-button>
+      <el-form :inline="true" style="margin: 0px;">
+        <el-form-item label="录入时间">
+          <el-date-picker
+            v-model="CreateRange"
+            type="daterange"
+            align="right"
+            style="width: 240px"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            unlink-panels
+            range-separator="-"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :picker-options="pickerOptions">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="客户姓名">
+          <el-input v-model="listQuery.customerName" placeholder="客户姓名" style="width: 200px; margin-right: 5px"
+            class="filter-item"/></el-form-item>
+        <el-form-item label="订单类型"><el-select v-model="listQuery.orderType" placeholder="订单类型"
+            style="width: 200px; margin-right: 5px" class="filter-item">
+            <el-option v-for="item in orderTypeOption" :key="item" :label="item" :value="item" />
+          </el-select></el-form-item>
+        <el-form-item><el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="()=>this.getList()">
+            查询
+          </el-button>
+          <el-button class="filter-item" style="margin-left: 5px" type="primary" icon="el-icon-edit"
+            @click="handleCreate">
+            新订
+          </el-button></el-form-item>
+      </el-form>
+
     </div>
 
-    <el-table
-      :key="tableKey"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-    >
-      <el-table-column label="ID" prop="id" align="center" width="100">
+    <el-table :key="tableKey" :data="list" border fit highlight-current-row style="width: 100%">
+      <el-table-column label="订单编号" prop="id" align="center" width="100">
         <template slot-scope="{ row }">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作员ID" width="100" align="center">
+      <el-table-column label="操作员编号" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.userId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="客户ID" width="100" align="center">
+      <el-table-column label="客户编号" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.customerId }}</span>
         </template>
@@ -110,68 +87,36 @@
         </template>
       </el-table-column>
       <!-- 按钮 -->
-      <el-table-column
-        label="Actions"
-        align="center"
-        min-width="390"
-        class-name="small-padding fixed-width"
-        fixed="right"
-      >
+      <el-table-column label="Actions" align="center" min-width="350" class-name="small-padding fixed-width"
+        fixed="right">
         <template slot-scope="{ row, $index }">
-          <div :style="stateOne(row)">
-            <el-button
-              type="primary"
-              plain
-              @click="handleOperateOrder(row, $event)"
-            >
+            <el-button v-if="stateOne(row)" type="primary" plain @click="handleOperateOrder(row, $event)">
               退订
             </el-button>
-            <el-button type="primary" plain @click="handleCancel(row)">
+            <el-button v-if="stateOne(row)" type="primary" plain @click="handleCancel(row)">
               撤销
             </el-button>
-            <el-button @click="handleInfo(row, $event)">详情</el-button>
-          </div>
-          <div :style="stateTwo(row)">
-            <el-button
-              type="danger"
-              plain
-              @click="handleOperateOrder(row, $event)"
-            >
+            <el-button v-if="stateTwo(row)" type="danger" plain @click="handleOperateOrder(row, $event)">
               退货
             </el-button>
-            <el-button
-              type="danger"
-              plain
-              @click="handleOperateOrder(row, $event)"
-            >
+            <el-button v-if="stateTwo(row)" type="danger" plain @click="handleOperateOrder(row, $event)">
               换货
             </el-button>
-            <el-button @click="handleInfo(row)">详情</el-button>
-          </div>
+          <el-button @click="handleInfo(row)">详情</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+      @pagination="getList" />
 
-    <OrderInfo
-      title="订单详情"
-      :temp="this.temp"
-      :products="this.temp.products"
-      :newOrder="this.newOrder"
-      :dialogFormVisible="this.dialogFormVisible"
-      @close="close()"
-    ></OrderInfo>
+    <OrderInfo title="订单详情" :temp="this.temp" :products="this.temp.products" :newOrder="this.newOrder"
+      :dialogFormVisible="this.dialogFormVisible" @close="close()"></OrderInfo>
   </div>
 </template>
 
 <script>
+
 import { fetchList, withdrawOrder, getOrder } from "@/api/order";
 import OrderInfo from "./OrderInfo.vue";
 import waves from "@/directive/waves"; // waves directive
@@ -194,14 +139,47 @@ export default {
         page: 1,
         limit: 20,
         customerId: null,
+        customerName: "",
+        createTime:undefined,
+        orderType: "",
       },
+
+      CreateRange:[],
 
       textMap: {
         update: "Edit",
         create: "Create",
       },
-      downloadLoading: false,
-      orderTypeOption: ["新订", "退订", "退货", "撤销", "换货"],
+      orderTypeOption: ["新订", "退订", "退货", "换货"],
+
+      // 日期选择的快捷设置
+      pickerOptions: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
 
       // dialog
       temp: {
@@ -223,33 +201,35 @@ export default {
   created() {
     // 客户ID
     this.listQuery.customerId = this.$route.query.id;
-    // this.listQuery.customerId = 1;
     this.getList();
   },
   methods: {
     getList() {
       this.listLoading = true;
+      //将起止日期添加到请求参数中
+      let query = this.addDateRange(this.listQuery,this.CreateRange);
+      query.beginTime=query.params.beginTime
+      query.endTime=query.params.endTime
+      query.params=undefined
       // 加载列表
-      fetchList(this.listQuery).then((response) => {
-        this.list = response.data;
-        this.total = response.data.length;
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false;
-        }, 1.5 * 1000);
-      });
+      fetchList(query).then((response) => {
+        this.list = response.data.records;
+        this.total = response.data.total;
+      })
     },
 
     // 设置是否显示操作按钮
     stateOne(row) {
       if (row.status !== "缺货" && row.status !== "可分配") {
-        return { display: "none" };
+        return false;
       }
+      return true;
     },
     stateTwo(row) {
       if (row.status !== "已完成") {
-        return { display: "none" };
+        return false;
       }
+      return true
     },
 
     // 新订
@@ -261,11 +241,10 @@ export default {
     handleCancel(row) {
       withdrawOrder(row.id).then(() => {
         this.getList();
-        this.$notify({
-          title: "",
-          message: "撤销成功",
-          type: "success",
-          duration: 2000,
+        this.$message({
+          message: '撤销成功',
+          type: 'success',
+          duration:1000,
         });
       });
     },
@@ -283,7 +262,7 @@ export default {
 
     // 查询
     handleFilter($event) {
-      this.getList();
+      this.getList()
     },
 
     // 订单详情
@@ -302,6 +281,6 @@ export default {
       this.temp = [];
       this.dialogFormVisible = false;
     },
-  },
-};
+  }
+}
 </script>
