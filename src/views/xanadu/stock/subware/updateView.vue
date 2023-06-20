@@ -130,8 +130,9 @@ export default {
       var that = this
       // 1、挂载地图
       this.map = new BMap.Map('map-container', { enableMapClick: false })
-      var point = new BMap.Point(123.47110,41.68383)
+      var point = new BMap.Point(parseFloat(this.subware.x),parseFloat(this.subware.y))
       this.map.centerAndZoom(point, 19)
+      this.map.enableScrollWheelZoom(true);
       // 3、设置图像标注并绑定拖拽标注结束后事件
       this.mk = new BMap.Marker(point, { enableDragging: true })
       this.map.addOverlay(this.mk)
