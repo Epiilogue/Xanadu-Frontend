@@ -4,20 +4,20 @@
       <el-button type="primary" size="default" icon="el-icon-refresh-right" style="margin-right: 10px"  @click="reset">刷  新</el-button>
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
-        <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库ID" align="center" prop="outputId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="分库ID" align="center" prop="subwareId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库时间" align="center" prop="outputTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="状态" align="center"  show-overflow-tooltip>
+        <el-table-column label="记录ID" align="center" width="80" prop="id" show-overflow-tooltip></el-table-column>
+        <el-table-column label="出库ID" align="center" width="80" prop="outputId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" width="80" prop="productId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="分库ID" align="center" width="80" prop="subwareId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" width="100" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="出库时间" align="center" width="200" prop="outputTime" show-overflow-tooltip></el-table-column>
+        <el-table-column label="状态" align="center" width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
             <el-tag type="danger"  v-show="scope.row.status === '未出库'">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="出库数量" align="center" prop="outputNum" show-overflow-tooltip></el-table-column>
-        <el-table-column label="实际出库数量" align="center" prop="actualNum" show-overflow-tooltip></el-table-column>
+        <el-table-column label="出库数量" align="center" width="80" prop="outputNum" show-overflow-tooltip></el-table-column>
+        <el-table-column label="实际出库数量" align="center" width="80" prop="actualNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)" :disabled="scope.row.status==='已出库'">出库</el-button>
@@ -30,15 +30,6 @@
                      :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=tableData.length>
       </el-pagination>
     </el-card>
-
-    <!--confirm-->
-    <el-dialog title="确认出库" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" center>
-      <p style="size: A3">请选择领货出库的数量</p>
-      <el-slider v-model="outNum" show-input :max="Math.ceil(this.outValue*1.5)" :min="Math.floor(this.outValue*0.5)" :step="1">
-      </el-slider>
-      <el-button type="primary" round @click="confirmOut">提交</el-button>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -56,21 +47,27 @@ export default {
       subwareID:'',
       dialogFormVisible:false,
       outNum:'',
-      outValue:'',
       outId:'',
     }
   },
   methods:{
-
     //toConfirm
     toConfirm(row){
-      this.outId = row.id
-      this.outValue = row.outputNum
-      this.outNum = row.outputNum
-      this.dialogFormVisible = true
+      this.$confirm('此操作将全部商品领取并出库', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.confirmOut(row.id,row.outputNum)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消领货'
+        });
+      });
     },
-    confirmOut(){
-      subConfirmOut(this.outId,this.outNum).then(res=>{
+    confirmOut(id,outputNum){
+      subConfirmOut(id,outputNum).then(res=>{
         console.log(res)
         if (res.msg === '确认退货出库成功'){
           this.dialogFormVisible = false
