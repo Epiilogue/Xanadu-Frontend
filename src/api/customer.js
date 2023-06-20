@@ -5,7 +5,11 @@ export function getCustomerList(query) {
     return request({
       url: `/cc/customer/list/${query.pageNum}/${query.pageSize}`,
       method: 'get',
-      // params: query.customerId
+      params: {
+        name: query.name,
+        telephone:query.telephone,
+        identityCard:query.identityCard
+    }
     })
   }
 
@@ -14,6 +18,31 @@ export function getCustomer(customerId) {
   return request({
     url: `/cc/customer/query/${customerId}`,
     method: 'get',
-    // params: query.customerId
+  })
+}
+
+// 新增客户
+export function createCustomer(customer) {
+  return request({
+    url: `/cc/customer/create`,
+    method: 'post',
+    data:customer,
+  })
+}
+
+// 编辑客户
+export function updateCustomer(customer) {
+  return request({
+    url: `/cc/customer/update`,
+    method: 'post',
+    data:customer,
+  })
+}
+
+// 删除客户
+export function deleteCustomer(customerId) {
+  return request({
+    url: `/cc/customer//delete/${customerId}`,
+    method: 'get',
   })
 }

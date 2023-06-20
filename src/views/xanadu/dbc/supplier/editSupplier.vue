@@ -2,57 +2,44 @@
   <div>
     <div class="container">
       <!-- 供应商信息 -->
-      <el-card class="box-card" shadow="always">
-        <div slot="header" class="clearfix">
-          <span>客户信息</span>
-          <el-button
-            style="float: right; padding: 3px 0"
-            type="text"
-            @click="handleSelectCustomer"
-            >查看客户列表</el-button
-          >
-        </div>
-        <el-form
-          ref="supForm"
-          :rules="rules"
-          :model="temp"
-          label-width="100px"
-          label-position="left"
-          style="min-width: 300px; margin-left: 50px"
-        >
-          <el-form-item label="供应商名称" prop="name">
-            <el-input v-model="temp.name" />
-          </el-form-item>
-          <el-form-item label="地址" prop="address">
-            <el-input v-model="temp.address" />
-          </el-form-item>
-          <el-form-item label="联系人" prop="contactPerson">
-            <el-input v-model="temp.contactPerson" />
-          </el-form-item>
-          <el-form-item label="联系电话" prop="contactPerson">
-            <el-input v-model="temp.phone" />
-          </el-form-item>
-          <el-form-item label="开户行" prop="contactPerson">
-            <el-input v-model="temp.bankAccount" />
-          </el-form-item>
-          <el-form-item label="创建日期" prop="contactPerson">
-            <el-date-picker v-model="temp.createTime" type="datetime" />
-          </el-form-item>
-          <el-form-item label="修改日期" prop="contactPerson">
-            <el-date-picker v-model="temp.updateTime" type="datetime" />
-          </el-form-item>
-          <el-form-item label="备注">
-            <el-input
-              v-model="temp.remarks"
-              :autosize="{ minRows: 2, maxRows: 4 }"
-              type="textarea"
-            />
-          </el-form-item>
-        </el-form>
-      </el-card>
-      <!-- 商品信息 -->
-      <!-- 合计 -->
-      <el-card class="box-card">
+      <el-form ref="form" :rules="rule" :model="supplier" label-width="100px" label-position="left"
+        style="min-width: 300px; margin-left: 50px">
+        <el-form-item label="供应商名称" prop="name">
+          <el-input v-model="supplier.name" />
+        </el-form-item>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="supplier.address" />
+        </el-form-item>
+        <el-form-item label="联系人" prop="contactPerson">
+          <el-input v-model="supplier.contactPerson" />
+        </el-form-item>
+        <el-form-item label="联系电话" prop="phone">
+          <el-input v-model="supplier.phone" />
+        </el-form-item>
+        <el-form-item label="开户行" prop="bankAccount">
+          <el-input v-model="supplier.bankAccount" />
+        </el-form-item>
+        <!-- <el-form-item label="创建日期" prop="contactPerson">
+          <el-date-picker v-model="supplier.createTime" type="datetime" />
+        </el-form-item>
+        <el-form-item label="修改日期" prop="contactPerson">
+          <el-date-picker v-model="supplier.updateTime" type="datetime" />
+        </el-form-item> -->
+        <el-form-item label="备注">
+          <el-input v-model="supplier.remarks" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" />
+        </el-form-item>
+        <!-- 按钮 -->
+        <el-form-item class="sumbit">
+          <el-button type="primary" @click="submit">提交</el-button>
+          <el-button type="primary"
+            @click="() => this.supplier = JSON.parse(JSON.stringify(this.originSup))">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <!-- 商品信息 -->
+    <!-- 合计 -->
+    <!-- <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span>商品信息</span>
           <el-button
@@ -63,11 +50,9 @@
             查看商品列表</el-button
           >
         </div>
-        <!-- 保证computed被触发 -->
         <div style="display: none">
           {{ `修改次数:${proChanged}-${cusChanged}` }}
         </div>
-        <!-- v-for不刷新 -->
         <div :v-if="this.ifShow">
           <el-table
             :key="0"
@@ -160,10 +145,10 @@
         >
           Confirm
         </el-button>
-      </div>
+      </div> -->
 
-      <!-- 录入商品信息 -->
-      <el-dialog
+    <!-- 录入商品信息 -->
+    <!-- <el-dialog
         :title="textMap[dialogStatus]"
         :visible.sync="dialogFormVisible"
         width="85%"
@@ -215,44 +200,59 @@
             Confirm
           </el-button>
         </div>
-      </el-dialog>
-    </div>
+      </el-dialog> -->
   </div>
-</template>
+</div></template>
 
 <script>
+import { createSup, updateSup } from "@/api/supplier";
 export default {
+  name: "editSup",
+  props: ['originSup', 'title'],
   data() {
     return {
-      textMap: {
-        update: "编辑",
-        create: "新增",
+      supplier: JSON.parse(JSON.stringify(this.originSup)),
+      rule: {
+        name: {
+          required: true,
+          message: '请输入供应商名称',
+          trigger: 'blur'
+        },
+        address: {
+          required: true,
+          message: '请输入地址',
+          trigger: 'blur'
+        },
+        phone: {
+          required: true,
+          message: '请输入联系电话',
+          trigger: 'blur'
+        },
       },
-
-      // dialog
-      temp: {
-        id: undefined,
-        name: "",
-        address: "",
-        contactPerson: "",
-        phone: "",
-        bankAccount: "",
-        remarks: "",
-        createTime: "",
-        updateTime: "",
-        products: [],
-      },
-
-      product: [],
-
-      dialogFormVisible: false,
-
-      dialogPvVisible: false,
-
-      dialogStatus: "",
-      pvData: [],
-      rules: {},
-    };
+    }
   },
-};
+  methods: {
+    submit() {
+      console.log(this.customer)
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          let fun = this.title === "create" ? createSup : updateSup
+          fun(this.supplier).then(res => {
+            this.$message({
+              message: res.msg,
+              type: 'success',
+              duration: 1000,
+            })
+            this.$emit('hideUpdateView')
+          }).catch(err => {
+            console.log(err)
+          })
+        } else {
+          this.$modal.alertWarning("输入不合法");
+        }
+      })
+    },
+  },
+
+}
 </script>

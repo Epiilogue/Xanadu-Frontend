@@ -1,82 +1,32 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input
-        v-model="listQuery.name"
-        placeholder="供应商名称"
-        style="width: 200px; margin-right: 5px"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-input
-        v-model="listQuery.address"
-        placeholder="地址"
-        style="width: 200px; margin-right: 5px"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-button
-        v-waves
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >
+      <el-input v-model="listQuery.name" placeholder="供应商名称" style="width: 200px; margin-right: 5px" class="filter-item"
+        @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.address" placeholder="地址" style="width: 200px; margin-right: 5px" class="filter-item"
+        @keyup.enter.native="handleFilter" />
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         查询
       </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 5px"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
+      <el-button class="filter-item" style="margin-left: 5px" type="primary" icon="el-icon-edit" @click="handleCreate">
         新增
       </el-button>
     </div>
 
-    <el-table
-      :key="tableKey"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-    >
+    <el-table :key="tableKey" :data="list" border fit highlight-current-row style="width: 100%" v-loading="listLoading">
       <el-table-column label="ID" prop="id" align="center" width="100">
-        <template slot-scope="{ row }">
-          <span>{{ row.id }}</span>
-        </template>
       </el-table-column>
-      <el-table-column label="供应商名称" width="100" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.name }}</span>
-        </template>
+      <el-table-column label="供应商名称" prop="name" width="100" align="center">
       </el-table-column>
-      <el-table-column label="地址" width="100" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.address }}</span>
-        </template>
+      <el-table-column label="地址" prop="address" width="100" align="center">
       </el-table-column>
-      <el-table-column label="联系人" width="200" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.contactPerson }}</span>
-        </template>
+      <el-table-column label="联系人" prop="contactPerson" width="200" align="center">
       </el-table-column>
-      <el-table-column label="联系电话" width="100" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.phone }}</span>
-        </template>
+      <el-table-column label="联系电话" prop="phone" width="100" align="center">
       </el-table-column>
-      <el-table-column label="开户行" width="100" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.bankAccount }}</span>
-        </template>
+      <el-table-column label="开户行" prop="bankAccount" width="100" align="center">
       </el-table-column>
-      <el-table-column label="备注" width="100" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.comment }}</span>
-        </template>
+      <el-table-column label="备注" prop="comment" width="100" align="center">
       </el-table-column>
       <el-table-column label="创建日期" width="200" align="center">
         <template slot-scope="{ row }">
@@ -95,95 +45,36 @@
         </template>
       </el-table-column>
       <!-- 按钮 -->
-      <el-table-column
-        label="Actions"
-        align="center"
-        min-width="390"
-        class-name="small-padding fixed-width"
-        fixed="right"
-      >
+      <el-table-column label="Actions" align="center" min-width="390" class-name="small-padding fixed-width"
+        fixed="right">
         <template slot-scope="{ row, $index }">
-          <el-button
-            type="primary"
-            plain
-            @click="handleOperateOrder(row, $event)"
-          >
+          <el-button type="primary" plain @click="handleEdit(row, $event)">
             编辑
           </el-button>
-          <el-button type="primary" plain @click="handleCancel(row)">
+          <el-button type="primary" plain @click="handleDelete(row)">
             删除
           </el-button>
-          <el-button @click="handleInfo(row, $event)">详情</el-button>
-          <el-button
+          <!-- <el-button
             type="primary"
             plain
             @click="handleOperateOrder(row, $event)"
           >
             查看商品
-          </el-button>
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.pageNum"
-      :limit.sync="listQuery.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize"
+      @pagination="getList" />
 
     <!-- 供应商信息 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="85%">
-      <el-form
-        ref="supForm"
-        :rules="rules"
-        :model="temp"
-        label-width="100px"
-        label-position="left"
-        style="min-width: 300px; margin-left:50px;"
-      >
-        <el-form-item label="供应商名称" prop="name">
-          <el-input v-model="temp.name" />
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="temp.address" />
-        </el-form-item>
-        <el-form-item label="联系人" prop="contactPerson">
-          <el-input v-model="temp.contactPerson" />
-        </el-form-item>
-        <el-form-item label="联系电话" prop="contactPerson">
-          <el-input v-model="temp.phone" />
-        </el-form-item>
-        <el-form-item label="开户行" prop="contactPerson">
-          <el-input v-model="temp.bankAccount" />
-        </el-form-item>
-        <el-form-item label="创建日期" prop="contactPerson">
-          <el-date-picker v-model="temp.createTime" type="datetime" />
-        </el-form-item>
-        <el-form-item label="修改日期" prop="contactPerson">
-          <el-date-picker v-model="temp.updateTime" type="datetime" />
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input
-            v-model="temp.remarks"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-            type="textarea"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false"> Cancel </el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createData() : updateData()"
-        >
-          Confirm
-        </el-button>
-      </div>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <editSupplier v-if="dialogFormVisible" :originSup="temp" :title="dialogStatus" @hideUpdateView="hideUpdateView">
+      </editSupplier>
     </el-dialog>
 
-    <!-- 商品列表 -->
+    <!-- 商品列表
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table
         :key="0"
@@ -259,9 +150,9 @@
           >Confirm</el-button
         >
       </span>
-    </el-dialog>
+    </el-dialog> -->
 
-    <!-- 商品表单 -->
+    <!-- 商品表单
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="proForm"
@@ -305,19 +196,19 @@
         <el-button @click="dialogFormVisible = false"> Cancel </el-button>
         <el-button type="primary" @click="AddProduct()"> Confirm </el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
-import { createSup,getSupList } from "@/api/supplier";
+import { getSupList, querySupList, deleteSup } from "@/api/supplier";
+import editSupplier from "./editSupplier.vue";
 import waves from "@/directive/waves"; // waves directive
-import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 
 export default {
-  name: "OrderList",
-  components: { Pagination },
+  name: "SupplierList",
+  components: { Pagination, editSupplier },
   directives: { waves },
   data() {
     return {
@@ -330,18 +221,13 @@ export default {
       listQuery: {
         pageNum: 1,
         pageSize: 20,
-        // status: undefined,
-        // orderType:undefined,
-
-        // importance: undefined,
-        // title: undefined,
-        // type: undefined,
-        // sort: '+id'
+        name: "",
+        address: "",
       },
 
       textMap: {
-        update: "编辑",
-        create: "新增",
+        update: "编辑供应商",
+        create: "新增供应商",
       },
 
       // dialog
@@ -358,107 +244,70 @@ export default {
         products: [],
       },
 
-      product: [],
-
       dialogFormVisible: false,
 
-      dialogPvVisible: false,
-
-      dialogStatus:'',
-      pvData: [],
-      rules: {
-        
-      },
+      dialogStatus: '',
+      rules: {},
     };
   },
   created() {
-    this.getList();
+    this.getList(false);
   },
   methods: {
-    getList() {
+    // 查询全部
+    getList(show) {
+      let fun = getSupList
+      if (this.listQuery.name || this.listQuery.address) {
+        fun = querySupList
+      }
       this.listLoading = true;
       // 加载列表
-      getSupList(this.listQuery).then((response) => {
+      fun(this.listQuery).then((response) => {
         this.list = response.data.records;
         this.total = response.data.total;
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false;
-        }, 1.5 * 1000);
-      });
-    },
-
-    resetTemp(){
-        this.temp=this.$options.data().temp;
-    },
-
-    // 添加
-    handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs["supForm"].clearValidate();
-      });
-    },
-    createData() {
-      this.$refs['supForm'].validate((valid) => {
-        if (valid) {
-          this.temp.createTime=new Date()
-          this.temp.updateTime=new Date()
-          createSup(this.temp).then((res) => {
-            this.temp.id=res.data    //设置供应商id
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
+        if(show){
+          this.$message({
+          type: 'success',
+          message: '查询成功',
+          durarion: 1000,
+        });
         }
-      })
+        this.listLoading = false;
+      }).catch(this.listLoading = false);
     },
 
-    //   // 删除
-    //   handleDelete(row){
-    //     DeleteSupplier(row.id).then(() => {
-    //       this.$notify({
-    //         title: "",
-    //         message: "撤销成功",
-    //         type: "success",
-    //         duration: 2000,
-    //       });
-    //     });
-    //     this.getList();
-    //   },
+    handleCreate() {
+      this.dialogStatus = "create";
+      this.temp = this.$options.data().temp;
+      this.dialogFormVisible = true
+    },
 
-    //   // 退订 退货 换货
-    //   handleOperateOrder(row,e) {
-    //     let op=e.target.innerText
-    //     this.$cache.local.setJSON('operateOrder',row)
-    //     this.$router.push({ path: "/cc/order/operateOrder", query: { orderId: row.id, opType:op} });
-    //     // this.$router.push({ path: "/cc/order/operateOrder", query: { orderId: 1, opType:op} });
-    //   },
+    handleEdit(row) {
+      this.dialogStatus = "edit";
+      this.temp = JSON.parse(JSON.stringify(row)),
+        this.dialogFormVisible = true
+    },
+
+    hideUpdateView() {
+      this.dialogFormVisible = false
+      this.getList(false)
+    },
+
+    // 删除
+    handleDelete(row) {
+      deleteSup(row.id).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功',
+          durarion: 1000,
+        });
+      });
+      this.getList(false);
+    },
 
     // 查询
-    handleFilter($event) {
-      console.log("事件", $event);
-      this.getList();
-    },
-
-    // 查看商品
-    handleInfo(row) {
-      getOrder(row.id).then((res) => {
-        temp = res.data;
-      });
-      this.dialogFormVisible = true;
-    },
-
-    AddProduct() {
-      temp.products.push(product);
-      product=[]
+    handleFilter() {
+      this.getList(true);
     },
   },
 };
