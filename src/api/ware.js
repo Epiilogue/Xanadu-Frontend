@@ -152,3 +152,28 @@ export function deleteReturnRecord(id){
 }
 
 //分库入库
+  //分库调拨入库列表
+export function subDispatchIn(subwareid){
+  return request({
+    url:'/listDispatch/'+subwareid,
+    method:'get',
+    baseURL:'http://localhost:8015/ware/subInput'
+  })
+}
+  //分库退货入库列表
+export function subRefundIn(subwareid){
+  return request({
+    url:'/listRefund/'+subwareid,
+    method:'get',
+    baseURL:'http://localhost:8015/ware/subInput'
+  })
+}
+
+//分库确认调拨入库
+export function subConfirmDispatchIn(id){
+  return request({
+    url:'/confirmDispatch/'+id,
+    method:'post',
+    baseURL:'http://localhost:8015/ware/subInput'
+  })
+}

@@ -36,7 +36,7 @@
             <el-button type="primary" v-show="inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto1(scope.row)">领货出库</el-button>
             <el-button type="primary" v-show="inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto2(scope.row)">退货出库</el-button>
             <el-button type="primary" v-show="!inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto3(scope.row)">调拨入库</el-button>
-            <el-button type="primary" v-show="!inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto4(scope.row)">退货入库</el-button>
+            <el-button type="primary" v-show="!inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto4(scope.row)">入库记录</el-button>
 
           </template>
         </el-table-column>
