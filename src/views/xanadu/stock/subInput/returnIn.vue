@@ -1,7 +1,14 @@
 <template>
   <div>
     <el-card style="margin: 10px 0">
-      <el-switch v-model="type" active-text="调拨入库" inactive-text="退货入库"></el-switch>
+      <el-dropdown @command="handleCommand" split-button type="primary" >
+        <span class="el-dropdown-link">入库方式</span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="a">调度入库</el-dropdown-item>
+          <el-dropdown-item command="b">退货入库</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
       <el-table v-show="!this.type" ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center"  prop="id" show-overflow-tooltip></el-table-column>
@@ -76,6 +83,10 @@ export default {
   },
 
   methods:{
+    //切换入库表
+    handleCommand(command) {
+      this.type = command === "a";
+    },
 
     //时间戳转换
     getLocalTime(nS) {
