@@ -41,7 +41,7 @@
           <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+      <el-table ref="multipleTable" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
