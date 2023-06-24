@@ -7,15 +7,15 @@
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作员ID" align="center" prop="operatorId" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库ID" align="center" prop="outputId" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="任务ID" align="center" prop="taskId" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品ID" align="center" prop="productId" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="分库ID" align="center" prop="subwareId" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="分站ID" align="center" prop="substationId" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="供应商ID" align="center" prop="supplierId" width="80" show-overflow-tooltip></el-table-column>
+        <el-table-column label="操作员ID" align="center" prop="operatorId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="出库ID" align="center" prop="outputId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="任务ID" align="center" prop="taskId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="分库ID" align="center" prop="subwareId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="分站ID" align="center" prop="substationId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品价格" align="center" prop="productPrice" width="80" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品价格" align="center" prop="productPrice" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" width="100" show-overflow-tooltip></el-table-column>
         <el-table-column label="预计出库时间" align="center" prop="requireTime" width="100" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center" width="140" show-overflow-tooltip>
