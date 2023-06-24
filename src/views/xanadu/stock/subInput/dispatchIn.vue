@@ -76,13 +76,13 @@ export default {
     confirmOut(id){
       subConfirmDispatchIn(id).then(res=>{
         console.log(res)
-        // if (res.msg === '确认退货出库成功'){
-        //   this.dialogFormVisible = false
-        //   this.$message({
-        //     message:'出库成功',
-        //     type:'success'
-        //   })
-        // }
+        if (res.msg === '确认退货出库成功'){
+          this.dialogFormVisible = false
+          this.$message({
+            message:'出库成功',
+            type:'success'
+          })
+        }
       })
     },
 
