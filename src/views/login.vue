@@ -167,8 +167,8 @@ export default {
 }
 
 .login-form {
-  margin-left: 1800px;
-  margin-bottom: 150px;
+  margin-left: 65%;
+  margin-top: -5%;
   border-radius: 6px;
   background: #FFFFFF;
   width: 400px;
