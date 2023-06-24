@@ -1,23 +1,23 @@
 <template>
   <div class="app-container" >
     <!--  上方表单  -->
-    <el-form :model="formData" ref="elForm"  size="small"  label-width="68px" :inline="true">
-        <el-form-item label="开始时间" prop="startdata">
+    <el-form :model="form" ref="elForm" :rules="rules" size="small"  label-width="68px" :inline="true">
+        <el-form-item label="开始时间" prop="startTime">
             <el-col>
-              <el-date-picker type="date" placeholder="选择日期" v-model="form.startdata" style="width: 100%;"></el-date-picker>
+              <el-date-picker type="date" placeholder="选择日期" v-model="form.startTime" style="width: 100%;"></el-date-picker>
             </el-col>
         </el-form-item>
-        <el-form-item label="结束时间" prop="enddata">
+        <el-form-item label="结束时间" prop="startTime">
           <el-col>
-            <el-date-picker type="date" placeholder="选择日期" v-model="form.enddata" style="width: 100%;"></el-date-picker>
+            <el-date-picker type="date" placeholder="选择日期" v-model="form.endTime" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="供应商id" prop="batch">
-          <el-input v-model="formData.batch"  placeholder="输入供应商id"
+        <el-form-item label="供应商id" prop="supplyId">
+          <el-input v-model="form.supplyId"  placeholder="输入供应商id"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
           <el-form-item label="结算状态" prop="status" >
-            <el-select v-model="queryParams.status" placeholder="结算状态" clearable>
+            <el-select v-model="form.status" placeholder="结算状态" clearable>
               <el-option
                 v-for="dict in options"
                 :key="dict.value"
@@ -27,13 +27,12 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="small" @click="getList(formData)" >    查询    </el-button>
+            <el-button type="primary" size="small" @click="getList()" >    查询    </el-button>
           </el-form-item>
     </el-form>
 
-    <!--  结算弹窗  -->
-
-    <el-table v-loading="loading" :data="refundList"
+    <!--  结算信息列表  -->
+    <el-table v-loading="loading" :data="refundList" ref="refundTableRefs"
                border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
@@ -86,8 +85,9 @@
       </el-table-column>
     </el-table>
 
+    <!--  合计结算  -->
     <div style="display: flex">
-      <el-button type="success" size="medium" @click="account" style="margin-top: 25px; margin-left: 45%"> 合计结算 </el-button>
+      <el-button type="success" size="medium" @click="account" style="margin-top: 25px; margin-left: 45%"> 结算 </el-button>
       <div style="margin-left: 44%">
         <pagination
           v-show="total>0"
@@ -98,6 +98,60 @@
         />
       </div>
     </div>
+
+
+    <!--合计结算窗口-->
+    <el-dialog :visible.sync="open" width="780px" append-to-body>
+      <el-table v-loading="loading" :data="this.selectList"
+                border >
+        <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
+        <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.productName"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算数量" align="center" prop="finalcount"  class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.inputNum - scope.row.refundCount"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.inputNum - scope.row.refundCount) * scope.row.productPrice"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算状态" align="center" prop="status" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.status === '已结算' ? 'success' : 'warning'"
+              disable-transitions>{{scope.row.status}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="日期" align="center" prop="refundTime" class-name="small-padding fixed-width" >
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.refundTime, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-form size="small"  label-width="68px" :inline="true" style="margin-top: 10px;margin-left: 390px">
+        <el-form-item label="合计金额" prop="totalprice">
+          <el-input v-model="this.totalprice"  placeholder="合计金额"
+                    prefix-icon='el-icon-paperclip' width="120%"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="warning" size="small" @click="submit" >结算</el-button>
+        </el-form-item>
+      </el-form>
+
+
+
+    </el-dialog>
 
   </div>
 
@@ -145,31 +199,24 @@ export default {
         pageSize: 10,
         status: undefined,
       },
-      formData: {
-        startNumber: '',
-        endNumber: '',
-        batch: '',
-        total: '',
-      },
+      // 选中的数据
+      selectList: [],
+      // 选中数据的总金额
+      totalprice: 0,
+      // 表单校验
       rules: {
-        startnumber: [{
-          required: true,
-          message: 'DW20230606005',
+        startTime: [{
+          type: 'date',
+          message: '请选择时间',
           trigger: 'blur'
         }],
-        endnumber: [{
-          required: true,
-          message: 'DW20230606020',
+        endTime: [{
+          type: 'data',
+          message: '请选择时间',
           trigger: 'blur'
         }],
-        batch: [{
-          required: true,
-          message: '批次',
-          trigger: 'blur'
-        }],
-        total: [{
-          required: true,
-          message: '本数',
+        supplyId: [{
+          message: '请输入供应商id',
           trigger: 'blur'
         }],
       },
@@ -180,7 +227,7 @@ export default {
   },
   methods: {
     /** 查询公告列表 */
-    getList(formData) {
+    getList() {
       const that = this
       this.loading = true;
       axios.get("http://localhost:8004/dbc/refund/list").then( function(res){
@@ -219,21 +266,52 @@ export default {
       this.multiple = !selection.length
     },
     account(){
-
+      this.selectList = this.$refs.refundTableRefs.selection;
+      let i = 0;
+      while(i < this.selectList.length){
+        if(this.selectList[i].status === '未结算')
+          this.totalprice += (this.selectList[i].inputNum - this.selectList[i].refundCount) * this.selectList[i].productPrice;
+          i = i + 1;
+      }
+      if(this.selectList.length === 0){
+        this.$message.error('请选择至少一条结算数据');
+      }
+      else {
+        this.open = true;
+      }
     },
     /** 提交按钮 */
-    submitForm: function(formData) {
-      const that = this
-      axios.post("http://localhost:8010/invoice/addinvoice/",formData)
-        .then(function(promise){
-          that.reset();
-          this.$message.success('提交成功');
-        }).catch( function (err){
-        //代表请求失败之后处理
-        console.log (err);
-        this.$message.error('提交失败');
-      });
-      that.reset();
+    submit: function() {
+      this.$confirm('您确定要结算吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let i = 0;
+        while(i < this.selectList.length){
+          this.selectList[i].status = '已结算';
+          i = i + 1;
+        }
+        const that = this;
+        let j = 0;
+        while(j < this.selectList.length){
+          // 向后端发送数据
+          axios.post("http://localhost:8004/dbc/refund/update",that.selectList[j])
+            .then(function(){
+              console.log(that.selectList[j]);
+              that.reset();
+            }).catch( function (err){
+            //代表请求失败之后处理
+            console.log (err);
+            that.$message({
+              message: '结算失败',
+              type: 'error'
+            });
+          });
+          j = j + 1;
+        }  //while
+        that.open = false;
+      })
     }
   },
 };

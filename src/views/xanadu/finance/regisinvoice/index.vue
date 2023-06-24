@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" >
     <!--  上方表单  -->
-    <el-form :model="formData" ref="elForm" :rules="rules" size="small"  label-width="68px" :label-position="right">
+    <el-form :model="formData" ref="elForm" :rules="rules" size="small"  label-width="68px">
           <el-form-item label="开始号码" prop="startNumber" label-width="100px">
             <el-input  v-model="formData.startNumber" placeholder="DW20230606005" :maxlength="13"
                       show-word-limit clearable prefix-icon='el-icon-tickets'></el-input>
@@ -23,16 +23,8 @@
             <el-button type="success" icon="el-icon-success" size="small" @click="submitForm(formData)" >    提交    </el-button>
           </el-form-item>
 
-          <!--   产生空隙  嘻嘻啦    -->
-          <el-form-item style="margin-left: 28px">
-            <div> </div>
-          </el-form-item>
-          <el-form-item>
-            <div></div>
-          </el-form-item>
-          <!--    结束了      -->
 
-          <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" >
+          <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" style="margin-left: 100px">
             <el-form-item prop="status">
               <el-select v-model="queryParams.status" placeholder="发票状态" clearable>
                 <el-option
@@ -286,8 +278,8 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
-      if(this.formData.startNumber === null||this.formData.endNumber === null||this.formData.batch === null
-      ||this.formData.total === null){
+      if(this.formData.startNumber === ''||this.formData.endNumber === ''||this.formData.batch === ''
+      ||this.formData.total === ''){
         this.$message({
           message: '提交信息有误，请重新输入',
           type: 'error'
@@ -297,6 +289,7 @@ export default {
         const that = this
         axios.post("http://localhost:8010/invoice/addinvoice/",that.formData)
           .then(function(){
+            console.log(that.formData)
             that.getList();
             that.reset();
             that.$message({

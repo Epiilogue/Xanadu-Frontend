@@ -34,64 +34,58 @@
     </el-dialog>
 
     <!--发票列表-->
-    <el-table v-loading="loading" :data="invoiceList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="id" width="50" />
-      <el-table-column label="开始号码" align="center" prop="startNumber" width="200">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_regisinvoice_endnumber" :value="scope.row.startNumber"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="结束号码" align="center" prop="endNumber" width="200">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_regisinvoice_endnumber" :value="scope.row.endNumber"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="批次" align="center" prop="batch" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_regisinvoice_batch" :value="scope.row.batch"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="本数" align="center" prop="total" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.total"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" prop="dstate" width="100">
-        <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.dstate === '已失效' ? 'danger' : 'success'"
-            disable-transitions>{{scope.row.dstate}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="失效原因" align="center" prop="details" width="200">
-        <template slot-scope="scope">
-          <dict-tag  :options="dict.type.sys_regisinvoice_details" :value="scope.row.details"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="small"
-            type="danger"
-            @click="changedstate(scope.row)"
-          >失效</el-button>
-          <el-button
-            size="small"
-            type="danger"
-            @click="changedstate1(scope.row)"
-          >撤销失效</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+      <el-table v-loading="loading" :data="invoiceList" @selection-change="handleSelectionChange">
+        <el-table-column label="序号" align="center" prop="id" width="50" />
+        <el-table-column label="发票号码" align="center" prop="number" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_endnumber" :value="scope.row.number"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="批次" align="center" prop="batch" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_batch" :value="scope.row.batch"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="领用分站id" align="center" prop="substationId" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_substationId" :value="scope.row.substationId"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="领用人" align="center" prop="employee" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_employee" :value="scope.row.employee"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="失效状态" align="center" prop="dstate" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.dstate === '生效中' ? 'success' : (scope.row.state === '已失效' ?'warning':'danger')"
+              disable-transitions>{{scope.row.dstate}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button :disabled=" scope.row.dstate === '已失效'"
+                       size="small"
+                       type="primary"
+                       @click="changedstate(scope.row)"
+            >失效</el-button>
+            <el-button :disabled=" scope.row.dstate === '未失效'"
+                       size="small"
+                       type="primary"
+                       @click="changedstate1(scope.row)"
+            >撤销</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
   </div>
 </template>
 
@@ -151,7 +145,7 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/invoice/list").then( function(res){
+      axios.get("http://localhost:8010/invoices/list").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -202,16 +196,16 @@ export default {
       row.dstate = '生效中';
       row.state = '未领用';
       row.details = '无';
-      axios.post("http://localhost:8010/invoice/update/",row)
+      axios.post("http://localhost:8010/invoices/update/",row)
         .then(function(promise){
           that.reset();
           console.log(that.form);
-          that.$message.success('提交成功');
+          that.$message.success('修改成功');
           that.open = false;
         }).catch( function (err){
         //代表请求失败之后处理
         console.log (err);
-        that.$message.error('提交失败');
+        that.$message.error('修改失败');
       });
     },
     // 多选框选中数据
@@ -224,19 +218,19 @@ export default {
     submitForm: function(form) {
       const that = this
       that.form.dstate = '已失效';
-      that.form.state = '已失效';
-      axios.post("http://localhost:8010/invoice/update/",form)
+      that.form.state = '未领用';
+      axios.post("http://localhost:8010/invoices/update/",form)
         .then(function(promise){
-          that.reset();
           console.log(form);
-          that.$message.success('提交成功');
+          that.$message.success('修改成功');
           that.open = false;
         }).catch( function (err){
         //代表请求失败之后处理
         console.log (err);
-        that.$message.error('提交失败');
+        that.$message.error('修改失败');
       });
       that.open = false;
+      that.reset();
     }
   },
 };

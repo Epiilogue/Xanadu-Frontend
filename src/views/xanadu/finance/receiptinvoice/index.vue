@@ -31,13 +31,8 @@
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="开始号码" prop="startnumber">
-                <el-input v-model="form.startNumber" maxlength="30" :disabled="true"/>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="结束号码" prop="endnumber">
-                <el-input v-model="form.endNumber" maxlength="30" :disabled="true"/>
+              <el-form-item label="发票号码" prop="endnumber">
+                <el-input v-model="form.number" maxlength="30" :disabled="true"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -45,11 +40,6 @@
             <el-col :span="12">
               <el-form-item label="批次" prop="startnumber">
                 <el-input v-model="form.batch" maxlength="30" :disabled="true"/>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="本数" prop="endnumber">
-                <el-input v-model="form.total" maxlength="30" :disabled="true"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -68,37 +58,19 @@
         </el-form>
       </form>
     </div>
-    <!-- 添加或修改用户配置对话框 -->
+
+    <!-- 修改对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
-        <el-col :span="12">
-          <el-form-item label="序号" prop="id">
-            <el-input v-model="form.id" maxlength="30" :disabled="true"/>
-          </el-form-item>
-        </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
-            <el-form-item label="开始号码" prop="startnumber">
-              <el-input v-model="form.startNumber" maxlength="30" :disabled="true"/>
+            <el-form-item label="序号" prop="id">
+             <el-input v-model="form.id" maxlength="30" :disabled="true"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="结束号码" prop="endnumber">
-              <el-input v-model="form.endNumber" maxlength="30" :disabled="true"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="批次" prop="startnumber">
-              <el-input v-model="form.batch" maxlength="30" :disabled="true"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="本数" prop="endnumber">
-              <el-input v-model="form.total" maxlength="30" :disabled="true"/>
+            <el-form-item label="发票号" prop="number">
+              <el-input v-model="form.number" maxlength="30" :disabled="true"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -123,45 +95,27 @@
     <!--发票列表-->
     <el-table v-loading="loading" :data="invoiceList" @selection-change="handleSelectionChange">
       <el-table-column label="序号" align="center" prop="id" width="50" />
-      <el-table-column label="开始号码" align="center" prop="startNumber" width="200">
+      <el-table-column label="开始号码" align="center" prop="startNumber" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_regisinvoice_endnumber" :value="scope.row.startNumber"/>
         </template>
       </el-table-column>
-      <el-table-column label="结束号码" align="center" prop="endNumber" width="200">
+      <el-table-column label="结束号码" align="center" prop="endNumber" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_regisinvoice_endnumber" :value="scope.row.endNumber"/>
         </template>
       </el-table-column>
-      <el-table-column label="批次" align="center" prop="batch" width="100">
+      <el-table-column label="批次" align="center" prop="batch" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_regisinvoice_batch" :value="scope.row.batch"/>
         </template>
       </el-table-column>
-      <el-table-column label="本数" align="center" prop="total" width="100">
+      <el-table-column label="本数" align="center" prop="total" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.total"/>
         </template>
       </el-table-column>
-
-      <el-table-column label="领用分站id" align="center" prop="substationId" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_regisinvoice_substationId" :value="scope.row.substationId"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="领用人" align="center" prop="employee" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_regisinvoice_employee" :value="scope.row.employee"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" prop="state" width="100">
-      <template slot-scope="scope">
-        <el-tag
-          :type="scope.row.state === '未领用' ? 'success' : (scope.row.state === '已领用' ?'warning':'danger')"
-          disable-transitions>{{scope.row.state}}</el-tag>
-      </template>
-      </el-table-column>
-      <el-table-column label="登记状态" align="center" prop="registration" width="100">
+      <el-table-column label="登记状态" align="center" prop="registration" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.registration === '已登记' ? 'success' : 'warning'"
@@ -170,18 +124,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button :disabled="scope.row.state === '已领用'
-                             || scope.row.registration === '未登记'
-                             || scope.row.state === '已失效'"
+          <el-button :disabled="scope.row.registration === '未登记'"
             size="small"
             type="primary"
-            @click="receipt(scope.row)"
-          >录入信息</el-button>
-          <el-button
-            size="small"
-            type="warning"
-            @click="watchDetails(scope.row)"
-          >详细信息</el-button>
+            @click="getinvoice(scope.row)"
+          >领用发票</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -193,6 +140,71 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+
+    <!--  详细信息  -->
+    <el-dialog :visible.sync="opendetails" width="1080px" append-to-body>
+      <el-table v-loading="loading" :data="invoiceList1" @selection-change="handleSelectionChange">
+        <el-table-column label="序号" align="center" prop="id" width="50" />
+        <el-table-column label="发票号码" align="center" prop="number" width="200">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_endnumber" :value="scope.row.number"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="批次" align="center" prop="batch" width="100">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_batch" :value="scope.row.batch"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="领用分站id" align="center" prop="substationId" width="100">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_substationId" :value="scope.row.substationId"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="领用人" align="center" prop="employee" width="100">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_employee" :value="scope.row.employee"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center" prop="state" width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.state === '未领用' ? 'success' : (scope.row.state === '已领用' ?'warning':'danger')"
+              disable-transitions>{{scope.row.state}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="失效状态" align="center" prop="dstate" width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.dstate === '生效中' ? 'success' : (scope.row.state === '已失效' ?'warning':'danger')"
+              disable-transitions>{{scope.row.dstate}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button :disabled="scope.row.state === '已领用'
+                             || scope.row.dstate === '已失效'"
+                       size="small"
+                       type="primary"
+                       @click="receipt(scope.row)"
+            >录入信息</el-button>
+            <el-button :disabled="scope.row.state === '已失效'"
+              size="small"
+              type="warning"
+              @click="watchDetails(scope.row)"
+            >打印发票</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -200,6 +212,7 @@
 
 
 import axios from 'axios'
+import printJS from "print-js";
 import Vue from 'vue'
 Vue.use(print)
 
@@ -218,6 +231,8 @@ export default {
         value: '选项2',
         label: '未领用'
       }],
+
+      opendetails: false,
       // 显示搜索条件
       showSearch: true,
       // 表单
@@ -234,6 +249,8 @@ export default {
       multiple: true,
       // 总条数
       total: 0,
+      // 单张发票数据
+      invoiceList1: [],
       // 发票表格数据
       invoiceList: [],
       // 是否显示弹出层
@@ -290,6 +307,20 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    getinvoice(row){
+      this.opendetails = true;
+      const totalid = row.id || this.ids;
+      const that = this;
+      axios.get("http://localhost:8010/invoices/getinvoicebytotalid/"+totalid).then( function(res){
+        //代表请求成功之后处理
+        that.invoiceList1 = res.data.data;
+        console.log(that.invoiceList1);
+      }).catch( function (err){
+        //代表请求失败之后处理
+        alert ('进入catch')
+        console.log (err);
+      });
+    },
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
@@ -299,7 +330,7 @@ export default {
       this.open = true;
       const id = row.id || this.ids;
       const that = this
-      axios.get("http://localhost:8010/invoice/getinvoice/"+id).then( function(res){
+      axios.get("http://localhost:8010/invoices/getinvoice/"+id).then( function(res){
         //代表请求成功之后处理
         that.form = res.data.data;
         console.log(that.form);
@@ -312,7 +343,7 @@ export default {
     watchDetails(row){
       const id = row.id || this.ids;
       const that = this;
-      axios.get("http://localhost:8010/invoice/getinvoice/"+id).then( function(res){
+      axios.get("http://localhost:8010/invoices/getinvoice/"+id).then( function(res){
         //代表请求成功之后处理
         that.form = res.data.data;
         console.log(that.form);
@@ -336,7 +367,7 @@ export default {
     submitForm: function(form) {
       const that = this
       that.form.state = '已领用';
-      axios.post("http://localhost:8010/invoice/update/",form)
+      axios.post("http://localhost:8010/invoices/update/",form)
         .then(function(promise){
           that.reset();
           console.log(form);
