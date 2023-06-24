@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="110px">
+    <el-form ref="form" :model="form">
       <el-form-item label="仓库地址:" prop="address">
         <el-autocomplete v-model="form.address" style="width:100%;" popper-class="autoAddressClass"
                          :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" :placeholder="oldAddress"
@@ -15,10 +15,6 @@
           </template>
         </el-autocomplete>
       </el-form-item>
-      <el-form-item label="地图定位:">
-        <div id="map-container" style="width:100%;height:500px;"/>
-      </el-form-item>
-
       <el-form :model="subware">
         <el-form-item label="仓库名称">
           <el-input v-model="subware.name" autocomplete="off">{{ this.subware.name }}</el-input>
@@ -31,9 +27,23 @@
         </el-form-item>
       </el-form>
       <el-form-item class="sumbit">
-        <el-button type="primary" @click="addStock">提交</el-button>
+        <el-button type="primary" style="margin-right: 80px" @click="showMap">查看地图</el-button>
+        <el-button type="primary" @click="addStock">确认提交</el-button>
       </el-form-item>
     </el-form>
+
+    <el-dialog title="查看地图" :visible.sync="dialogFormVisible">
+      <el-form ref="form" :model="form" label-width="110px">
+        <el-form-item label="地图定位:">
+          <div id="map-container" style="height:500px;width:730px;">
+          </div>
+        </el-form-item>
+        <el-form-item class="sumbit">
+          <el-button type="primary" @click="addStock">提交</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -43,10 +53,18 @@ import loadBMap from '@/utils/loadBMap.js'
 //import { BMap } from 'vue-baidu-map'
 import { centerware, centerwareupdate, subwareEdit } from '@/api/ware'
 
-import axios from 'axios'
-import subware from './index'
-import { addSubware } from '@/api/ware'
-import { treeselect } from '@/api/system/menu'
+const calendarTypeOptions = [
+  { key: 'CN', display_name: 'China' },
+  { key: 'US', display_name: 'USA' },
+  { key: 'JP', display_name: 'Japan' },
+  { key: 'EU', display_name: 'Eurozone' }
+]
+
+// arr to obj, such as { CN : "China", US : "USA" }
+const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
 
 export default {
   name: 'updateView',
@@ -76,6 +94,7 @@ export default {
           lat: 0
         }
       },
+      dialogFormVisible: false,
       map: '', // 地图实例
       mk: '', // Marker实例
       locationPoint: null,
@@ -88,26 +107,16 @@ export default {
         maxNumber: '',
         city: '',
         warnNumber: ''
-      },
-      showPage: false
+      }
     }
   },
   created() {
     this.getList()
-    loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
-    console.log(this.subware.x+'******')
-    this.initMap(subware.x,subware.y)
   },
-/*   mounted() {
-    loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
-    console.log(this.subware.x+'******')
-    this.initMap(this.subware.x,this.subware.y)
-  }, */
   methods: {
-    async getList() {
+    getList() {
       this.listLoading = true
-      await centerware().then(response => {
-        console.log(response.data)
+      centerware().then(response => {
         this.subware.name = response.data.name
         this.subware.address = response.data.address
         this.subware.city = response.data.city
@@ -119,9 +128,14 @@ export default {
         this.form.addrPoint.lat = this.subware.x
         this.form.addrPoint.lng = this.subware.y
         this.form.city = this.subware.city
-        this.showPage = true
-        return this.subware
       })
+    },
+    async showMap() {
+      this.dialogFormVisible = true
+      await loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
+      this.initMap()
+      setTimeout(null, 2000)
+
     },
     //修改仓库
     addStock() {
@@ -148,12 +162,14 @@ export default {
       }
     },
     // 初始化地图
-    initMap(x, y) {
+    initMap() {
       var that = this
       // 1、挂载地图
       this.map = new BMap.Map('map-container', { enableMapClick: false })
-      var point = new BMap.Point(x, y)
-      this.map.centerAndZoom(point, 5)
+      //const x = this.subware.x
+      //const y = this.
+      var point = new BMap.Point(this.subware.x, this.subware.y)
+      this.map.centerAndZoom(point, 3)
       // 3、设置图像标注并绑定拖拽标注结束后事件
       this.mk = new BMap.Marker(point, { enableDragging: true })
       this.map.addOverlay(this.mk)
@@ -165,6 +181,7 @@ export default {
         anchor: BMAP_ANCHOR_TOP_RIGHT,
         type: BMAP_NAVIGATION_CONTROL_SMALL
       }))
+
       // 7、绑定点击地图任意点事件
       this.map.addEventListener('click', function(e) {
         that.getAddrByPoint(e.point)
@@ -175,6 +192,7 @@ export default {
       var that = this
       var geco = new BMap.Geocoder()
       geco.getLocation(point, function(res) {
+        console.log(res)
         that.mk.setPosition(point)
         that.map.panTo(point)
         that.form.address = res.address
@@ -187,7 +205,7 @@ export default {
       var options = {
         onSearchComplete: function(res) {
           var s = []
-          if (local.getStatus() == BMAP_STATUS_SUCCESS) {
+          if (local.getStatus() === BMAP_STATUS_SUCCESS) {
             for (var i = 0; i < res.getCurrentNumPois(); i++) {
               s.push(res.getPoi(i))
             }
@@ -212,35 +230,31 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.autoAddressClass {
-  li {
-    i.el-icon-search {
-      margin-top: 11px;
-    }
-
-    .mgr10 {
-      margin-right: 10px;
-    }
-
-    .title {
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-
-    .address {
-      line-height: 1;
-      font-size: 12px;
-      color: #b4b4b4;
-      margin-bottom: 5px;
-    }
-  }
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.sumbit {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

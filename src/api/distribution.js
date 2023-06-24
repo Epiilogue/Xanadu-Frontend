@@ -27,6 +27,24 @@ export function generatePurchaseRecord(data){
     data
   })
 }
+//查询所有退货
+export function getRefundList(){
+  return request({
+    url: '/list',
+    method:'get',
+    baseURL:'http://localhost:8004/dbc/refund'
+  })
+}
+
+//
+/* export function getRefundList(){
+  return request({
+    url: '/searchForReturn',
+    method:'get',
+    baseURL:'http://localhost:8004/dbc/refund'
+  })
+} */
+
 export function LackRecordInspect(id,isCheck){
   return request({
     url: `getLackRecord/${id}/${true}`,
@@ -80,11 +98,18 @@ export function fetchList(query) {
     })
   }
 //更新商品
-  export function updateArticle(data) {
+  export function updateProduct(data) {
     return request({
       url: '/update',
       method: 'post',
       baseURL: 'http://localhost:8004/dbc/product',
       data
+    })
+  }
+  export function getOneProduct(id){
+    return request({
+      url: `get/${id}`,
+      method: 'get',
+      baseURL: 'http://localhost:8004/dbc/product',
     })
   }

@@ -2,17 +2,29 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="optionalValue" placeholder="请选择" class="filter-item">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
       <el-input v-model="listQuery.name" placeholder="Name" style="width: 200px;" class="filter-item"
                 @keyup.enter.native="handleFilter"
       />
+        <el-date-picker
+          v-model="date"
+          class="filter-item"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期">
+        </el-date-picker>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download"
-                 @click="handleDownload"
-      >
-        导出为EXCEL
-      </el-button>
+
     </div>
     <el-card>
       <el-table
@@ -24,47 +36,63 @@
         highlight-current-row
         style="width: 100%;"
       >
-        <el-table-column label="ID" prop="id" align="center" width="80"
+        <el-table-column label="退货单ID" prop="id" align="center" width="80"
         >
           <template slot-scope="{row}">
-            <span>{{ row.product.id }}</span>
+            <span>{{ row.id }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="商品名称" prop="name" min-width="80px" align="center">
+        <el-table-column label="商品ID" prop="productId" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.product.name }}</span>
+            <span class="link-type" @click="handleUpdate(row)">{{ row.productId}}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="当前库存" prop="nowCount" min-width="50px" align="center">
+        <el-table-column label="供应商ID" prop="supplierId" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.nowCount }}</span>
+            <span class="link-type" @click="handleUpdate(row)">{{ row.supplierId }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="安全库存" prop="safeStock" min-width="50px" align="center">
+        <el-table-column label="商品名称" prop="productName" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.product.safeStock }}</span>
+            <span class="link-type">{{ row.productName }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="最大库存" prop="maxCount" min-width="50px" align="center">
+        <el-table-column label="商品价格" prop="productPrice" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.product.maxCount }}</span>
+            <span class="link-type">{{ row.productPrice }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="缺货数量" prop="needCount" min-width="50px" align="center">
+        <el-table-column label="进货数量" prop="inputNum" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.needCount }}</span>
+            <span class="link-type">{{ row.inputNum }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="现库存量" prop="nowCount" min-width="50px" align="center">
+          <template slot-scope="{row}">
+            <span class="link-type">{{ row.nowCount }}</span>
           </template>
         </el-table-column>
 
-
-        <el-table-column label="创建时间" width="100px" align="center">
+        <el-table-column label="退货数量" prop="refundCount" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span>{{ timestampToTime()(row.createTime) }}</span>
+            <span class="link-type">{{ row.refundCount }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="缺货状态" min-width="50px" align="center">
+          <template slot-scope="{row}">
+            <el-tag :type="row.status ==='已采购'?'success': row.status==='已入库'?'info':row.status ==='已到货'?'':'warning'">{{ row.status }}</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="退货时间" width="100px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ timestampToTime()(row.refundTime) }}</span>
           </template>
         </el-table-column>
 
@@ -82,14 +110,14 @@
 
         <el-table-column label="操作" align="center" mid-width="230px" class-name="small-padding fixed-width">
           <template slot-scope="{row,$index}">
-            <el-button type="primary" size="medium" @click="handleUpdate(row)">
+<!--            <el-button type="primary" size="medium" @click="handleUpdate(row)">
               详情
             </el-button>
             <el-button size="medium" type="danger" @click="handleCommit(row.id)">
               提交
-            </el-button>
-            <el-button @click="handleArrival(row.id)">
-              到货
+            </el-button>-->
+            <el-button @click="handleRefund(row.id)">
+              退货
             </el-button>
           </template>
         </el-table-column>
@@ -159,7 +187,14 @@
 </template>
 
 <script>
-import { fetchList, createArticle, updateProduct, deleteProduct, fetchLackRecordList } from '@/api/distribution'
+import {
+  fetchList,
+  createArticle,
+  updateProduct,
+  deleteProduct,
+  fetchLackRecordList,
+  getRefundList
+} from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
@@ -221,6 +256,7 @@ export default {
         value: 'category',
         children: 'children'
       },
+      date:'',
       currentPage: 1,//默认显示第一页
       pageSize: 5,//默认每页显示5条
       totalNum: 100, //总页数
@@ -244,24 +280,16 @@ export default {
         status: ''
       },
       imageUrl: '',
-      options: [],
+      options: [{
+        value: '商品ID',
+        label: '商品ID'
+      },{
+        value: '供应商ID',
+        label: '供应商ID'
+      }],
+      optionalValue:'',
       dialogFormVisible: false,
       dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      dataObj: {
-        policy: '',
-        signature: '',
-        key: '',
-        accessid: '',
-        dir: '',
-        host: ''
-        // callback:'',
-      },
       downloadLoading: false,
       singleLackRecord: null
     }
@@ -273,41 +301,7 @@ export default {
     timestampToTime() {
       return timestampToTime
     },
-    handleArrival(index) {
-      arrivalStockOut(index).then(response => {
-        if (response.code === 200) {
-          this.$message({
-            message: '成功到货',
-            type: 'success'
-          })
-          this.getList()
-        }
-      })
-    },
-    //获取缺货记录详情
-    getSingleLackRecord(id) {
-      for (var i = 0; i < this.list.length; i++) {
-        if(this.list[i].product.id===id){
-          this.singleLackRecord  =  this.list[i].singleLackRecordVos
-        }
-      }
-      console.log(this.singleLackRecord)
-    },
-    handleCommit(index) {
-      commitStockOut(index).then(response => {
-        console.log(response)
-        this.$message({
-          message: '成功提交',
-          type: 'success'
-        })
-        this.getList()
-      })
-    },
-    handleChange(value) {
-      this.temp.firstCategray = value[0]
-      this.temp.secondCategray = value[1]
-      console.log(value)
-    },
+
     //分页组件修改页面容量
     handleSizeChange(newSize) {
       this.pageSize = newSize
@@ -316,15 +310,10 @@ export default {
     handleCurrentChange(newPage) {
       this.currentPage = newPage
     },
-    //todo 查询方法
-    getShowList(name) {
-      this.showList = []
-      let len = this.list.length
 
-    },
     getList(name) {
       this.listLoading = true
-      fetchLackRecordList().then(response => {
+      getRefundList().then(response => {
         this.list = response.data
         console.log(this.list)
         this.total = response.data.length
@@ -344,88 +333,7 @@ export default {
       })
       row.status = status
     },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        name: '',
-        price: '',
-        cost: '',
-        upplierId: '',
-        firstCategray: '',
-        secondCategray: '',
-        refundAble: false,
-        changeAble: false,
-        comment: '',
-        createTime: new Date(),
-        updateTime: new Date(),
-        picture: ''
-      }
-    },
-    handleUpdate(row) {
-      this.dialogFormVisible = true
-      this.temp = row
-      this.getSingleLackRecord(row.product.id)
-    },
-    updateData() {
-      updateStockOut(this.temp).then(response => {
-        console.log(response)
-        if (response.code === 200) {
-          this.$notify({
-            title: 'Success',
-            message: 'Delete Successfully',
-            type: 'success',
-            duration: 2000
-          })
-          this.dialogFormVisible = false
-        }
-      })
-    },
-    handleDelete(row, index) {
-      console.log(row)
-      deleteProduct(row.id).then((res) => {
-          console.log(res)
-          if (res.code === 200) {
-            this.$notify({
-              title: 'Success',
-              message: 'Delete Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          }
-        }
-      )
 
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
-        const filterVal = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'createTime' || j === 'updateTime') {
-          return timestampToTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    }
   }
 }
 </script>

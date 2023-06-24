@@ -19,9 +19,6 @@
       </el-form-item>
 
       <el-form :model="subware">
-        <el-form-item label="仓库ID">
-          <el-input v-model="subware.id" autocomplete="off"></el-input>
-        </el-form-item>
         <el-form-item label="仓库名称">
           <el-input v-model="subware.name" autocomplete="off"></el-input>
         </el-form-item>
@@ -57,7 +54,7 @@ export default {
       map: '', // 地图实例
       mk: '', // Marker实例
       locationPoint: null,
-      list :{
+      subware :{
         id:'',
         name:'',
         address:'',
@@ -75,24 +72,22 @@ export default {
   methods: {
     //添加仓库
     addStock() {
-      this.list.address = this.form.address
-      this.list.x = this.form.addrPoint.lat
-      this.list.y = this.form.addrPoint.lng
-      this.list.city = this.form.city
-      console.log(this.list)
-      if (!this.list.id){
-        this.$message.error('请输入仓库id')
-      } else if (!this.list.name){
+      this.subware.address = this.form.address
+      this.subware.x = this.form.addrPoint.lat
+      this.subware.y = this.form.addrPoint.lng
+      this.subware.city = this.form.city
+      console.log(this.subware)
+      if (!this.subware.name){
         this.$message.error('请输入仓库名称')
-      } else if (!this.list.master){
+      } else if (!this.subware.master){
         this.$message.error('请输入仓库管理员')
-      } else if (!this.list.address){
+      } else if (!this.subware.address){
         this.$message.error('请输入仓库地址')
-      } else if (!this.list.city){
+      } else if (!this.subware.city){
         this.$message.error('请选择仓库位置')
       }
       else {
-        addSubware(this.list).then((res)=>{
+        addSubware(this.subware).then((res)=>{
           if (res.msg == '创建分库成功'){
             this.$message({
               message:'创建分库成功',
@@ -110,6 +105,7 @@ export default {
       this.map = new BMap.Map('map-container', { enableMapClick: false })
       var point = new BMap.Point(123.47110,41.68383)
       this.map.centerAndZoom(point, 19)
+      this.map.enableScrollWheelZoom(true);
       // 3、设置图像标注并绑定拖拽标注结束后事件
       this.mk = new BMap.Marker(point, { enableDragging: true })
       this.map.addOverlay(this.mk)

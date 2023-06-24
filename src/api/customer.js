@@ -10,6 +10,15 @@ export function fetchStockOut(query) {
     baseURL: 'http://localhost:8003/cc/stockout'
   })
 }
+export function getOneStockOut(id) {
+  return request({
+    url: `/get/${id}`,
+    method: 'get',
+    //params: { pageNum, pageSize },
+    //params: query,
+    baseURL: 'http://localhost:8003/cc/stockout'
+  })
+}
 //增加缺货量
 export function updateStockOut(data) {
   return request({

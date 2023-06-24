@@ -29,7 +29,7 @@
       >
         <el-table-column label="商品ID" prop="id" align="center" width="90">
           <template slot-scope="{row}">
-            <span>{{ row.product.id }}</span>
+            <product :id="row.product.id"></product>
           </template>
         </el-table-column>
         <el-table-column label="商品名称" prop="orderId" min-width="80px" align="center">
@@ -157,10 +157,6 @@
 
 <script>
 import {
-  fetchList,
-  createArticle,
-  updateArticle,
-  deleteProduct,
   LackRecordInspect,
   fetchLackRecordList, generatePurchaseRecord
 } from '@/api/distribution'
@@ -172,6 +168,7 @@ import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import { arrivalStockOut, commitStockOut, fetchStockOut, updateStockOut } from '@/api/customer'
 import { update } from 'script-ext-html-webpack-plugin/lib/elements'
+import Product from '@/components/detail/product.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -188,7 +185,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { SingleUpload, Pagination },
+  components: { Product, SingleUpload, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -289,6 +286,7 @@ export default {
         fetchLackRecordList().then(response => {
           if (that.isCheck === '') {
             let res = response.data
+            console.log(res)
             res.forEach(function(item) {
               let singleRecord = item.singleLackRecordVos
               for (let i = 0; i < singleRecord.length; i++) {
@@ -359,8 +357,8 @@ export default {
           tmp.forEach(function(key) {
             if (key.id === -1) {
               key.createBy = '系统创建'
-              key.id = '无'
-              key.orderId = '无'
+              key.id = -1
+              key.orderId = -1
             }
           })
           this.singleLackRecord = this.list[i].singleLackRecordVos
@@ -378,6 +376,7 @@ export default {
     //todo 生成进货单后,系统生成缺货单不再显示
     updateData() {
       this.oneAllLackRecord.inputCount = this.inputCount
+      console.log(this.oneAllLackRecord)
       generatePurchaseRecord(this.oneAllLackRecord).then(response => {
         console.log(response)
         if (response.code === 200) {
@@ -388,6 +387,7 @@ export default {
             duration: 2000
           })
           this.generateVisible = false
+          this.getList()
         }
       })
     }
