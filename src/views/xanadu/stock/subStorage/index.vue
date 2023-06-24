@@ -31,16 +31,16 @@
           start-placeholder="更新开始日期"
           end-placeholder="更新结束日期">
         </el-date-picker>
-
+      </el-form>
+    </el-card>
+    <!--表格-->
+    <el-card style="margin: 10px 0">
+      <el-form :inline="true">
         <el-form-item style="margin-left: 10px">
           <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
           <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
-    </el-card>
-
-    <!--表格-->
-    <el-card style="margin: 10px 0">
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
