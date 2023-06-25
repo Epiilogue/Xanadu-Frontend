@@ -71,7 +71,7 @@ export function cenGoodById(id){
 
 
 //中心仓库 出库单
-  //调拨出库
+//调拨出库
 export function cenDispatchOut(){
   return request({
     url: '/getDispatchOutput',
@@ -87,7 +87,7 @@ export function cenConfirmOut(id,number){
     baseURL: 'http://localhost:8015/ware/centerOutput'
   })
 }
-  //退货出库
+//退货出库
 export function cenRuturnOut(){
   return request({
     url: '/getReturnOutput',
@@ -96,7 +96,7 @@ export function cenRuturnOut(){
   })
 }
 //中心仓库 入库单
-  //入库列表
+//入库列表
 export function cenInputList(type){
   return request({
     url: '/list/'+type,
@@ -105,7 +105,7 @@ export function cenInputList(type){
   })
 }
 
-  //入库
+//入库
 export function cenInput(id,number){
   return request({
     url: '/confirm/'+id+'/'+number,
@@ -113,19 +113,67 @@ export function cenInput(id,number){
     baseURL: 'http://localhost:8015/ware/centerInput'
   })
 }
-export function centerware(id) {
+
+//分库库存量
+export function subList(){
   return request({
-    url: 'info',
+    url: 'list',
     method: 'get',
-    baseURL: 'http://localhost:8015/ware/centerware'
+    baseURL: 'http://localhost:8015/ware/subStorageRecord'
   })
 }
 
-export function centerwareupdate(data) {
+//分库出库
+//获取所有列表
+export function subInputList(type){
   return request({
-    url: '/edit',
-    method: 'post',
-    baseURL: 'http://localhost:8015/ware/centerware',
-    data
+    url: '/list/'+type,
+    method:'get',
+    baseURL:'http://localhost:8015/ware/subOutput'
+  })
+}
+
+//确认出库
+export function subConfirmOut(id, number){
+  return request({
+    url: '/confirm/'+id+'/'+number,
+    method:'put',
+    baseURL:'http://localhost:8015/ware/subOutput'
+  })
+}
+
+//删除退货记录
+export function deleteReturnRecord(id){
+  return request({
+    url:'/delete/'+id,
+    method:'delete',
+    baseURL:'http://localhost:8015/ware/subOutput'
+  })
+}
+
+//分库入库
+//分库调拨入库列表
+export function subDispatchIn(subwareid){
+  return request({
+    url:'/listDispatch/'+subwareid,
+    method:'get',
+    baseURL:'http://localhost:8015/ware/subInput'
+  })
+}
+//分库退货入库列表
+export function subRefundIn(subwareid){
+  return request({
+    url:'/listRefund/'+subwareid,
+    method:'get',
+    baseURL:'http://localhost:8015/ware/subInput'
+  })
+}
+
+//分库确认调拨入库
+export function subConfirmDispatchIn(id){
+  return request({
+    url:'/confirmDispatch/'+id,
+    method:'post',
+    baseURL:'http://localhost:8015/ware/subInput'
   })
 }
