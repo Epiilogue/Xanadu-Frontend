@@ -3,8 +3,8 @@
 
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>卡片名称</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="showDialog(null,'create')">操作按钮
+        <span>商品分类</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="showDialog(null,'create')">添加父类
         </el-button>
       </div>
       <el-tree
@@ -23,21 +23,21 @@
             @click="showDialog(data,'append')"
             v-if="data.level==1"
           >
-            Append
+            添加子类
           </el-button>
           <el-button
             type="text"
             size="mini"
             @click="() => remove(node, data)"
           >
-            Delete
+            删除
           </el-button>
           <el-button
             type="text"
             size="mini"
             @click="showDialog(data,'edit')"
           >
-            edit
+            修改
           </el-button>
         </span>
       </span>

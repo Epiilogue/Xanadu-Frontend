@@ -5,10 +5,10 @@
     </div>
     <el-dialog title="商品详情查看" :visible.sync="dialogFormVisible" style="width: 100%;padding-left: 5%">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="35%"
-               style="width: 75%; margin-left:160px;"
+               style="width: 85%; margin-left:180px;"
       >
         <el-image
-          style="width: 100px; height: 100px;margin-right: 150px"
+          style="width: 100px; height: 100px;margin-right:180px"
           :src="temp.picture"
         ></el-image>
         <el-form-item label="货物名称" prop="name">

@@ -5,7 +5,7 @@
     </div>
     <el-dialog title="缺货记录详情查看" :visible.sync="dialogFormVisible" style="width: 100%;padding-left: 5%">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="35%"
-               style="width: 75%; margin-left:160px;"
+               style="width: 70%; margin-left:280px;"
       >
         <el-form-item label="缺货记录ID" prop="id">
           <span>{{ temp.id }}</span>
