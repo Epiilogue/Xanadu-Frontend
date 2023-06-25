@@ -299,7 +299,7 @@ export default {
           axios.post("http://localhost:8004/dbc/refund/update",that.selectList[j])
             .then(function(){
               console.log(that.selectList[j]);
-              that.reset();
+              that.reset();R
             }).catch( function (err){
             //代表请求失败之后处理
             console.log (err);

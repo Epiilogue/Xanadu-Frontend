@@ -21,15 +21,17 @@
     <!-- 失效原因对话框 -->
     <el-dialog :title="title" :visible.sync="open" height="300px" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" >
-          <el-col :span="20">
-            <el-text></el-text>
-            <el-form-item label="失效原因" prop="dstate" width="100px">
-              <el-input  type="textarea":rows="2" v-model="form.details" maxlength="30"/>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="失效原因">
+              <el-input v-model="form.details" type="details" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm(form)">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
 
