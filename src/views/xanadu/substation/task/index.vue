@@ -12,10 +12,13 @@
                         style="width: 200px; margin-right: 5px" class="filter-item">
                         <el-option v-for="item in taskTypeOption" :key="item" :label="item" :value="item" />
                     </el-select></el-form-item>
-                <el-form-item label="任务状态"><el-select v-model="listQuery.taskStatus" placeholder="任务状态"
+                <el-form-item label="任务状态">
+                    <!-- <el-select v-model="listQuery.taskStatus" placeholder="任务状态"
                         style="width: 200px; margin-right: 5px" class="filter-item">
                         <el-option v-for="item in taskStatusOption" :key="item" :label="item" :value="item" />
-                    </el-select></el-form-item>
+                    </el-select> -->
+                    <el-cascader :options="taskStatusOption" :props="{ checkStrictly: true }" clearable></el-cascader>
+                </el-form-item>
                 <el-form-item label="快递员编号">
                     <el-input v-model="listQuery.courierId" placeholder="快递员编号" style="width: 200px; margin-right: 5px"
                         class="filter-item" />
@@ -70,6 +73,7 @@
             </el-table-column>
             <el-table-column label="分站编号" prop="subId" width="100" align="center">
             </el-table-column>
+
             <el-table-column label="快递员编号" prop="courierId" width="100" align="center">
             </el-table-column>
 
@@ -143,8 +147,50 @@ export default {
                 pageSize: 10,
             },
             //下拉选择
-            taskStatusOption: ['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成'],
+            // taskStatusOption: ['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成'],
             taskTypeOption: ['收款', '送货', '送货收款', '退货', '换货'],
+            //任务操作-任务状态级联
+            taskStatusOption: [{
+                value: '任务分配',
+                label: '任务分配',
+                children: [{
+                    value: '可分配',
+                    label: '可分配',
+                }, {
+                    value: '已调度',
+                    label: '已调度',
+                }]
+            },{
+                value: '取货',
+                label: '取货',
+                children: [{
+                    value: '已分配',
+                    label: '已分配',
+                }]
+            },{
+                value: '回执录入',
+                label: '回执录入',
+                children: [{
+                    value: '已分配',
+                    label: '已分配',
+                }, {
+                    value: '已领货',
+                    label: '已领货',
+                }]
+            },{
+                value: '完成状态',
+                label: '完成状态',
+                children: [{
+                    value: '完成',
+                    label: '完成',
+                }, {
+                    value: '失败',
+                    label: '失败',
+                },{
+                    value: '部分完成',
+                    label: '部分完成',
+                }]
+            }],
         }
     },
     methods: {
@@ -184,8 +230,14 @@ export default {
             });
         },
 
-        //表格多选框选中事件
-        handleSelectionChange() { }
+        //表格多选框选中事件，换页时提示可能丢失选中的内容，是否切换页面
+        handleSelectionChange() { },
+
+        // 查看任务当前状态对应的流程分步表单
+        handleViewStep(){},
+
+        //查看任务详情
+        handleViewTask(){},
     }
 }
 </script>
