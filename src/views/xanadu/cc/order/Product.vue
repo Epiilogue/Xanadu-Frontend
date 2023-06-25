@@ -21,9 +21,10 @@
       </el-table-column>
       <el-table-column v-if="newOrder" label="商品图片" width="100" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.picture }}</span>
+          <img :src="row.picture" width="40" height="40" class="head_pic"/>
         </template>
       </el-table-column>
+
       <el-table-column v-if="!newOrder" label="ID" prop="id" align="center" width="100">
         <template slot-scope="{ row }">
           <span>{{ row.productId }}</span>
@@ -34,27 +35,11 @@
           <span>{{ row.productName }}</span>
         </template>
       </el-table-column>
-
       <el-table-column label="价格" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.price }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="商品大类" width="100" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.categary }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="newOrder" label="一级分类ID" width="200" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.firstCategray }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="newOrder" label="二级分类ID" width="200" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.secondCategray }}</span>
-        </template>
-      </el-table-column>
+      </el-table-column>   
       <el-table-column label="能否退货" class-name="status-col" width="100">
         <template slot-scope="{ row }">
           <el-tag :type="row.refundAble ? 'success' : 'danger'">
@@ -69,6 +54,17 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column v-if="newOrder" label="一级分类ID" width="200" align="center">
+        <template slot-scope="{ row }">
+          <span>{{ row.firstCategray }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="newOrder" label="二级分类ID" width="200" align="center">
+        <template slot-scope="{ row }">
+          <span>{{ row.secondCategray }}</span>
+        </template>
+      </el-table-column>
+      
       <el-table-column v-if="newOrder" label="备注" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.comment }}</span>

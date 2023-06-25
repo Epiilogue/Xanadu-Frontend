@@ -24,9 +24,9 @@
         style="width: 100%">
         <el-table-column label="客户编号" prop="id" align="center" width="100">
         </el-table-column>
-        <el-table-column label="客户名称" prop="name" width="200" align="center">
+        <el-table-column label="客户名称" prop="name" width="100" align="center">
         </el-table-column>
-        <el-table-column label="身份证号" prop="identityCard" width="100" align="center">
+        <el-table-column label="身份证号" prop="identityCard" width="200" align="center">
         </el-table-column>
         <el-table-column label="收货地址" prop="address" width="100" align="center">
         </el-table-column>

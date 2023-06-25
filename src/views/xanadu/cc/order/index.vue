@@ -50,22 +50,7 @@
           <span>{{ row.customerId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建日期" width="200" align="center">
-        <template slot-scope="{ row }">
-          <i class="el-icon-time"></i>
-          <span>{{
-            $moment(new Date(row.createTime)).format("YYYY-MM-DD HH:mm:ss")
-          }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="要求完成日期" width="200" align="center">
-        <template slot-scope="{ row }">
-          <i class="el-icon-time"></i>
-          <span>{{
-            $moment(new Date(row.deadline)).format("YYYY-MM-DD HH:mm:ss")
-          }}</span>
-        </template>
-      </el-table-column>
+      
       <el-table-column label="订单类型" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.orderType }}</span>
@@ -84,6 +69,22 @@
       <el-table-column label="订单状态" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.status }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建日期" width="200" align="center">
+        <template slot-scope="{ row }">
+          <i class="el-icon-time"></i>
+          <span>{{
+            $moment(new Date(row.createTime)).format("YYYY-MM-DD HH:mm:ss")
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="要求完成日期" width="200" align="center">
+        <template slot-scope="{ row }">
+          <i class="el-icon-time"></i>
+          <span>{{
+            $moment(new Date(row.deadline)).format("YYYY-MM-DD HH:mm:ss")
+          }}</span>
         </template>
       </el-table-column>
       <!-- 按钮 -->
