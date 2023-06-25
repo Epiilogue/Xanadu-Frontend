@@ -6,9 +6,6 @@
         <el-form-item label="商品ID:">
           <el-input type="text" placeholder="请输入你要搜索的商品ID" v-model="goodID" clearable @clear="reset"></el-input>
         </el-form-item>
-        <el-form-item label="仓库ID:">
-          <el-input type="text" placeholder="请输入你要搜索的仓库ID" v-model="stockID" clearable @clear="reset"></el-input>
-        </el-form-item>
 
         <!--时间段搜索-->
         <el-date-picker
@@ -31,21 +28,20 @@
           start-placeholder="更新开始日期"
           end-placeholder="更新结束日期">
         </el-date-picker>
-      </el-form>
-    </el-card>
-    <!--表格-->
-    <el-card style="margin: 10px 0">
-      <el-form :inline="true">
+
         <el-form-item style="margin-left: 10px">
           <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
           <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table ref="multipleTable" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+    </el-card>
+
+    <!--表格-->
+    <el-card style="margin: 10px 0">
+      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库ID" align="center" prop="subwareId" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" show-overflow-tooltip></el-table-column>
         <el-table-column label="创建时间" align="center" prop="createTime" show-overflow-tooltip></el-table-column>
@@ -68,7 +64,7 @@
 import { subList } from '@/api/ware'
 
 export default {
-  name: 'index',
+  name: 'personal',
   data(){
     return {
       stockID:'',
@@ -84,7 +80,7 @@ export default {
   methods:{
     //搜索
     search() {
-      if (this.stockID === '' && this.goodID === '' && this.datevalue === '' && this.datevalue1 === ''){
+      if (this.goodID === '' && this.datevalue === '' && this.datevalue1 === ''){
         this.$message.error('请输入筛选信息')
       } else {
         subList().then(res=>{
@@ -125,6 +121,7 @@ export default {
                 this.tableData.push(list.at(i))
             }
           }
+
           for (let i = 0;i < this.tableData.length;i++){
             this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
             this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
@@ -135,12 +132,17 @@ export default {
     },
     //重置
     reset() {
-      this.stockID=''
       this.goodID=''
       this.datevalue=''
       this.datevalue1=''
+      this.tableData = []
       subList().then(res=>{
-        this.tableData = res.data;
+        var list = []
+        list = res.data;
+        for (let i = 0;i < list.length;i++){
+          if (list.at(i).subwareId == this.stockID)
+            this.tableData.push(list.at(i))
+        }
         for (let i = 0;i < this.tableData.length;i++){
           this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
           this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
@@ -180,8 +182,14 @@ export default {
     },
   },
   mounted() {
+    this.stockID = this.$route.query.stockId;
     subList().then(res=>{
-      this.tableData = res.data;
+      var list = []
+      list = res.data;
+      for (let i = 0;i < list.length;i++){
+        if (list.at(i).subwareId == this.stockID)
+          this.tableData.push(list.at(i))
+      }
       for (let i = 0;i < this.tableData.length;i++){
         this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)
         this.tableData.at(i).updateTime = this.getLocalTime(this.tableData.at(i).updateTime)
