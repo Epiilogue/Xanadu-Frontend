@@ -15,25 +15,29 @@
     <el-card style="margin: 10px 0">
       <el-button type="primary" size="default" @click="dialogFormVisible = true">添加仓库</el-button>
       <el-button type="primary" size="default" icon="el-icon-refresh-right" @click="refreshform">刷  新</el-button>
+
+      <!--出入库查询-->
+      <el-switch v-model="inout" active-text="出库查询" inactive-text="入库查询" style="margin-left: 1000px"></el-switch>
+
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
-        <el-table-column label="ID" align="center" width="100" prop="id" >
-          <template slot-scope="{row}">
-            <ware :id="row.id"></ware>
-          </template>
-        </el-table-column>
+        <el-table-column label="ID" align="center" width="50" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库名称" align="center" width="100" prop="name" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库地址" align="center" width="150" prop="address" show-overflow-tooltip></el-table-column>
+        <el-table-column label="仓库地址" align="center" width="100" prop="address" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库城市地址" align="center" width="100" prop="city" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库经度" align="center" width="100" prop="x" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库纬度" align="center" width="100" prop="y" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库管理员" align="center" width="100" prop="master" show-overflow-tooltip></el-table-column>
+        <el-table-column label="仓库管理员" align="center" width="50" prop="master" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-edit" @click="editStock(scope.row)" >编辑</el-button>
             <el-button type="primary" size="default" icon="el-icon-delete" style="background-color: red; border: red" @click="open(scope.row)">删除</el-button>
-            <el-button type="primary" size="default" icon="el-icon-files" style="background-color: green; border: green">库存量查询</el-button>
-            <el-button type="primary" size="default" icon="el-icon-printer" style="background-color: orange; border: orange">出/入库单查询</el-button>
+            <el-button type="primary" size="default" icon="el-icon-files" style="background-color: green; border: green" @click="goto(scope.row)">库存量查询</el-button>
+            <el-button type="primary" v-show="inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto1(scope.row)">领货出库</el-button>
+            <el-button type="primary" v-show="inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto2(scope.row)">退货出库</el-button>
+            <el-button type="primary" v-show="!inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto3(scope.row)">调拨入库</el-button>
+            <el-button type="primary" v-show="!inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto4(scope.row)">入库记录</el-button>
+
           </template>
         </el-table-column>
       </el-table>
@@ -65,6 +69,7 @@
 
 import mapview from './mapView.vue'
 import updateView from './updateView'
+import personal from '../subStorage/personal'
 
 import { subwareByID,subwareAll ,subwareDetele} from '@/api/ware'
 import Ware from '@/components/detail/ware.vue'
@@ -86,16 +91,57 @@ export default {
       editCity:'',
       editX:'',
       editY:'',
-
-      dialogFormVisible: false,
-      dialogFormVisible1:false,
       tableData: [],
       currentPage: 1,
       pagesize: 10,
+      dialogFormVisible: false,
+      dialogFormVisible1:false,
+      inout: true,
+
     }
   },
 
   methods: {
+
+    //跳转库存量
+    goto(row){
+      this.$router.push(({
+        path:'/stock/subwareStorage1',
+        query:{stockId:row.id}
+      }))
+    },
+
+    //跳转领货出库
+    goto1(row){
+      this.$router.push(({
+        path:'/stock/subOutput/subOutput1',
+        query:{stockId:row.id}
+      }))
+    },
+    //跳转退货出库
+    goto2(row){
+      this.$router.push(({
+        path:'/stock/subOutput/subOutput2',
+        query:{stockId:row.id}
+      }))
+    },
+
+    //跳转调拨入库
+    goto3(row){
+      this.$router.push(({
+        path:'/stock/subInput/subInput1',
+        query:{stockId:row.id}
+      }))
+    },
+
+    //跳转退货入库
+    goto4(row){
+      this.$router.push(({
+        path:'/stock/subInput/subInput2',
+        query:{stockId:row.id}
+      }))
+    },
+
     //搜索
     search() {
       if (this.stockID === ''){
@@ -136,10 +182,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
         this.deleteStock(row)
       }).catch(() => {
         this.$message({
@@ -154,6 +196,12 @@ export default {
       console.log(row.id)
       subwareDetele(row.id).then(res=>{
         console.log(res)
+        if (res.msg === '删除分库成功'){
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }
       })
     },
     //分页

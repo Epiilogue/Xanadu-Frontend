@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">若依后台管理系统</h3>
+      <h3 class="title">Xanadu物流运输管理系统</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -55,9 +55,6 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-login-footer">
-      <span>Copyright © 2018-2023 ruoyi.vip All Rights Reserved.</span>
-    </div>
   </div>
 </template>
 
@@ -158,25 +155,26 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
 .login {
   display: flex;
-  justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url("../assets/images/img_1.png");
   background-size: cover;
 }
 .title {
-  margin: 0px auto 30px auto;
+  margin: 25px auto 30px auto;
   text-align: center;
   color: #707070;
 }
 
 .login-form {
+  margin-left: 65%;
+  margin-top: -5%;
   border-radius: 6px;
-  background: #ffffff;
+  background: #FFFFFF;
   width: 400px;
-  padding: 25px 25px 5px 25px;
+  padding: 2px 25px 5px 25px;
   .el-input {
-    height: 38px;
+    height: 45px;
     input {
       height: 38px;
     }
