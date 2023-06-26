@@ -189,7 +189,7 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/invoice/list").then( function(res){
+      axios.get("http://localhost:8010/ac/invoice/list").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -232,7 +232,7 @@ export default {
       }
       else {
         row.registration = "未登记";
-        axios.post("http://localhost:8010/invoice/register/",row)
+        axios.post("http://localhost:8010/ac/invoice/register/",row)
           .then(function(promise){
             console.log(promise.data)
             that.reset();
@@ -256,7 +256,7 @@ export default {
       }
       else{
         row.registration = "已登记";
-        axios.post("http://localhost:8010/invoice/register/",row)
+        axios.post("http://localhost:8010/ac/invoice/register/",row)
           .then(function(promise){
             console.log(promise.data)
             that.reset();
@@ -287,7 +287,7 @@ export default {
       }
       else{
         const that = this
-        axios.post("http://localhost:8010/invoice/addinvoice/",that.formData)
+        axios.post("http://localhost:8010/ac/invoice/addinvoice/",that.formData)
           .then(function(){
             console.log(that.formData)
             that.getList();

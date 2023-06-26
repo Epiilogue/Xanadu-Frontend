@@ -281,7 +281,7 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/invoice/list").then( function(res){
+      axios.get("http://localhost:8010/ac/invoice/list").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.invoiceList = res.data.data;
@@ -311,7 +311,7 @@ export default {
       this.opendetails = true;
       const totalid = row.id || this.ids;
       const that = this;
-      axios.get("http://localhost:8010/invoices/getinvoicebytotalid/"+totalid).then( function(res){
+      axios.get("http://localhost:8010/ac/invoices/getinvoicebytotalid/"+totalid).then( function(res){
         //代表请求成功之后处理
         that.invoiceList1 = res.data.data;
         console.log(that.invoiceList1);
@@ -330,7 +330,7 @@ export default {
       this.open = true;
       const id = row.id || this.ids;
       const that = this
-      axios.get("http://localhost:8010/invoices/getinvoice/"+id).then( function(res){
+      axios.get("http://localhost:8010/ac/invoices/getinvoice/"+id).then( function(res){
         //代表请求成功之后处理
         that.form = res.data.data;
         console.log(that.form);
@@ -343,7 +343,7 @@ export default {
     watchDetails(row){
       const id = row.id || this.ids;
       const that = this;
-      axios.get("http://localhost:8010/invoices/getinvoice/"+id).then( function(res){
+      axios.get("http://localhost:8010/ac/invoices/getinvoice/"+id).then( function(res){
         //代表请求成功之后处理
         that.form = res.data.data;
         console.log(that.form);
@@ -367,7 +367,7 @@ export default {
     submitForm: function(form) {
       const that = this
       that.form.state = '已领用';
-      axios.post("http://localhost:8010/invoices/update/",form)
+      axios.post("http://localhost:8010/ac/invoices/update/",form)
         .then(function(promise){
           that.reset();
           console.log(form);

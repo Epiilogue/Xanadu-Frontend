@@ -24,7 +24,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="失效原因">
-              <el-input v-model="form.details" type="details" placeholder="请输入内容"></el-input>
+              <el-input v-model="form.details" type="textarea" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -63,6 +63,11 @@
             <el-tag
               :type="scope.row.dstate === '生效中' ? 'success' : (scope.row.state === '已失效' ?'warning':'danger')"
               disable-transitions>{{scope.row.dstate}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" prop="details" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_regisinvoice_employee" :value="scope.row.details"/>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -147,7 +152,7 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/invoices/list").then( function(res){
+      axios.get("http://localhost:8010/ac/invoices/list").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -183,7 +188,7 @@ export default {
       this.open = true;
       const id = row.id || this.ids;
       const that = this
-      axios.get("http://localhost:8010/invoice/getinvoice/"+id).then( function(res){
+      axios.get("http://localhost:8010/ac/invoice/getinvoice/"+id).then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.form = res.data.data;
@@ -198,10 +203,9 @@ export default {
       row.dstate = '生效中';
       row.state = '未领用';
       row.details = '无';
-      axios.post("http://localhost:8010/invoices/update/",row)
+      axios.post("http://localhost:8010/ac/invoices/update/",row)
         .then(function(promise){
           that.reset();
-          console.log(that.form);
           that.$message.success('修改成功');
           that.open = false;
         }).catch( function (err){
@@ -218,14 +222,13 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function(form) {
+      this.open = false;
       const that = this
       that.form.dstate = '已失效';
       that.form.state = '未领用';
-      axios.post("http://localhost:8010/invoices/update/",form)
+      axios.post("http://localhost:8010/ac/invoices/update/",form)
         .then(function(promise){
-          console.log(form);
           that.$message.success('修改成功');
-          that.open = false;
         }).catch( function (err){
         //代表请求失败之后处理
         console.log (err);

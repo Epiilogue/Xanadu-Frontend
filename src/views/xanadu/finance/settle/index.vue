@@ -12,23 +12,19 @@
             <el-date-picker type="date" placeholder="选择日期" v-model="form.endTime" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="供应商id" prop="supplyId">
-          <el-input v-model="form.supplyId"  placeholder="输入供应商id"
+        <el-form-item label="供应商id" prop="supplierId">
+          <el-input v-model="form.supplierId"  placeholder="输入供应商id"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
-          <el-form-item label="结算状态" prop="status" >
-            <el-select v-model="form.status" placeholder="结算状态" clearable>
-              <el-option
-                v-for="dict in options"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="small" @click="getList()" >    查询    </el-button>
-          </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="small" @click="getToList()" >    查询    </el-button>
+        </el-form-item>
+      <el-form-item>
+        <el-button type="primary" size="small" @click="getList()" >    重置    </el-button>
+      </el-form-item>
+        <el-form-item style="margin-left: 150px">
+          <el-button type="primary" size="small" @click="getList()" >    查看已结算记录    </el-button>
+        </el-form-item>
     </el-form>
 
     <!--  结算信息列表  -->
@@ -46,41 +42,34 @@
           <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.productName"/>
         </template>
       </el-table-column>
-      <el-table-column label="单价" align="center" prop="productPrice"  class-name="small-padding fixed-width">
+      <el-table-column label="单价" align="center" prop="price"  class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.productPrice"/>
+          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.price"/>
         </template>
       </el-table-column>
-      <el-table-column label="供货数量" align="center" prop="inputNum" class-name="small-padding fixed-width">
+      <el-table-column label="供货数量" align="center" prop="supplyNum" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.inputNum"/>
+          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum"/>
         </template>
       </el-table-column>
-      <el-table-column label="退货数量" align="center" prop="refundCount" class-name="small-padding fixed-width">
+      <el-table-column label="退货数量" align="center" prop="returnNum" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.refundCount"/>
+          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.returnNum"/>
         </template>
       </el-table-column>
-      <el-table-column label="结算数量" align="center" prop="finalcount"  class-name="small-padding fixed-width">
+      <el-table-column label="结算数量" align="center" prop="totalNum"  class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.inputNum - scope.row.refundCount"/>
+          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
         </template>
       </el-table-column>
       <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.inputNum - scope.row.refundCount) * scope.row.productPrice"/>
+          <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
         </template>
       </el-table-column>
-      <el-table-column label="结算状态" align="center" prop="status" class-name="small-padding fixed-width">
+      <el-table-column label="日期" align="center" prop="time" class-name="small-padding fixed-width" >
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.status === '已结算' ? 'success' : 'warning'"
-            disable-transitions>{{scope.row.status}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="日期" align="center" prop="refundTime" class-name="small-padding fixed-width" >
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.refundTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -117,24 +106,17 @@
         </el-table-column>
         <el-table-column label="结算数量" align="center" prop="finalcount"  class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.inputNum - scope.row.refundCount"/>
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
           </template>
         </el-table-column>
         <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.inputNum - scope.row.refundCount) * scope.row.productPrice"/>
-          </template>
-        </el-table-column>
-        <el-table-column label="结算状态" align="center" prop="status" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.status === '已结算' ? 'success' : 'warning'"
-              disable-transitions>{{scope.row.status}}</el-tag>
+            <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
           </template>
         </el-table-column>
         <el-table-column label="日期" align="center" prop="refundTime" class-name="small-padding fixed-width" >
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.refundTime, '{y}-{m}-{d}') }}</span>
+            <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -145,7 +127,7 @@
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="warning" size="small" @click="submit" >结算</el-button>
+          <el-button type="warning" size="small" @click="submit" >确认</el-button>
         </el-form-item>
       </el-form>
 
@@ -230,13 +212,36 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8004/dbc/refund/list").then( function(res){
+      axios.get("http://localhost:8010/ac/supply/listSettlement").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
         that.refundList = res.data.data;
         that.loading = false;
       }).catch( function (err){
+        //代表请求失败之后处理
+        console.log (err);
+      });
+    },
+    getToList() {
+      const that = this
+      axios.get("http://localhost:8010/ac/supply/listToSettlement",{
+        params: {
+          supplierId: that.form.supplierId,
+          startTime: that.form.startTime,
+          endTime: that.form.endTime
+        }
+      }).then( function(res){
+        console.log(that.form.supplierId);
+        //代表请求成功之后处理
+        console.log(res);
+        that.total = res.data.data.length;
+        that.refundList = res.data.data;
+      }).catch( function (err){
+        that.$message({
+          message: '查询失败',
+          type: 'error'
+        });
         //代表请求失败之后处理
         console.log (err);
       });
@@ -266,11 +271,11 @@ export default {
       this.multiple = !selection.length
     },
     account(){
+      this.totalprice = 0;
       this.selectList = this.$refs.refundTableRefs.selection;
       let i = 0;
       while(i < this.selectList.length){
-        if(this.selectList[i].status === '未结算')
-          this.totalprice += (this.selectList[i].inputNum - this.selectList[i].refundCount) * this.selectList[i].productPrice;
+          this.totalprice += (this.selectList[i].supplyNum - this.selectList[i].returnNum) * this.selectList[i].price;
           i = i + 1;
       }
       if(this.selectList.length === 0){
@@ -296,10 +301,14 @@ export default {
         let j = 0;
         while(j < this.selectList.length){
           // 向后端发送数据
-          axios.post("http://localhost:8004/dbc/refund/update",that.selectList[j])
+          axios.post("http://localhost:8010/ac/supply/postSettlement",that.selectList)
             .then(function(){
-              console.log(that.selectList[j]);
-              that.reset();R
+              console.log(that.selectList);
+              that.$message({
+                message: '结算成功',
+                type: 'success'
+              });
+              that.reset();
             }).catch( function (err){
             //代表请求失败之后处理
             console.log (err);
