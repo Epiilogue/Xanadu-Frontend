@@ -40,6 +40,15 @@ import DictData from '@/components/DictData'
 
 import { BaiduMap } from 'vue-baidu-map'
 
+import dataV from '@jiaminghi/data-view';
+Vue.use(dataV);
+
+//引入echart
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
+
+
+
 Vue.use(BaiduMap,{ak:'zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM'})
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
