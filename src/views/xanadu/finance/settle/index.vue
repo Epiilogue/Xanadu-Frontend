@@ -16,11 +16,12 @@
           <el-input v-model="form.supplierId"  placeholder="输入供应商id"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
+      <el-form-item label="商品id" prop="productId">
+        <el-input v-model="form.productId"  placeholder="输入商品id"
+                  prefix-icon='el-icon-paperclip' width="120%"></el-input>
+      </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="getList()" >    查询    </el-button>
-        </el-form-item>
-        <el-form-item style="margin-left: 150px">
-          <el-button type="primary" size="small" @click="getToList()" >    查看已结算记录    </el-button>
         </el-form-item>
     </el-form>
 
@@ -83,7 +84,8 @@
     </div>
       <!--  合计结算按钮  -->
       <div v-show="open2" style="display: flex">
-        <el-button type="success" size="medium" @click="account" style="margin-top: 25px; margin-left: 45%"> 结算 </el-button>
+        <el-button type="success" size="medium" @click="account" style="margin-top: 25px; margin-left: 40%"> 结算 </el-button>
+        <el-button type="primary" size="medium" @click="getToList()" style="margin-top: 25px;">    查看已结算记录    </el-button>
         <div style="margin-left: 44%">
           <pagination
             v-show="total>0"
@@ -139,7 +141,7 @@
 
 
     <!-- 已结算列表   -->
-    <el-dialog :visible.sync="open1" width="780px" append-to-body>
+    <el-dialog :visible.sync="open1" width="1080px" append-to-body>
       <el-table v-loading="loading" :data="this.alreadyform"
                 border >
         <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
@@ -165,7 +167,7 @@
         </el-table-column>
         <el-table-column label="结算日期" align="center" prop="refundTime" class-name="small-padding fixed-width" >
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
+            <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}-{h}:{m}:{s}') }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -255,7 +257,8 @@ export default {
         params: {
           supplierId: that.form.supplierId,
           startTime: that.form.startTime.toLocaleString(),
-          endTime: that.form.endTime.toLocaleString()
+          endTime: that.form.endTime.toLocaleString(),
+          productId: that.form.productId
         }
       }).then( function(res){
         //代表请求成功之后处理
