@@ -8,6 +8,13 @@ export function getSupList(query) {
     })
   }
 
+export function getSupplier(query) {
+  return request({
+    url: `/dbc/supplier/get/${query}`,
+    method: 'get',
+  })
+}
+
 // 根据姓名、地址查找供应商
 export function querySupList(query) {
   return request({

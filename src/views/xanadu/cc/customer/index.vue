@@ -23,6 +23,9 @@
       <el-table :key="0" :row-key="(row) => row.id" :data="list" ref="table" border fit highlight-current-row
         style="width: 100%">
         <el-table-column label="客户编号" prop="id" align="center" width="100">
+          <template slot-scope="{row}">
+            <customer :id="row.id"></customer>
+          </template>
         </el-table-column>
         <el-table-column label="客户名称" prop="name" width="100" align="center">
         </el-table-column>
@@ -47,9 +50,7 @@
         <el-table-column label="更新日期" width="200" align="center">
           <template slot-scope="{ row }">
             <i class="el-icon-time"></i>
-            <span>{{
-              $moment(new Date(row.updateTime)).format("YYYY-MM-DD HH:mm:ss")
-            }}</span>
+            <span>{{$moment(new Date(row.updateTime)).format("YYYY-MM-DD HH:mm:ss") }}</span>
           </template>
         </el-table-column>
         <!-- 按钮 -->
@@ -82,11 +83,12 @@
 import { getCustomerList, deleteCustomer, getCustomer } from "@/api/cc-customer";
 import editCustomer from "./updateView.vue";
 import waves from "@/directive/waves"; // waves directive
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import Pagination from "@/components/Pagination";
+import Customer from '@/components/detail/customer.vue' // secondary package based on el-pagination
 
 export default {
   name: "CustomertList",
-  components: { Pagination, editCustomer },
+  components: { Customer, Pagination, editCustomer },
   directives: { waves },
   data() {
     return {
