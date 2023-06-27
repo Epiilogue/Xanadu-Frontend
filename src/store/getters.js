@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 const getters = {
   sidebar: state => state.app.sidebar,
   size: state => state.app.size,
@@ -15,5 +17,7 @@ const getters = {
   topbarRouters:state => state.permission.topbarRouters,
   defaultRoutes:state => state.permission.defaultRoutes,
   sidebarRouters:state => state.permission.sidebarRouters,
+  proChanged:state=>state.order.prochanged,
+  cusChanged:state=>state.order.cusChanged,
 }
 export default getters

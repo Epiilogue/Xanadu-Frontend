@@ -19,7 +19,7 @@
     >
       <i class="el-icon-plus"></i>
     </el-upload>
-
+    
     <!-- 上传提示 -->
     <div class="el-upload__tip" slot="tip" v-if="showTip">
       请上传
@@ -71,15 +71,13 @@ export default {
     }
   },
   data() {
-    //:action="'https://xanadu-image.oss-cn-beijing.aliyuncs.com'"
     return {
       number: 0,
       uploadList: [],
       dialogImageUrl: "",
       dialogVisible: false,
       hideUpload: false,
-      //uploadImgUrl: 'https://xanadu-image.oss-cn-beijing.aliyuncs.com', // 上传的图片服务器地址
-      uploadImgUrl : '',
+      uploadImgUrl: process.env.VUE_APP_BASE_API + "/file/upload", // 上传的图片服务器地址
       headers: {
         Authorization: "Bearer " + getToken(),
       },
@@ -131,6 +129,7 @@ export default {
       } else {
         isImg = file.type.indexOf("image") > -1;
       }
+
       if (!isImg) {
         this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join("/")}图片格式文件!`);
         return false;
@@ -151,8 +150,6 @@ export default {
     },
     // 上传成功回调
     handleUploadSuccess(res, file) {
-      console.log(res)
-      console.log(file)
       if (res.code === 200) {
         this.uploadList.push({ name: res.data.url, url: res.data.url });
         this.uploadedSuccessfully();

@@ -38,9 +38,6 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 
-import { BaiduMap } from 'vue-baidu-map'
-
-Vue.use(BaiduMap,{ak:'zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM'})
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -73,6 +70,9 @@ Axios.defaults.baseURL = 'http://localhost:8004'
 Axios.defaults.headers.post['Content-Type'] = 'application/json';
 Vue.config.productionTip = false
 import product from '@/components/detail/product.vue'
+import moment from "moment";
+Vue.prototype.$moment = moment; //UTC时间格式转换
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

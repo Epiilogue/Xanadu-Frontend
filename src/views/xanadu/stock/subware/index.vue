@@ -21,7 +21,11 @@
 
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
-        <el-table-column label="ID" align="center" width="50" prop="id" show-overflow-tooltip></el-table-column>
+        <el-table-column label="ID" align="center" width="50" prop="id" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <subware :id="row.id"></subware>
+          </template>
+        </el-table-column>
         <el-table-column label="仓库名称" align="center" width="100" prop="name" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库地址" align="center" width="100" prop="address" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库城市地址" align="center" width="100" prop="city" show-overflow-tooltip></el-table-column>
@@ -72,9 +76,11 @@ import updateView from './updateView'
 import personal from '../subStorage/personal'
 
 import { subwareByID,subwareAll ,subwareDetele} from '@/api/ware'
+import Subware from '@/components/detail/subware.vue'
 
 export default {
   components:{
+    Subware,
     mapview:mapview,
     updateView:updateView
   },
@@ -226,6 +232,7 @@ export default {
   mounted() {
     subwareAll().then(res=>{
       this.tableData = res.data;
+      console.log(res)
     })
   }
 }
