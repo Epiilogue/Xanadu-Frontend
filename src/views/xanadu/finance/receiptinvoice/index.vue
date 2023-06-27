@@ -29,7 +29,7 @@
             <div class="headerMessage" style="justify-content: space-between; font-size: 8px; margin-bottom: 5px;">
               <!-- 在此处放置发票信息，例如发票号码、日期等 -->
               <p>发票号码：{{ this.printform.number }}</p>
-              <p>打印时间：{{ parseTime(this.printform.printTime, '{y}-{m}-{d}-{h}-{m}-{s}') }}</p>
+              <p>打印时间：{{ parseTime(this.printform.printTime, '{y}-{m}-{d}-{h}:{m}:{s}') }}</p>
             </div>
           <div>------------详细信息-------------</div>
           <div class="content" style=" justify-content: space-between; font-size: 14px; margin-bottom: 5px;">

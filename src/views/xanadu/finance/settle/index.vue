@@ -24,68 +24,76 @@
         </el-form-item>
     </el-form>
 
-    <!--  结算信息列表  -->
-    <el-table v-loading="loading" :data="refundList" ref="refundTableRefs"
-               border @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
-      <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.productName"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="单价" align="center" prop="price"  class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.price"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="供货数量" align="center" prop="supplyNum" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="退货数量" align="center" prop="returnNum" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.returnNum"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="结算数量" align="center" prop="totalNum"  class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="日期" align="center" prop="time" class-name="small-padding fixed-width" >
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
 
-    <!--  合计结算  -->
-    <div style="display: flex">
-      <el-button type="success" size="medium" @click="account" style="margin-top: 25px; margin-left: 45%"> 结算 </el-button>
-      <div style="margin-left: 44%">
-        <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
-          @pagination="getList"
-        />
-      </div>
+    <!--  查询之前显示  -->
+    <div v-if="open3">
+      <el-result title="提示" subTitle="请先输入查询条件" >
+        <template slot="extra">
+          <el-button type="primary" size="medium">刷新</el-button>
+        </template>
+      </el-result>
     </div>
-
-
+      <!--  查询之后显示结算信息列表  -->
+    <div v-show="open2">
+      <el-table :data="refundList" ref="refundTableRefs"
+                border @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
+        <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.productName"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="单价" align="center" prop="price"  class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.price"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="供货数量" align="center" prop="supplyNum" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="退货数量" align="center" prop="returnNum" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.returnNum"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算数量" align="center" prop="totalNum"  class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="日期" align="center" prop="time" class-name="small-padding fixed-width" >
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+      <!--  合计结算按钮  -->
+      <div v-show="open2" style="display: flex">
+        <el-button type="success" size="medium" @click="account" style="margin-top: 25px; margin-left: 45%"> 结算 </el-button>
+        <div style="margin-left: 44%">
+          <pagination
+            v-show="total>0"
+            :total="total"
+            :page.sync="queryParams.pageNum"
+            :limit.sync="queryParams.pageSize"
+            @pagination="getList"
+          />
+        </div>
+      </div>
     <!--合计结算窗口-->
     <el-dialog :visible.sync="open" width="780px" append-to-body>
       <el-table v-loading="loading" :data="this.selectList"
@@ -127,11 +135,42 @@
           <el-button type="warning" size="small" @click="submit" >确认</el-button>
         </el-form-item>
       </el-form>
-
-
-
     </el-dialog>
 
+
+    <!-- 已结算列表   -->
+    <el-dialog :visible.sync="open1" width="780px" append-to-body>
+      <el-table v-loading="loading" :data="this.alreadyform"
+                border >
+        <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
+        <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.productName"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算数量" align="center" prop="finalcount"  class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="结算日期" align="center" prop="refundTime" class-name="small-padding fixed-width" >
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+
+    </el-dialog>
   </div>
 
 </template>
@@ -139,7 +178,7 @@
 <script>
 
 import axios from 'axios'
-import {timestampToDetailTime, timestampToTime} from "@/utils/ruoyi";
+
 
 export default {
   name: "RegisInvoice",
@@ -171,8 +210,12 @@ export default {
       total: 0,
       // 查询数据
       refundList: [],
+      alreadyform: [],
       // 是否显示弹出层
+      open1: false,
       open: false,
+      open2: false,
+      open3: true,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -201,19 +244,18 @@ export default {
       },
     };
   },
-  created() {
-    this.getList();
-  },
   methods: {
     /** 查询供应列表 */
     getList() {
-      const that = this
+      this.open3 = false;
+      this.open2 = true;
+      const that = this;
       this.loading = true;
       axios.get("http://localhost:8010/ac/supply/listToSettlement",{
         params: {
           supplierId: that.form.supplierId,
-          startTime: timestampToDetailTime(that.form.startTime),
-          endTime: timestampToDetailTime(that.form.endTime)
+          startTime: that.form.startTime.toLocaleString(),
+          endTime: that.form.endTime.toLocaleString()
         }
       }).then( function(res){
         //代表请求成功之后处理
@@ -228,12 +270,12 @@ export default {
     },
     getToList() {
       const that = this
+      that.open1 = true;
       axios.get("http://localhost:8010/ac/supply/listSettlement").then( function(res){
-        console.log(that.form.supplierId);
         //代表请求成功之后处理
         console.log(res);
-        that.total = res.data.data.length;
-        that.refundList = res.data.data;
+        that.loading = false;
+        that.alreadyform = res.data.data;
       }).catch( function (err){
         that.$message({
           message: '查询失败',
