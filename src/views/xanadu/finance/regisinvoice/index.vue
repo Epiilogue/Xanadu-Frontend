@@ -67,9 +67,9 @@
           <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.total"/>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="time" width="100">
+      <el-table-column label="创建时间" align="center" prop="time" width="200">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}-{h}-{m}-{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="登记状态" align="center" prop="registration" width="100">

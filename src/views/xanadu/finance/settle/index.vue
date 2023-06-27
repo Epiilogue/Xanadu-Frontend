@@ -17,13 +17,10 @@
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="getToList()" >    查询    </el-button>
+          <el-button type="primary" size="small" @click="getList()" >    查询    </el-button>
         </el-form-item>
-      <el-form-item>
-        <el-button type="primary" size="small" @click="getList()" >    重置    </el-button>
-      </el-form-item>
         <el-form-item style="margin-left: 150px">
-          <el-button type="primary" size="small" @click="getList()" >    查看已结算记录    </el-button>
+          <el-button type="primary" size="small" @click="getToList()" >    查看已结算记录    </el-button>
         </el-form-item>
     </el-form>
 
@@ -142,6 +139,7 @@
 <script>
 
 import axios from 'axios'
+import {timestampToDetailTime, timestampToTime} from "@/utils/ruoyi";
 
 export default {
   name: "RegisInvoice",
@@ -171,7 +169,7 @@ export default {
       form: {},
       // 总条数
       total: 0,
-      // 发票表格数据
+      // 查询数据
       refundList: [],
       // 是否显示弹出层
       open: false,
@@ -179,7 +177,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        status: undefined,
       },
       // 选中的数据
       selectList: [],
@@ -208,11 +205,17 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询公告列表 */
+    /** 查询供应列表 */
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/ac/supply/listSettlement").then( function(res){
+      axios.get("http://localhost:8010/ac/supply/listToSettlement",{
+        params: {
+          supplierId: that.form.supplierId,
+          startTime: timestampToDetailTime(that.form.startTime),
+          endTime: timestampToDetailTime(that.form.endTime)
+        }
+      }).then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -225,13 +228,7 @@ export default {
     },
     getToList() {
       const that = this
-      axios.get("http://localhost:8010/ac/supply/listToSettlement",{
-        params: {
-          supplierId: that.form.supplierId,
-          startTime: that.form.startTime,
-          endTime: that.form.endTime
-        }
-      }).then( function(res){
+      axios.get("http://localhost:8010/ac/supply/listSettlement").then( function(res){
         console.log(that.form.supplierId);
         //代表请求成功之后处理
         console.log(res);

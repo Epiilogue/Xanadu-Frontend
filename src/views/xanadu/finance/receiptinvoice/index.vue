@@ -20,42 +20,34 @@
 
     <!--  打印内容  -->
     <div v-show="false">
-      <form method="post" action="#" id="printJS-form">
-        <el-form ref="form" :model="form" :rules="rules" label-width="120px" >
-          <el-row>
-            <el-col :span="12" >
-              <el-form-item label="序号" prop="id" >
-                <el-input v-model="form.id" maxlength="30" :disabled="true" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="发票号码" prop="endnumber">
-                <el-input v-model="form.number" maxlength="30" :disabled="true"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="批次" prop="startnumber">
-                <el-input v-model="form.batch" maxlength="30" :disabled="true"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="领用分站" prop="startnumber">
-                <el-input v-model="form.substationId" maxlength="30" :disabled="true"/>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="领用人" prop="endnumber">
-                <el-input v-model="form.employee" maxlength="30" :disabled="true"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
+      <form method="get" action="#" id="printJS-form">
+        <div class="invoice">
+          <div style="justify-content: space-between; font-size: 14px; margin-bottom: 5px;" >
+            <!-- 发票头部内容 -->
+            <h1>Xanadu物流管理中心</h1>
+          </div>
+            <div class="headerMessage" style="justify-content: space-between; font-size: 8px; margin-bottom: 5px;">
+              <!-- 在此处放置发票信息，例如发票号码、日期等 -->
+              <p>发票号码：{{ this.printform.number }}</p>
+              <p>打印时间：{{ parseTime(this.printform.printTime, '{y}-{m}-{d}-{h}-{m}-{s}') }}</p>
+            </div>
+          <div>------------详细信息-------------</div>
+          <div class="content" style=" justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+            <p>商品名称：{{ this.printform.productName }}</p>
+            <p>商品数量：{{ this.printform.productNum }}</p>
+            <p>分站id：{{ this.printform.substationId }}</p>
+            <p>金额：{{ this.printform.amount }}</p>
+            <p>批次：{{ this.printform.batch }}</p>
+            <p>本数：{{ this.printform.total }}</p>
+            <!-- 在此处放置发票项目列表、数量、价格等 -->
+          </div>
+          <div>--------------------------------</div>
+          <div class="footer" style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
+            <p>负责人签字：</p>
+            <p></p>
+            <p>Xanadu公司盖章：</p>
+          </div>
+        </div>
       </form>
     </div>
 
@@ -188,10 +180,10 @@
                        type="primary"
                        @click="receipt(scope.row)"
             >录入信息</el-button>
-            <el-button :disabled="scope.row.state === '已失效'"
+            <el-button :disabled="scope.row.dstate === '已失效'"
               size="small"
               type="warning"
-              @click="watchDetails(scope.row)"
+              @click="printInvoice(scope.row)"
             >打印发票</el-button>
           </template>
         </el-table-column>
@@ -231,6 +223,8 @@ export default {
         value: '选项2',
         label: '未领用'
       }],
+      // 打印数据
+      printform: {},
 
       opendetails: false,
       // 显示搜索条件
@@ -340,13 +334,13 @@ export default {
         console.log (err);
       })
     },
-    watchDetails(row){
+    printInvoice(row){
       const id = row.id || this.ids;
       const that = this;
-      axios.get("http://localhost:8010/ac/invoices/getinvoice/"+id).then( function(res){
+      axios.get("http://localhost:8010/ac/invoices/printInvoices/"+id).then( function(res){
         //代表请求成功之后处理
-        that.form = res.data.data;
-        console.log(that.form);
+        that.printform = res.data.data;
+        console.log(that.printform);
       }).catch( function (err){
         //代表请求失败之后处理
         alert ('进入catch')
