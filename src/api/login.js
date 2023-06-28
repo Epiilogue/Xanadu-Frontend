@@ -12,6 +12,18 @@ export function login(username, password, code, uuid) {
   })
 }
 
+export function loginByEmail(email,code) {
+  return request({
+    url: 'loginByEmail',
+    method: 'post',
+    headers: {
+      isToken: false
+    },
+    data: { email, code },
+    baseURL:'http://localhost:9200/'
+  })
+}
+
 // 注册方法
 export function register(data) {
   return request({
@@ -59,3 +71,13 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+
+export  function getCode(email){
+  return request({
+    url:`/getEmailCode/${email}`,
+    method:'get',
+    baseURL:'http://localhost:9200'
+  })
+}
+
+
