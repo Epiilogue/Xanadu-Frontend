@@ -1,4 +1,4 @@
-import { login, logout, getInfo, refreshToken } from '@/api/login'
+import { login, logout, getInfo, refreshToken, loginByEmail } from '@/api/login'
 import { getToken, setToken, setExpiresIn, removeToken } from '@/utils/auth'
 
 const user = {
@@ -52,6 +52,27 @@ const user = {
       })
     },
 
+    //邮箱登录
+    LoginByEmail({ commit }, userInfo) {
+      const email = userInfo.email
+      const code = userInfo.code
+      const uuid = userInfo.uuid
+      return new Promise((resolve, reject) => {
+        loginByEmail(email, code).then(res => {
+          console.log(res)
+          let data = res.data
+          setToken(data.access_token)
+          commit('SET_TOKEN', data.access_token)
+          setExpiresIn(data.expires_in)
+          commit('SET_EXPIRES_IN', data.expires_in)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+
     // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
@@ -85,7 +106,7 @@ const user = {
         })
       })
     },
-    
+
     // 退出系统
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {

@@ -505,6 +505,7 @@ export default {
         const tHeader = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
         const filterVal = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
         const data = this.formatJson(filterVal)
+        console.log(data)
         excel.export_json_to_excel({
           header: tHeader,
           data,
@@ -522,10 +523,6 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    }
   }
 }
 </script>
