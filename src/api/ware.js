@@ -186,7 +186,7 @@ export function subConfirmDispatchIn(id){
 }
 
 // 获取分库分页列表
-export function subList(query) {
+export function subwareList(query) {
   return request({
       url: `/ware/subware/list/${query.pageNum}/${query.pageSize}`,
       method: 'get',
