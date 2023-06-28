@@ -32,19 +32,19 @@
 
         <el-table-column label="缺货订单号" prop="orderId" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.orderId }}</span>
+            <span>{{ row.orderId }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="缺货商品号" prop="productId" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.productId }}</span>
+            <span>{{ row.productId }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="缺货商品数量" prop="secondCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.needNumbers }}</span>
+            <span>{{ row.needNumbers }}</span>
           </template>
         </el-table-column>
 

@@ -56,11 +56,11 @@ export function LackRecordInspect(id,isCheck){
 //获取商品列表
 export function fetchList(query) {
   return request({
-    url: '/listAll',
+    url: '/dbc/product/listAll',
     method: 'get',
     //params: { pageNum, pageSize },
     //params: query,
-    baseURL: 'http://localhost:8004/dbc/product'
+    //baseURL: 'http://localhost:8089/dbc/product'
   })
 }
   export function fetchPage(id) {

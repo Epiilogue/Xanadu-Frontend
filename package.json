@@ -5,7 +5,7 @@
   "author": "Xanadu",
   "license": "MIT",
   "scripts": {
-    "dev": "SET NODE_OPTIONS=--openssl-legacy-provider start && vue-cli-service serve",
+    "dev": "SET NODE_OPTIONS='' start && vue-cli-service serve",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
@@ -42,7 +42,7 @@
     "core-js": "3.25.3",
     "echarts": "5.4.0",
     "element-ui": "2.15.12",
-    "file-saver": "2.0.5",
+    "file-saver": "^2.0.5",
     "fuse.js": "6.4.3",
     "highlight.js": "9.18.5",
     "js-beautify": "1.13.0",
@@ -79,6 +79,7 @@
     "sass": "1.32.13",
     "sass-loader": "10.1.1",
     "script-ext-html-webpack-plugin": "2.1.5",
+    "script-loader": "^0.7.2",
     "svg-sprite-loader": "5.1.1",
     "vue-template-compiler": "2.6.12"
   },

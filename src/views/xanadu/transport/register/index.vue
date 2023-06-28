@@ -37,49 +37,49 @@
 
         <el-table-column label="名称" prop="name" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+            <span>{{ row.name }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="商品大类" prop="firstCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.firstCategray }}</span>
+            <span >{{ row.firstCategray }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="商品小类" prop="secondCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.secondCategray }}</span>
+            <span >{{ row.secondCategray }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="价格" min-width="50px" prop="price" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.price }}</span>
+            <span >{{ row.price }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="供应商ID" min-width="50px" prop="supplierId " align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.supplierId }}</span>
+            <supplier :id="row.id"></supplier>
           </template>
         </el-table-column>
 
         <el-table-column label="可否退货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.refundAble }}</span>
+            <span  >{{ row.refundAble }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="可否换货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.changeAble }}</span>
+            <span  >{{ row.changeAble }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="备注" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.comment }}</span>
+            <span  >{{ row.comment }}</span>
           </template>
         </el-table-column>
 
@@ -96,13 +96,13 @@
         </el-table-column>
         <el-table-column label="最大库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.maxCount }}</span>
+            <span >{{ row.maxCount }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="安全库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.safeStock }}</span>
+            <span >{{ row.safeStock }}</span>
           </template>
         </el-table-column>
 
@@ -212,6 +212,7 @@ import { timestampToTime } from '@/utils/ruoyi'
 import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import Product from '@/components/detail/product.vue'
+import Supplier from '@/components/detail/supplier.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -228,7 +229,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Product, SingleUpload, Pagination },
+  components: { Supplier, Product, SingleUpload, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -504,6 +505,7 @@ export default {
         const tHeader = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
         const filterVal = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
         const data = this.formatJson(filterVal)
+        console.log(data)
         excel.export_json_to_excel({
           header: tHeader,
           data,
@@ -521,10 +523,6 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    }
   }
 }
 </script>

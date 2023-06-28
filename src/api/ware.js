@@ -122,13 +122,7 @@ export function cenInput(id,number){
 }
 
 //分库库存量
-export function subList(){
-  return request({
-    url: 'list',
-    method: 'get',
-    baseURL: 'http://localhost:8015/ware/subStorageRecord'
-  })
-}
+
 
 //分库出库
 //获取所有列表
@@ -186,10 +180,17 @@ export function subConfirmDispatchIn(id){
 }
 
 // 获取分库分页列表
-export function subwareList(query) {
+export function subWareList(query) {
   return request({
       url: `/ware/subware/list/${query.pageNum}/${query.pageSize}`,
       method: 'get',
       params:query,
+  })
+}
+export function subList(){
+  return request({
+    url: 'list',
+    method: 'get',
+    baseURL: 'http://localhost:8015/ware/subStorageRecord'
   })
 }

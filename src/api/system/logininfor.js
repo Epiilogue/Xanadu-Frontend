@@ -31,3 +31,5 @@ export function cleanLogininfor() {
     method: 'delete'
   })
 }
+
+

@@ -123,10 +123,10 @@
         </el-tabs>
     </div>
 </template>
-    
+
 <script>
 
-import { centerStorageList,cenGoodById, subList } from '@/api/ware.js'
+import { centerStorageList, cenGoodById, subList, subWareList } from '@/api/ware.js'
 import { getProduct } from '@/api/dbc-product.js'
 import { dispatchProduct } from '@/api/dpc-dispatch.js'
 import Pagination from "@/components/Pagination";
@@ -179,7 +179,7 @@ export default {
         // 分库分页列表
         getSubList() {
             this.listLoading = true;
-            subList(this.subwareListQuery).then((response) => {
+            subWareList(this.subwareListQuery).then((response) => {
                 this.subList = response.data;
                 this.subTotal = response.data.length;
                 this.listLoading = false;
