@@ -7,8 +7,16 @@
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库ID" align="center" prop="outputId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <product :id="row.productId"></product>
+          </template>
+        </el-table-column>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <supplier :id="row.supplierId"></supplier>
+          </template>
+        </el-table-column>
         <el-table-column label="供应商名称" align="center" prop="supplierName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" show-overflow-tooltip></el-table-column>
@@ -23,7 +31,7 @@
         <el-table-column label="实际出库数量" align="center" prop="actualNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="default" icon="el-icon-printer" @click="open(scope.row)" :disabled="scope.row.status==='已出库'">出库</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" @click="open(scope.row)" :disabled="scope.row.status!=='未出库'">出库</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -37,9 +45,12 @@
 
 <script>
 import { cenRuturnOut, cenConfirmOut} from '@/api/ware'
+import product from '../../../../components/detail/product'
+import supplier from '../../../../components/detail/supplier'
 
 export default {
   name: 'returnOut',
+  components: { product, supplier },
   data(){
     return {
       tableData:[],

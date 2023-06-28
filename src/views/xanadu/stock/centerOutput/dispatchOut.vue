@@ -9,8 +9,16 @@
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库ID" align="center" prop="outputId" show-overflow-tooltip></el-table-column>
         <el-table-column label="任务ID" align="center" prop="taskId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="分库ID" align="center" prop="subwareId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <product :id="row.productId"></product>
+          </template>
+        </el-table-column>
+        <el-table-column label="分库ID" align="center" prop="subwareId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <subware :id="row.subwareId"></subware>
+          </template>
+        </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="预计出库时间" align="center" prop="requireTime" show-overflow-tooltip></el-table-column>
@@ -18,13 +26,14 @@
           <template slot-scope="scope">
             <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
             <el-tag type="danger"  v-show="scope.row.status === '未出库'">{{ scope.row.status }}</el-tag>
+            <el-tag type="warning"  v-show="scope.row.status === '分库已入库'">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="出库数量" align="center" prop="outputNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="实际出库数量" align="center" prop="actualNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)" :disabled="scope.row.status==='已出库'">出库</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)" :disabled="scope.row.status!=='未出库'">出库</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -49,9 +58,12 @@
 <script>
 
 import {cenDispatchOut, cenConfirmOut} from '@/api/ware'
+import subware from '../../../../components/detail/subware'
+import product from '../../../../components/detail/product'
 
 export default {
   name: 'DispatchOut',
+  components: { subware, product },
   data() {
     return {
       tableData: [],

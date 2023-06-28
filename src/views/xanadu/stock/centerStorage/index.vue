@@ -41,7 +41,11 @@
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <product :id="row.productId"></product>
+          </template>
+        </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" show-overflow-tooltip></el-table-column>
         <el-table-column label="创建时间" align="center" prop="createTime" show-overflow-tooltip></el-table-column>
@@ -64,9 +68,11 @@
 <script>
 
 import {cenlist, cenGoodById} from '@/api/ware'
+import product from '../../../../components/detail/product'
 
 export default {
   name: 'index',
+  components: { product },
   data(){
     return {
       goodID: '',
