@@ -69,6 +69,13 @@ export function cenGoodById(id){
   })
 }
 
+// 中心仓库 库存分页
+export function centerStorageList(query) {
+  return request({
+      url: `/ware/centerStorageRecord/list/${query.pageNum}/${query.pageSize}`,
+      method: 'get',
+  })
+}
 
 //中心仓库 出库单
 //调拨出库
@@ -115,13 +122,7 @@ export function cenInput(id,number){
 }
 
 //分库库存量
-export function subList(){
-  return request({
-    url: 'list',
-    method: 'get',
-    baseURL: 'http://localhost:8015/ware/subStorageRecord'
-  })
-}
+
 
 //分库出库
 //获取所有列表
@@ -175,5 +176,21 @@ export function subConfirmDispatchIn(id){
     url:'/confirmDispatch/'+id,
     method:'post',
     baseURL:'http://localhost:8015/ware/subInput'
+  })
+}
+
+// 获取分库分页列表
+export function subWareList(query) {
+  return request({
+      url: `/ware/subware/list/${query.pageNum}/${query.pageSize}`,
+      method: 'get',
+      params:query,
+  })
+}
+export function subList(){
+  return request({
+    url: 'list',
+    method: 'get',
+    baseURL: 'http://localhost:8015/ware/subStorageRecord'
   })
 }
