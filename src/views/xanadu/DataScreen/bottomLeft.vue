@@ -1,113 +1,105 @@
+
 <template>
-  <div id="bottomLeft">
-    <div class="bg-color-black">
-      <div class="d-flex pt-2 pl-2">
-        <span style="color:#5cd9e8">
-        </span>
-          <span class="fs-xl text mx-2">各商品订购总量</span>
-      </div>
-      <div class="d-flex jc-center body-box" style=" margin-top: 10px;">
-        <dv-capsule-chart :config="config" style="width: 8rem;height:5rem" />
-      </div>
-    </div>
+  <div >
+    <div ref="chart1" style="margin-top: 20px;width:10rem;height:4rem"></div>
   </div>
+
 </template>
 
 <script>
-export default {
-  name: 'bottomLeft',
-  data(){
-    return{
-      config:{
-        data:[
-          {
-            name: "南阳",
-            value: 167
-          },
-          {
-            name: "周口",
-            value: 67
-          },
-          {
-            name: "漯河",
-            value: 123
-          },
-          {
-            name: "郑州",
-            value: 55
-          },
-          {
-            name: "西峡",
-            value: 98
-          },
-          {
-            name: "南阳",
-            value: 167
-          },
-          {
-            name: "周口",
-            value: 67
-          },
-          {
-            name: "漯河",
-            value: 123
-          },
-          {
-            name: "郑州",
-            value: 55
-          },
-          {
-            name: "西峡",
-            value: 98
-          },
-          {
-            name: "南阳",
-            value: 167
-          },
-          {
-            name: "周口",
-            value: 67
-          },
-          {
-            name: "漯河",
-            value: 123
-          },
-          {
-            name: "郑州",
-            value: 55
-          },
-          {
-            name: "西峡",
-            value: 98
-          },
-        ]
-      }
-    }
-  },
 
+export default {
+  name:'bottomLeft',
+  data() {
+    return{}
+  },
+  mounted() {
+    this.getEchartData1()
+
+  },
+  methods: {
+    getEchartData1() {
+      const chart1 = this.$refs.chart1
+      if (chart1) {
+        const myChart = this.$echarts.init(chart1)
+        const option = {
+          title: {
+            text: '各商品出货量'
+          },
+          tooltip: {
+            trigger: 'axis'
+          },
+          legend: {
+            data: ['阿伟罗软蛋', '矿泉水', '阿伟李硬蛋', '草莓', '风扇']
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          toolbox: {
+            feature: {
+              saveAsImage: {}
+            }
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月','八月','九月','十月','十一月','十二月']
+          },
+          yAxis: {
+            type: 'value'
+          },
+          series: [
+            {
+              name: '阿伟罗软蛋',
+              type: 'line',
+              stack: 'Total',
+              data: [120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230]
+            },
+            {
+              name: '矿泉水',
+              type: 'line',
+              stack: 'Total',
+              data: [220, 182, 191, 234, 290, 330, 310,220, 182, 191, 234, 290, 330]
+            },
+            {
+              name: '阿伟李硬蛋',
+              type: 'line',
+              stack: 'Total',
+              data: [150, 232, 201, 154, 190, 330, 410,150, 232, 201, 154, 190, 330]
+            },
+            {
+              name: '草莓',
+              type: 'line',
+              stack: 'Total',
+              data: [320, 332, 301, 334, 390, 330, 320,320, 332, 301, 334, 390, 330]
+            },
+            {
+              name: '风扇',
+              type: 'line',
+              stack: 'Total',
+              data: [820, 932, 901, 934, 1290, 1330, 1320,820, 932, 901, 934, 1290, 1330]
+            }
+          ]
+
+        }
+        myChart.setOption(option)
+        window.addEventListener("resize", function() {
+          myChart.resize()
+        })
+      }
+      this.$on('hook:destroyed',()=>{
+        window.removeEventListener("resize", function() {
+          myChart.resize();
+        });
+      })
+    },
+
+  },
+  watch: {},
+  created() {
+  }
 }
 </script>
-
-<style lang="scss">
-#bottomLeft {
-  padding: 0.3rem 0.2rem;
-  height: 6rem;
-  min-width: 3.75rem;
-  border-radius: 0.0625rem;
-  .bg-color-black {
-    height: 6.0625rem;
-    border-radius: 0.125rem;
-  }
-  .text {
-    color: #c3cbde;
-  }
-  .chart-box {
-    margin-top: 0.2rem;
-    width: 2.125rem;
-    height: 2.125rem;
-    .active-ring-name {
-      padding-top: 0.125rem;
-    }
-  }
-}
-</style>

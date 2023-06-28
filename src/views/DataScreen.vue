@@ -85,7 +85,7 @@
             <!-- 底部-->
             <div class="bototm-box">
               <!--各商品订购折线图-->
-              <dv-border-box-13>
+              <dv-border-box-13 style="z-index: 2">
                 <bottomLeft />
               </dv-border-box-13>
               <!--分站分析-->

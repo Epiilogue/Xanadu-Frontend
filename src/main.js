@@ -44,7 +44,7 @@ import dataV from '@jiaminghi/data-view';
 Vue.use(dataV);
 
 //引入echart
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 Vue.prototype.$echarts = echarts
 
 

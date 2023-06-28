@@ -7,7 +7,7 @@
         <span class="fs-xl text mx-2">订单列表</span>
       </div>
       <div class="d-flex jc-center body-box" style=" margin-top: 10px;">
-        <dv-scroll-board :config="config" style="width: 10rem;height:5rem" />
+        <dv-scroll-board :config="config" style="width: 10rem;height:4.5rem" />
       </div>
 
 
