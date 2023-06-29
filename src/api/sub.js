@@ -11,12 +11,20 @@ import * as http from 'http'
 //查询所有分站
 export function fetchAllSubStation() {
   return request({
+    url: '/listAll',
+    method: 'get',
+    baseURL: 'http://localhost:8019/sub/substation',
+  })
+}
+//查询当前用户管理的所有分站
+export function fetchSubStation() {
+  return request({
     url: '/list',
     method: 'get',
     baseURL: 'http://localhost:8019/sub/substation',
   })
 }
-//生成采购单
+//添加分站
 export function AddSubstation(data){
   return request({
     url: '/add',
@@ -25,7 +33,7 @@ export function AddSubstation(data){
     data
   })
 }
-//查询所有退货
+//修改分站信息
 export function updateSubstation(data){
   return request({
     url: '/update',
@@ -34,7 +42,7 @@ export function updateSubstation(data){
     data
   })
 }
-
+// 删除分站
 export function deleteSubstation(id){
   return request({
     url: `delete/${id}`,
@@ -42,12 +50,12 @@ export function deleteSubstation(id){
     baseURL: 'http://localhost:8019/sub/substation',
   })
 }
-
-export function fetchPage2(id) {
+// 获取未分配管理权的分站长和超级管理员
+export function getSubstationUserList() {
   return request({
-    url: '/vue-element-admin/article/detail',
+    url: '/getSubstationUserList',
     method: 'get',
-    params: { id }
+    baseURL: 'http://localhost:8019/sub/substation',
   })
 }
 

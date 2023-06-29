@@ -1,378 +1,130 @@
 <template>
     <div class="app-container">
-        <div v-if="!receipt">
-        <el-select v-model="opType" style="width: 200px; margin-bottom: 10px;" class="filter-item" placeholder="选择任务单操作"
-            @change="handleOpChange" clearable @clear="handleOpChange">
-            <el-option v-for="item in opTypeOption" :key="item" :label="item" :value="item" />
-        </el-select>
-        <div class="filter-container">
-            <el-card>
-                <el-form class="form" :inline="true">
-                    <el-form-item label="要求完成日期">
-                        <el-date-picker v-model="listQuery.deadlineRange" type="daterange" align="right"
-                            style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" unlink-panels range-separator="-"
-                            start-placeholder="开始日期" end-placeholder="结束日期">
-                        </el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="任务类型">
-                        <el-select v-model="listQuery.taskType" placeholder="任务类型" style="width: 200px; margin-right: 5px"
-                            class="filter-item" clearable>
-                            <el-option v-for="item in taskTypeOption" :key="item" :label="item" :value="item" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="任务状态">
-                        <el-select v-model="listQuery.taskStatus" placeholder="任务状态" style="width: 200px; margin-right: 5px"
-                            class="filter-item" clearable>
-                            <el-option v-for="item in taskStatusOption" :key="item" :label="item" :value="item" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="快递员编号">
-                        <el-input v-model="listQuery.courierId" placeholder="快递员编号" style="width: 200px; margin-right: 5px"
-                            class="filter-item" />
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-                            查询
-                        </el-button>
-                    </el-form-item>
-                </el-form>
-            </el-card>
-        </div>
-
-        <!-- 动态列Table -->
-        <el-card>
-            <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%" v-loading="listLoading">
-                <el-table-column v-for="column in tableColumns" :prop="column.prop"
-                    :label="column.label" v-if="column.show" min-width="130" align="center">
-                </el-table-column>
-                <!-- 日期 -->
-                <el-table-column prop="deadline" label="要求完成日期" min-width="130" align="center">
-                    <template slot-scope="{ row }">
-                        <i class="el-icon-time"></i>
-                        <span>{{
-                            $moment(new Date(row.deadline)).format("YYYY-MM-DD HH:mm:ss")
-                        }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column v-if="this.opType!=='' && this.opType!=='分配任务'" prop="createTime" label="任务生成日期" min-width="130" align="center">
-                    <template slot-scope="{ row }">
-                        <i class="el-icon-time"></i>
-                        <span>{{
-                            $moment(new Date(row.createTime)).format("YYYY-MM-DD HH:mm:ss")
-                        }}</span>
-                    </template>
-                </el-table-column>
-                按钮
-                <el-table-column label="操作" align="center" min-width="400" class-name="small-padding fixed-width"
-                    fixed="right">
-                    <template slot-scope="{ row, $index }">
-                        <el-button type="primary" plain @click="handleTask(row)">
-                            操作任务单
-                        </el-button>
-                        <el-button type="primary" plain @click="handleViewTask(row)">
-                            任务详情
-                        </el-button>
-                        <el-button type="primary" plain @click="deleteTask(row)">
-                            删除
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-
-            <Pagination v-show="total > 0" :total="total" :page.sync="pageInfo.pageNum" :limit.sync="pageInfo.pageSize"
-                @pagination="getPageList" />
-        </el-card>
-
-        <!-- 选择快递员 -->
-        <el-dialog title="选择快递员" :visible.sync="courierDialogVisible" @before-close="this.task = {}">
-            <SelectCourier ref="SelectCourier" v-if="courierDialogVisible" :subId="this.subId">
-            </SelectCourier>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="close">取消</el-button>
-                <el-button type="primary" @click="assignTask">分配</el-button>
-            </span>
-        </el-dialog>
-    </div>
-    <div v-else>
-        <Receipt @close="submited(success)" :payment="this.task && this.task.taskType === '收款'"></Receipt>
-    </div>
+        <!-- 步骤条 -->
+        <el-steps :active="active === 3 ? 2 : active" align-center>
+            <!-- wait / process / error / success / finish -->
+            <el-step v-for="item, index in steps" :title="item.title" :key="item.key" :status="getStatus(index)"
+                v-if="!item.disabled" @click.native="ChangeView(item.key)">
+            </el-step>
+        </el-steps>
+        <!-- 表单内容 -->
+        <!-- 分配任务页面 -->
+        
+        <!-- 取货页面 -->
+        <!-- 回执录入页面 -->
     </div>
 </template>
+
 <script>
 
-import { getTaskList, assign, listHanding, takeProducts,deleteTask } from '@/api/sub-task'
-import Pagination from '@/components/Pagination'
-import SelectCourier from './selectCourier.vue'
-import Receipt from './inputReceipt.vue'
-import { getColumn } from './taskColumn'
-
 export default {
-    components: { Pagination, SelectCourier, Receipt },
     created() {
-        // this.opType = this.$route.query.opType; //路由参数
-        this.handleOpChange(this.opType, false);
-        this.subId = this.$route.query.subId ? this.$route.query.subId : this.subId;
+        // 获取任务信息
+        // this.task = {};
+        // 计算任务进度
+        this.getStep()
     },
     data() {
         return {
-            //路由参数
-            opType: "",   //任务操作类型
-            subId: 2,   //分站id
-            //数据
-            task: {},    //当前操作的任务单
-            list: [],   //所有数据
-            queryList: [],  //查询后数据
-            opList: [],  //操作的数据
-            total: 0,   //分页
-            listLoading: false,
-            //查询
-            listQuery: {
-                deadlineRange: [],
-                taskStatus: "",
-                taskType: "",
-                courierId: "",
+            steps: [{ title: "分配任务", key: 0, disabled: false }, { title: "取货", key: 1, disabled: false }, { title: "回执录入", key: 2, disabled: false }],
+            active: 0,  //正在进行的步骤,3表示已完成
+            current: 0,  //当前展示的页面
+            task: {
+                taskType: '送货收款',
+                taskStatus: '已调度',
             },
-            // 分页
-            pageList: [],   //表格数据
-            pageInfo: {
-                pageNum: 1,
-                pageSize: 10,
-            },
-            //下拉选择
-            taskStatusOption: ['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成'],
-            taskTypeOption: ['收款', '送货', '送货收款', '退货', '换货'],
-            opTypeOption: ['分配任务', '取货', '回执录入'],
-            // dialog
-            courierDialogVisible: false,
-            tableColumns: undefined, //表格列
-            receipt:false,  //是否展示回执录入页面
         }
     },
     methods: {
-
-        getList(fun) {
-            // 默认查询所有任务
-            if (!fun) fun = getTaskList
-            // 加载列表
-            return new Promise((resolve, reject) => {
-                fun(this.subId).then((response) => {
-                    this.list = response.data;
-                    resolve('成功')
-                }).catch(err=>{
-                    reject('失败')
-                    this.listLoading=false
-                });
-            })
+        // 步骤条状态
+        getStatus(index) {
+            if (this.active === 3)
+                return 'finish'
+            if (index < this.active)
+                return 'success'
+            if (index === this.active)
+                return 'process'
+            return 'wait'
         },
-        getPageList() {
-            this.total = this.queryList.length
-            let pageNum = this.pageInfo.pageNum
-            let pageSize = this.pageInfo.pageSize
-            this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
-        },
-        //查询
-        handleFilter() {
-            this.listLoading = true;
-            this.queryList = this.opList.filter((task) => {
-                // 查询条件
-                let query = this.listQuery
-                // 日期 任务类型 任务状态 配送员
-                let range = query.deadlineRange
-                if (range !== null && (new Date(task.deadline) < new Date(range[0]) || new Date(task.deadline) > new Date(range[1]))) {
-                    this.listLoading = false;
-                    return false
+        /**
+         * 计算任务进度
+         * '收款', '退货'任务不需要取货
+         * "分配任务" 1.可分配 + 收款 退货、2.已调度 + 送货收款 送货 换货
+         * "取货" 已分配 + 送货收款 送货 换货
+         * "回执录入" 1.已分配+收款 退货  2.已领货+送货收款 送货 换货
+        */
+        getStep() {
+            let active = 0
+            if (this.task.taskType === '收款' || this.task.taskType === '退货') {
+                // 隐藏取货步骤条
+                this.steps[1].disabled = true
+                // 计算当前进度
+                switch (this.task.taskStatus) {
+                    case '可分配':
+                        active = 0
+                        break;
+                    case '已分配':
+                        active = 2
+                        break;
                 }
-                if (query.taskType !== '' && task.taskType !== query.taskType) {
-                    this.listLoading = false;
-                    return false
+            } else if (this.task.taskType === '送货收款' || this.task.taskType === '送货' || this.task.taskType === '换货') {
+                // 计算当前进度
+                switch (this.task.taskStatus) {
+                    case '可分配':
+                        active = 0
+                        break;
+                    case '已分配':
+                        active = 1
+                        break;
+                    case '已领货':
+                        active = 2
+                        break;
                 }
-                if (query.taskStatus !== '' && task.taskStatus !== query.taskStatus) {
-                    this.listLoading = false;
-                    return false
-                }
-                if (query.courierId != '' && (task.courierId).toString().indexOf(query.courierId) === -1) {
-                    this.listLoading = false;
-                    return false
-                }
-                return true
-            });
-            // 分页
-            this.getPageList()
-            this.listLoading = false;
-            if (this.queryList.length === 0) {
-                this.$message({
-                    type: 'error',
-                    message: '没有符合条件的任务',
-                    durarion: 1000,
-                });
-            } else {
-                this.$message({
-                    type: 'success',
-                    message: '查询成功',
-                    durarion: 1000,
-                });
             }
-        },
-        // 获取当前操作类型对应的任务单
-        async handleOpChange(newVal, show) {
-            this.listLoading = true;
-            // 修改表格列
-            this.tableColumns = getColumn(newVal)
-            // 加载下拉框内容
-            switch (newVal) {
-                // 所有任务
-                case '分配任务':
-                    await this.getList()
-                    this.opList = this.list.filter(task => task.taskStatus === '可分配')
-                    break
-                // list是分站进行中的任务
-                case '取货':
-                    await this.getList(listHanding)
-                    this.opList = this.list.filter(task => {
-                        if (task.taskStatus === '已分配' && ['送货', '送货收款', '换货'].includes(task.taskType))
-                            return true
-                    })
-                    break
-                // list是分站进行中的任务
-                case '回执录入':
-                    await this.getList(listHanding)
-                    this.opList = this.list.filter(task => {
-                        if ((task.taskStatus === '已领货' && ['送货', '送货收款', '换货'].includes(task.taskType))
-                            || (task.taskStatus === '已分配' && ['收款', '退货'].includes(task.taskType)))
-                            return true
-                    })
-                    break
-                // 所有任务
-                default:
-                    await this.getList()
-                    this.opList = this.list
-                    break
+            // 计算当前进度
+            switch (this.task.taskStatus) {
+                case '成功':
+                case '失败':
+                case '部分完成':
+                    active = 3
+                    break;
             }
-            if (this.opList.length === 0 && show) {
-                this.$message({
-                    type: 'error',
-                    message: '没有需要操作的任务单',
-                    durarion: 1000,
-                });
-            }
-            // 查询结果
-            this.queryList = this.opList
-            // 分页
-            this.getPageList()
-            this.listLoading = false;
+            this.active = active
+            this.current = active
         },
-
-        // 查看任务当前状态对应的流程分步表单
-        // 查看任务详情
-        handleViewTask() { },
-
-        // 任务单操作
-        handleTask(row) {
-            if (this.opType === '') {
-                this.$message({
-                    type: 'error',
-                    message: '请先选择要进行的操作',
-                    durarion: 1000,
-                });
+        // 点击步骤条，切换视图
+        ChangeView(key) {
+            if (key > this.active) {
+                // 请先完成当前流程
+                return
+            } else if (key === this.active) {
+                // 不需要切换视图
                 return
             }
-            // 保存当前任务信息
-            this.task = row
-            console.log('正在操作的任务信息', row)
-            switch (this.opType) {
-                case '分配任务':
-                    // 弹出对话框，展示分站快递员编号列表
-                    this.courierDialogVisible = true
-                    break
-                case '取货':
-                    this.takeTaskProducts()
-                    break
-                case '回执录入':
-                    this.inputReceipt()
-                    break
-            }
-
-        },
-        // 分配任务
-        assignTask() {
-            let courierId = this.$refs['SelectCourier'].getSelectedCourier();
-            if (courierId === undefined) {
-                this.$message({
-                    type: 'error',
-                    message: '请选择任务配送员',
-                    durarion: 1000,
-                });
-                return
-            }
-            assign(this.subId, courierId, this.task).then(res => {
-                //更新表格数据
-                this.handleOpChange(this.opType, false)
-                this.close()
-                this.$message({
-                    type: 'success',
-                    message: res.msg,
-                    durarion: 1000,
-                });
-            }).catch()
-        },
-        // 分配任务完成
-        close() {
-            // 关闭对话框
-            this.task = {}
-            this.courierDialogVisible = false
-        },
-
-        // 取货
-        takeTaskProducts() {
-            takeProducts(this.task.id).then(res => {
-                //更新表格数据
-                this.handleOpChange(this.opType, false)
-                this.$message({
-                    type: 'success',
-                    message: res.msg,
-                    durarion: 1000,
-                });
-            })
-        },
-
-        // 回执录入
-        inputReceipt(){
-            this.$cache.local.setJSON("operateTask",this.task);
-            console.log(this.task)
-            this.receipt=true
-        },
-        // 回执录入完成
-        submited(success){
-            // 关闭回执页
-            this.task = {}
-            this.receipt=false
-            // 提交成功则刷新表格
-            if(success){
-                this.handleOpChange(this.opType, false)
-            }
-        },
-
-        // 删除任务
-        deleteTask(row){
-            deleteTask(row.id).then(res=>{
-                this.$message({
-                    type: 'success',
-                    message: res.msg,
-                    durarion: 1000,
-                });
-                // 重新加载操作列表
-                this.handleOpChange(this.opType,false)
-            })
-        },
+            console.log(key)
+            this.current = key
+            // switch (key) {
+            //     // 展示分配任务页面
+            //     case 0:
+            //         break;
+            //     // 展示取货页面
+            //     case 1:
+            //         break;
+            //     // 展示回执录入页面
+            //     case 2:
+            //         break;
+            // }
+        }
     },
+    computed: {
+
+    }
 }
 </script>
 
-<style scoped>
-
-.form{
-    el-form-item{
-        margin-bottom: 0px;
-    }
+<style >
+.el-step__head:hover {
+    color: #67c23a;
+    border-color: #67c23a;
 }
 </style>

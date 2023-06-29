@@ -129,6 +129,7 @@ let taskStatusOption=['已调度', '可分配', '已分配', '已领货', '已�
 let taskTypeOption=['收款', '送货', '送货收款', '退货', '换货']
 function getOption(opType) {
     let status = []
+    let type=[]
     switch (opType) {
         case '分配任务':
             status = ['可分配']
