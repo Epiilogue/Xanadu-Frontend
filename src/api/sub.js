@@ -58,4 +58,25 @@ export function getSubstationUserList() {
     baseURL: 'http://localhost:8019/sub/substation',
   })
 }
+//生成每日报表
+export function generateSubstationStatistics(){
+  return request({
+    url: '/sub/substation/generateSubstationStatistics',
+    method:'get',
+  })
+}
 
+export function dailyReportsByDate(date){
+  return request({
+    url: '/sub/substation/dailyReportsByDate/',
+    method:'get',
+    params:{'date' :date}
+  })
+}
+
+export function updateDailyReportStatus(id){
+  return request({
+    url: `/sub/substation/updateDailyReportStatus/${id}`,
+    method:'get',
+  })
+}

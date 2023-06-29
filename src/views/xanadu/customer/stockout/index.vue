@@ -57,7 +57,7 @@
 
         <el-table-column label="创建客服" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.createBy }}</span>
+            <span>{{ row.createBy }}</span>
           </template>
         </el-table-column>
 
