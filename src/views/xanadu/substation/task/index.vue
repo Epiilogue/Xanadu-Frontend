@@ -1,10 +1,7 @@
 <template>
     <div class="app-container">
         <div v-if="!receipt">
-            <!-- <el-select v-model="opType"  class="select"
-                    placeholder="选择任务单操作" @change="handleOpChange" clearable @clear="handleOpChange">
-                    <el-option v-for="item in opTypeOption" :key="item" :label="item" :value="item" />
-                </el-select> -->
+            <!-- 提示当前任务操作 -->
             <div class="alert">
                 <p v-if="opType !== ''">正在进行的任务单操作是</p>
                 <p v-else>正在查看所有任务单</p>
@@ -14,6 +11,7 @@
                 </el-select>
             </div>
             <el-card>
+                <!-- 任务单查询 -->
                 <div class="filter-container">
                     <el-form :inline="true">
                         <el-form-item class="form-item" label="要求完成日期">
@@ -42,12 +40,15 @@
                             <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
                                 查询
                             </el-button>
+                            <el-button class="filter-item" type="primary" icon="el-icon-document-add"
+                                @click="handleAssignSubInvoice">
+                                分站发票领用
+                            </el-button>
                         </el-form-item>
                     </el-form>
                 </div>
 
                 <!-- 动态列Table -->
-
                 <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%"
                     v-loading="listLoading">
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
@@ -119,7 +120,7 @@ import { getColumn, getOption } from './taskColumn'
 export default {
     components: { Pagination, SelectCourier, Receipt },
     created() {
-        let sub=this.$cache.session.get('subProcessing')
+        let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
             // 未设置分站
             this.pageList = []
@@ -129,7 +130,7 @@ export default {
                 durarion: 1000,
             });
             return
-        }else{
+        } else {
             this.subId = Number(this.$cache.session.get('subProcessing'))
             this.handleOpChange(this.opType, false);
         }
@@ -141,6 +142,7 @@ export default {
             subId: '',   //分站id
             //数据
             task: {},    //当前操作的任务单
+            
             list: [],   //所有数据
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
@@ -162,7 +164,7 @@ export default {
             //下拉选择
             taskStatusOption: ['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成'],
             taskTypeOption: ['收款', '送货', '送货收款', '退货', '换货'],
-            opTypeOption: ['分配任务', '取货', '回执录入'],
+            opTypeOption: ['分配任务', '取货', '发票领用', '打印签收单', '回执录入'],
             // dialog
             courierDialogVisible: false,
             tableColumns: undefined, //表格列
@@ -234,7 +236,7 @@ export default {
                 });
             }
         },
-        // 获取当前操作类型对应的任务单
+        // 获取当前操作类型对应的任务单列表
         async handleOpChange(newVal, show) {
             this.listLoading = true;
             // 修改下拉框选项
@@ -255,6 +257,24 @@ export default {
                     await this.getList(listHanding)
                     this.opList = this.list.filter(task => {
                         if (task.taskStatus === '已分配' && ['送货', '送货收款', '换货'].includes(task.taskType))
+                            return true
+                    })
+                    break
+                // list是分站进行中的任务
+                case '发票领用':
+                    await this.getList(listHanding)
+                    // 只有新订的收款任务和已分配且未完成的任务需要领用发票
+                    this.opList = this.list.filter(task => {
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType))
+                            return true
+                    })
+                    break
+                // list是分站进行中的任务
+                case '打印签收单':
+                    // 已分配且未完成的任务需要打印签收单
+                    await this.getList(listHanding)
+                    this.opList = this.list.filter(task => {
+                        if (['已分配', '已领货'].includes(task.taskStatus))
                             return true
                     })
                     break
@@ -304,6 +324,7 @@ export default {
             // 保存当前任务信息
             this.task = row
             console.log('正在操作的任务信息', row)
+            // 执行对应的任务单操作
             switch (this.opType) {
                 case '分配任务':
                     // 弹出对话框，展示分站快递员编号列表
@@ -311,6 +332,12 @@ export default {
                     break
                 case '取货':
                     this.takeTaskProducts()
+                    break
+                case '发票领用':
+                    this.assignInvoice()
+                    break
+                case '打印签收单':
+                    this.printSign()
                     break
                 case '回执录入':
                     this.inputReceipt()
@@ -397,6 +424,51 @@ export default {
                 this.handleOpChange(this.opType, false)
             })
         },
+
+
+        /**
+         * 选中的任务信息保存在 this.task 里，字段含义在 taskColumn.js 里
+         * 如果任务列表不能加载，可以使用以下的模拟任务数据
+         * task: {     //模拟的任务单信息
+                id: 11,
+                customerId: 1,
+                receiverName: "张三",
+                phone: "18535423348",
+                deliveryAddress: "1",
+                orderId: 95,
+                courierId: 2,
+                numbers: 60,
+                totalAmount: 420,
+                deadline: 1688054400000,
+                createTime: 1687879832000,
+                taskType: "收款",
+                taskStatus: "已分配",
+                productsJson: "[{\"number\":10,\"price\":5.0,\"productId\":1,\"productName\":\"苹果\",\"refundAble\":true},{\"number\":10,\"price\":6.0,\"productId\":2,\"productName\":\"橘子\",\"refundAble\":false},{\"number\":10,\"price\":10.0,\"productId\":3,\"productName\":\"西瓜\",\"refundAble\":false},{\"number\":10,\"price\":8.0,\"productId\":4,\"productName\":\"猕猴桃\",\"refundAble\":true},{\"number\":10,\"price\":8.0,\"productId\":5,\"productName\":\"芒果\",\"refundAble\":false},{\"number\":10,\"price\":5.0,\"productId\":6,\"productName\":\"火龙果\",\"refundAble\":true}]",
+                subId: 2,
+                products: null,
+                receiptId: null,
+                deleted: false
+            },
+         */
+
+        /**
+         * Todo:发票领用
+         * 后端需要判断一下订单是否需要发票
+         */
+        assignInvoice() {
+            console.log('发票领用')
+        },
+
+        // Todo:打印签收单
+        printSign() {
+            console.log('打印签收单')
+        },
+
+        // Todo:分站发票领用
+        // 分站id是 this.subId
+        handleAssignSubInvoice() {
+            console.log('分站发票领用')
+        }
     },
 }
 </script>

@@ -77,18 +77,18 @@ let tableColumns = [
     },
     // {
     //     prop: "products",
-    //     label: "调度商品列表",
+    //     label: "所有任务的商品列表",
     //     show: true
     // },
     // {
     //     prop: "productsJson",
-    //     label: "分站商品列表",
+    //     label: "正在处理的任务的商品列表",
     //     show: true
     // },
 ]
 // 要隐藏的列
 const all = ['courierId', 'createTime', 'receiptId']
-const assign=['courierId', 'createTime', 'receiptId','taskStatus']
+const assign = ['courierId', 'createTime', 'receiptId', 'taskStatus']
 const assigned = ['receiptId']
 // 设置表格列的显示与隐藏
 /**
@@ -105,6 +105,8 @@ function getColumn(opType) {
             hide = assign
             break
         case '取货':
+        case '发票领用':
+        case '打印签收单':
         case '回执录入':
             hide = assigned
             break
@@ -125,11 +127,11 @@ function getColumn(opType) {
 }
 
 // 任务类型和任务状态下拉框
-let taskStatusOption=['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成']
-let taskTypeOption=['收款', '送货', '送货收款', '退货', '换货']
+let taskStatusOption = ['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成']
+let taskTypeOption = ['收款', '送货', '送货收款', '退货', '换货']
 function getOption(opType) {
     let status = []
-    let type=[]
+    let type = []
     switch (opType) {
         case '分配任务':
             status = ['可分配']
@@ -139,6 +141,11 @@ function getOption(opType) {
             status = ['已分配']
             type = ['送货', '送货收款', '换货']
             break
+        case '发票领用':
+            status = ['已分配', '已领货']
+            type = ['收款', '送货收款']
+            break
+        case '打印签收单':
         case '回执录入':
             status = ['已分配', '已领货']
             type = taskTypeOption
@@ -148,9 +155,9 @@ function getOption(opType) {
             type = taskTypeOption
             break
     }
-    return {status,type}
+    return { status, type }
 }
 
 
 
-export { getColumn,getOption }
+export { getColumn, getOption }
