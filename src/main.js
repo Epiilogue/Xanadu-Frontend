@@ -38,6 +38,18 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 
+import { BaiduMap } from 'vue-baidu-map'
+
+import dataV from '@jiaminghi/data-view';
+Vue.use(dataV);
+
+//引入echart
+import * as echarts from 'echarts'
+Vue.prototype.$echarts = echarts
+
+
+
+Vue.use(BaiduMap,{ak:'zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM'})
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey

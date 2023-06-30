@@ -3,45 +3,42 @@ import request from '@/utils/request'
 //获取所有缺货信息
 export function fetchStockOut(query) {
   return request({
-    url: '/listAll',
+    url: '/cc/stockout/listAll',
     method: 'get',
     //params: { pageNum, pageSize },
     //params: query,
-    baseURL: 'http://localhost:8003/cc/stockout'
+    //baseURL: 'http://localhost:8089/cc/stockout'
   })
 }
 export function getOneStockOut(id) {
   return request({
-    url: `/get/${id}`,
+    url: `/cc/stockout/get/${id}`,
     method: 'get',
     //params: { pageNum, pageSize },
     //params: query,
-    baseURL: 'http://localhost:8003/cc/stockout'
+    //baseURL: 'http://localhost:8089/cc/stockout'
   })
 }
 //增加缺货量
 export function updateStockOut(data) {
   return request({
-    url: '/edit',
+    url: '/cc/stockout/edit',
     method: 'put',
-    baseURL: 'http://localhost:8003/cc/stockout',
     data
   })
 }
 //提交缺货
 export function commitStockOut(id) {
   return request({
-    url: `/commit/${id}`,
+    url: `/cc/stockout/commit/${id}`,
     method: 'put',
-    baseURL: 'http://localhost:8003/cc/stockout',
   })
 }
 
 //到货
 export function arrivalStockOut(id) {
   return request({
-    url: `/arrival/${id}`,
+    url: `/cc/stockout/arrival/${id}`,
     method: 'put',
-    baseURL: 'http://localhost:8003/cc/stockout',
   })
 }

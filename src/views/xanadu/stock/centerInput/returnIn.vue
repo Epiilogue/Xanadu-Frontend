@@ -6,10 +6,22 @@
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="入库ID" align="center" prop="inputId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <product :id="row.productId"></product>
+          </template>
+        </el-table-column>
         <el-table-column label="分站ID" align="center" prop="substationId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="分库ID" align="center" prop="subwareId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="分库ID" align="center" prop="subwareId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <subware :id="row.subwareId"></subware>
+          </template>
+        </el-table-column>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <supplier :id="row.supplierId"></supplier>
+          </template>
+        </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" show-overflow-tooltip></el-table-column>
         <el-table-column label="入库时间" align="center" prop="inputTime" show-overflow-tooltip></el-table-column>
@@ -45,9 +57,13 @@
 
 <script>
 import { cenInputList, cenInput } from '@/api/ware'
+import product from '../../../../components/detail/product'
+import subware from '../../../../components/detail/subware'
+import supplier from '../../../../components/detail/supplier'
 
 export default {
   name: 'returnIn',
+  components: { supplier, subware, product },
   data(){
     return{
       tableData: [],

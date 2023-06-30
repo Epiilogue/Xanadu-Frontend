@@ -40,3 +40,29 @@ export function takeProducts(taskId) {
     method: 'get',
   })
 }
+
+// 删除任务
+export function deleteTask(taskId) {
+  return request({
+    url: `/sub/task/delete/${taskId}`,
+    method: 'delete',
+  })
+}
+
+// 回执录入:收款
+export function fillPaymentReceipt(paymentReceipt) {
+  return request({
+    url: `/sub/task/fillPaymentReceipt`,
+    method: 'post',
+    data:paymentReceipt
+  })
+}
+
+// 回执录入:退货，换货，送货
+export function fillReceipt(receipt) {
+  return request({
+    url: `/sub/task/fillReceipt`,
+    method: 'post',
+    data:receipt
+  })
+}
