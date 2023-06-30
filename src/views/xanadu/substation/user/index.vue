@@ -28,23 +28,23 @@
 <template>
     <div class="app-container">
         <el-tabs tab-position="top" v-model="activeName" @tab-click="changeTab" style="height: 100%;">
-            <el-tab-pane label="管理员" name="master">
-                <div style="display: flex; justify-content: space-between;">
+            <el-tab-pane label="管理员" name="SUBSTATION_MANAGER">
+                <!-- <div style="display: flex; justify-content: space-between;">
                     <el-select v-model="opType" class="select" @change="handleOpChange">
                         <el-option v-for="item in opTypeOption" :key="item" :label="item" :value="item" />
                     </el-select>
-                    <el-button type="primary" @click="handleAssign" style="margin-right: 5px;">添加到分站</el-button>
-                </div>
-                <UserTable></UserTable>
+                    <el-button type="primary" @click="handleAssign" style="margin-right: 5px;" :disabled="this.opType==='查看用户'">添加到分站</el-button>
+                </div> -->
+                <!-- <UserTable></UserTable> -->
             </el-tab-pane>
-            <el-tab-pane label="快递员" name="courier">
+            <el-tab-pane label="快递员" name="COURIER">
                 <div style="display: flex; justify-content: space-between;">
-                    <el-select v-model="opType" class="select" @change="handleOpChange">
+                    <el-select v-model="opType" class="select">
                         <el-option v-for="item in opTypeOption" :key="item" :label="item" :value="item" />
                     </el-select>
                     <el-button type="primary" @click="handleAssign" style="margin-right: 5px;">添加到分站</el-button>
                 </div>
-                <UserTable></UserTable>
+                <UserTable :role="activeName" :opType="opType" :subId="subId"></UserTable>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -68,24 +68,22 @@ export default {
             return
         }else{
             this.subId = Number(this.$cache.session.get('subProcessing'))
-            this.handleOpChange(this.opType, false);
+            this.setOpOption()
         }
     },
     data(){
         return{
             subId:'',   //分站id
-            activeName: "courier",
-            opType:'查看用户',
-            opTypeOption:['查看用户','角色分配']
+            activeName: "COURIER",
+            roleMap:{COURIER:'快递员',SUBSTATION_MANAGER:'分站管理员'},
+            opType:'查看快递员',
+            opTypeOption:[],
         }
     },
     methods:{
         changeTab(){
             // 切换tab
-        },
-
-        handleOpChange(){
-            // 加载对应的表格
+            this.setOpOption()
         },
 
         // 设置分站管理员/快递员
@@ -95,7 +93,11 @@ export default {
             // 判断是管理员还是快递员
 
             // 调用对应的接口
+        },
+        setOpOption(){
+            this.opTypeOption=[`查看${this.roleMap[this.activeName]}`,`添加${this.roleMap[this.activeName]}`]
+            this.opType=this.opTypeOption[0]
         }
-    }
+    },
 };
 </script>

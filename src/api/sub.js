@@ -16,14 +16,15 @@ export function fetchAllSubStation() {
     baseURL: 'http://localhost:8019/sub/substation',
   })
 }
-//查询当前用户管理的所有分站
-export function fetchSubStation() {
+//查询当前用户管理的分站
+export function fetchSubStation(userId) {
   return request({
-    url: '/list',
+    url: `/infoByUser/${userId}`,
     method: 'get',
     baseURL: 'http://localhost:8019/sub/substation',
   })
 }
+
 //添加分站
 export function AddSubstation(data){
   return request({

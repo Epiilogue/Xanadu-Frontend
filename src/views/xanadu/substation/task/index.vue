@@ -202,19 +202,15 @@ export default {
                 // 日期 任务类型 任务状态 配送员
                 let range = query.deadlineRange
                 if (range !== null && (new Date(task.deadline) < new Date(range[0]) || new Date(task.deadline) > new Date(range[1]))) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.taskType !== '' && task.taskType !== query.taskType) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.taskStatus !== '' && task.taskStatus !== query.taskStatus) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.courierId != '' && (task.courierId).toString().indexOf(query.courierId) === -1) {
-                    this.listLoading = false;
                     return false
                 }
                 return true
