@@ -1,62 +1,43 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="30">
-      <!--用户数据-->
-      <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-        <el-form-item label="用户名称" prop="userName">
-          <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px"
-            @keyup.enter.native="handleQuery" />
-        </el-form-item>
-        <el-form-item label="手机号码" prop="phonenumber">
-          <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable style="width: 240px"
-            @keyup.enter.native="handleQuery" />
-        </el-form-item>
-        <el-form-item label="创建时间">
-          <el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange"
-            range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-        </el-form-item>
-      </el-form>
-      <el-col :span="16">
-        <el-table v-loading="loading" ref="multipleTable" :data="userList" @select="handleSelect" >
-          <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="用户编号" align="center" key="userId" prop="userId" />
-          <el-table-column label="用户名称" align="center" key="userName" prop="userName" 
-            :show-overflow-tooltip="true" />
-          <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" 
-            :show-overflow-tooltip="true" />
-          <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" 
-            :show-overflow-tooltip="true" />
-          <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" 
-            width="120" />
-          <el-table-column label="创建时间" align="center" prop="createTime"  width="160">
-            <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
-          </el-table-column>
-        </el-table>
-
-        <Pagination v-show="total > 0" :total="total" :page.sync="pageInfo.pageNum" :limit.sync="pageInfo.pageSize"
-          @pagination="getPageList" />
-      </el-col>
-      <el-col :span="8">
-        <div class="right">
-          <div class="title"><span>已选</span><span class="clear" @click="handleCLearAll">清空全部</span></div>
-          <template v-if="selectedAccount.length > 0">
-            <div class="one-selected" v-for="(item, index) in selectedAccount" :key="index">
-              <span>{{ item.userId-- - item.userName }}</span>
-              <span @click="cancelSelect(item, index)">X</span>
-            </div>
-          </template>
-          <div v-else class="no-selected">暂无选择</div>
-        </div>
-      </el-col>
-    </el-row>
+    <!--用户数据-->
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="用户名称" prop="userName">
+        <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px"
+          @keyup.enter.native="handleQuery" />
+      </el-form-item>
+      <el-form-item label="手机号码" prop="phonenumber">
+        <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable style="width: 240px"
+          @keyup.enter.native="handleQuery" />
+      </el-form-item>
+      <el-form-item label="创建时间">
+        <el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange"
+          range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+    <el-table v-loading="loading" :row-key="(row) => row.id" ref="multipleTable" :data="userList" @select="handleSelect"
+      @select-all="handleSelect">
+      <el-table-column type="selection" :reserve-selection="true" width="50" align="center" />
+      <el-table-column label="用户编号" align="center" key="userId" prop="userId" />
+      <el-table-column label="用户名称" align="center" key="userName" prop="userName" :show-overflow-tooltip="true" />
+      <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" :show-overflow-tooltip="true" />
+      <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" :show-overflow-tooltip="true" />
+      <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" width="120" />
+      <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+      </el-table-column>
+    </el-table>
+    <!-- 分页 -->
+    <Pagination v-show="total > 0" :total="total" :page.sync="pageInfo.pageNum" :limit.sync="pageInfo.pageSize"
+      @pagination="getPageList" />
   </div>
 </template>
   
@@ -68,7 +49,7 @@ import { AddSubstation, updateSubstation } from '@/api/sub.js'
 
 export default {
   name: "UserTable",
-  props: ['role', 'opType', 'subId'],
+  props: { role: '', opType: '', subId: '' },
   data() {
     return {
       // 遮罩层
@@ -119,30 +100,29 @@ export default {
         { key: 6, label: `创建时间`, visible: true }
       ],
       // 多选
-      // 二位数组，暂存每页点击过的数据
-      stateArr: [],
-      // 已经选择的数据
-      selectedAccount: [],
+      ids: [],
+      // 分站快递员ID
+      courierIds: [],
+      // 分站管理员ID
+      masterIds: [],
     };
   },
   created() {
     console.log(this.role, this.opType, this.subId)
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询用户列表 */
     getList() {
+      // 未设置分站时不加载数据
       if (!this.subId) {
-        this.$message({
-          type: 'error',
-          message: '请先在分站管理处设置要操作的分站',
-          durarion: 1000,
-        });
+        this.loading = false;
         return
       }
       // 加载表格数据
       this.loading = true;
       let fun = new Function()
+      // 查看用户（快递员、分站长）
       if (this.opType.includes('查看')) {
         switch (this.role) {
           case 'SUBSTATION_MANAGER':
@@ -155,7 +135,8 @@ export default {
         fun(this.subId).then(res => {
           this.userList = res.data
         })
-      } else if(this.opType.includes('添加')){
+        // 添加对应用户到分站
+      } else if (this.opType.includes('添加')) {
         switch (this.role) {
           case 'SUBSTATION_MANAGER':
             fun = getSubstationUserList
@@ -168,16 +149,6 @@ export default {
           this.userList = res.data
         })
       }
-      console.log('表格数据',this.userList)
-      // if(this.userList.length===0){
-      //   this.loading = false;
-      //   this.$message({
-      //     type: 'success',
-      //     message: '暂无数据',
-      //     durarion: 1000,
-      //   });
-      //   return
-      // }
       // 分页
       this.queryList = this.userList
       this.getPageList()
@@ -185,11 +156,14 @@ export default {
     },
     // 分页
     getPageList() {
+      if (!this.queryList || this.queryList.length === 0) {
+        this.total = 0
+        return
+      }
       this.total = this.queryList.length
       let pageNum = this.pageInfo.pageNum
       let pageSize = this.pageInfo.pageSize
       this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
-      this.showPreSelected(pageNum)
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -213,7 +187,7 @@ export default {
       // 分页
       this.getPageList()
       this.listLoading = false;
-      if (this.queryList.length === 0) {
+      if (this.total === 0) {
         this.$message({
           type: 'error',
           message: '没有符合条件的用户',
@@ -236,55 +210,74 @@ export default {
       this.handleQuery();
     },
 
-    // 清空全部
-    handleCLearAll() {
-      this.stateArr[this.pageInfo.pageNum - 1] && this.stateArr[this.pageInfo.pageNum - 1].forEach(item => {
-        this.$refs.multipleTable.toggleRowSelection(this.userList[item.index], false)
-      })
-      this.stateArr = Array(this.totalPage).fill([])
-      this.selectedAccount = []
-    },
     // 选择事件
-    handleSelect(selection, row) {
-      this.stateArr[this.pageInfo.pageNum - 1] = selection
-      this.selectedAccount = this.stateArr.flat()
+    handleSelect(rows, row) {
+      this.ids = rows.map(item => item.userId);
+      console.log(this.ids)
     },
-    // 取消选择
-    cancelSelect(item, index) {
-      this.selectedAccount.splice(index, 1)
-      const stateArrIndex = this.stateArr[this.pageInfo.pageNum - 1].findIndex(el => el.index === item.index)
-      this.stateArr[this.pageInfo.pageNum - 1].splice(stateArrIndex, 1)
-      this.$refs.multipleTable.toggleRowSelection(this.userList[item.index], false)
+
+    // 获取选中的用户ID
+    getIds() {
+      return this.ids
     },
-    // 回显数据，调用的地方是在获取分页数据之后
-    showPreSelected(page) {
-      // $nextTick在下次dom更新循环结束之后回调，在修改数据之后使用，在回调中可获取更新后的Dom
-      this.$nextTick(() => {
-        this.stateArr[page - 1] && this.stateArr[page - 1].forEach(item => {
-          this.$refs.multipleTable.toggleRowSelection(this.userList[item.index], true)
+    // 获取所有用户ID
+    getAllIds() {
+      let fun = new Function()
+      switch (this.role) {
+        case 'SUBSTATION_MANAGER':
+          fun = getSubstationManager
+          break
+        case 'COURIER':
+          fun = getSubCourierList
+          break
+      }
+      return new Promise(resolve=>{
+        fun(this.subId).then((res) => {
+          let list = res.data
+          let allId=[]
+          if (list)
+            allId=list.map(item => item.userId)
+          resolve(allId)
         })
-      })
+      });
     },
+    // 取消表格选中
+    setIds() {
+      // this.$refs.multipleTable.rows.forEach(row => {
+      //   this.$refs.multipleTable.toggleRowSelection(row,false)
+      // })
+      this.$refs.multipleTable.clearSelection()
+      this.ids = []
+    }
   },
 
-  computed: {
-    // 加载表格
-    change() {
-      this.getList()
+  watch: {
+    // 加载表格数据
+    // role: {
+    //   handler(newValue, oldValue) {
+    //     console.log('props', newValue)
+    //     this.getList()
+    //   },
+    // },
+    opType: {
+      handler(newValue, oldValue) {
+        console.log('props', newValue)
+        this.getList()
+        this.setIds()
+      },
     }
   }
 };
 </script>
 
 <style scoped>
-
-.title{
+.title {
   /* border:0.5px solid ; */
   display: flex;
   justify-content: space-between;
 }
 
-.clear{
+.clear {
   color: cornflowerblue;
 }
 </style>

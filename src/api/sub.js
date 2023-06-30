@@ -25,6 +25,16 @@ export function fetchSubStation(userId) {
   })
 }
 
+// 根据分站id获取对应分站
+//查询当前用户管理的分站
+export function fetchSubStationById(subId) {
+  return request({
+    url: `/infoById/${subId}`,
+    method: 'get',
+    baseURL: 'http://localhost:8019/sub/substation',
+  })
+}
+
 //添加分站
 export function AddSubstation(data){
   return request({
