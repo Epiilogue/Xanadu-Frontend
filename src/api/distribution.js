@@ -21,18 +21,16 @@ export function fetchLackRecordList(query) {
 //生成采购单
 export function generatePurchaseRecord(data){
   return request({
-    url: '/generatePurchaseOrder',
+    url: '/dbc/purchaseRecord/generatePurchaseOrder',
     method: 'post',
-    baseURL: 'http://localhost:8004/dbc/purchaseRecord',
     data
   })
 }
 //查询所有退货
 export function getRefundList(){
   return request({
-    url: '/list',
+    url: '/dbc/refund/list',
     method:'get',
-    baseURL:'http://localhost:8004/dbc/refund'
   })
 }
 
@@ -47,9 +45,8 @@ export function getRefundList(){
 
 export function LackRecordInspect(id,isCheck){
   return request({
-    url: `getLackRecord/${id}/${true}`,
+    url: `/dbc/lackRecordgetLackRecord/${id}/${true}`,
     method: 'get',
-    baseURL: 'http://localhost:8004/dbc/lackRecord'
   })
 }
 
@@ -81,9 +78,8 @@ export function fetchList(query) {
 //删除商品
   export function deleteProduct(id) {
     return request({
-      url: `delete/${id}`,
+      url: `/dbc/productdelete/${id}`,
       method: 'get',
-      baseURL: 'http://localhost:8004/dbc/product',
     })
   }
 
@@ -91,25 +87,22 @@ export function fetchList(query) {
 //创建商品
   export function createArticle(data) {
     return request({
-      url: '/add',
+      url: '/dbc/product/add',
       method: 'post',
-      baseURL: 'http://localhost:8004/dbc/product',
       data
     })
   }
 //更新商品
   export function updateProduct(data) {
     return request({
-      url: '/update',
+      url: '/dbc/product/update',
       method: 'post',
-      baseURL: 'http://localhost:8004/dbc/product',
       data
     })
   }
   export function getOneProduct(id){
     return request({
-      url: `get/${id}`,
+      url: `/dbc/productget/${id}`,
       method: 'get',
-      baseURL: 'http://localhost:8004/dbc/product',
     })
   }
