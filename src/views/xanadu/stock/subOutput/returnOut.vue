@@ -6,8 +6,16 @@
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" width="80" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库ID" align="center" width="80" prop="outputId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品ID" align="center" width="80" prop="productId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="分库ID" align="center" width="80" prop="subwareId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" width="80" prop="productId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <product :id="row.productId"></product>
+          </template>
+        </el-table-column>
+        <el-table-column label="分库ID" align="center" width="80" prop="subwareId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <subware :id="row.subwareId"></subware>
+          </template>
+        </el-table-column>
         <el-table-column label="商品名称" align="center" width="100" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" width="200" prop="outputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center" width="100" show-overflow-tooltip>
@@ -44,9 +52,12 @@
 
 <script>
 import {subInputList, subConfirmOut, deleteReturnRecord} from '@/api/ware'
+import product from '../../../../components/detail/product'
+import subware from '../../../../components/detail/subware'
 
 export default {
   name: 'returnIn',
+  components: { subware, product },
   data(){
     return{
       subwareID:'',

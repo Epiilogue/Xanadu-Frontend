@@ -50,7 +50,11 @@ export const constantRoutes = [
     component: () => import('@/views/register'),
     hidden: true
   },
-
+  {
+    path: '/dataScreen',
+    component: () => import('@/views/DataScreen'),
+    hidden: true
+  },
   {
     path: '/404',
     component: () => import('@/views/error/404'),
