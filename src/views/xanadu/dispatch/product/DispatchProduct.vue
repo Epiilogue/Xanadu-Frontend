@@ -301,7 +301,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .alert {
     padding: 8px 16px;
     background-color: #ecf8ff;
