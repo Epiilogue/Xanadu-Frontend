@@ -165,8 +165,8 @@ export default {
     return {
       category: [],
       tableKey: 0,
-      list: null,
-      showList: null,
+      list: [],
+      showList: [],
       total: 0,
       listLoading: true,
       /*      pageNum: 5,
