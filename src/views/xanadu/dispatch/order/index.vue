@@ -6,7 +6,7 @@
                     <el-form-item label="要求到货日期">
                         <el-date-picker v-model="deadlineRange" type="daterange" align="right" style="width: 240px"
                             value-format="yyyy-MM-dd HH:mm:ss" unlink-panels range-separator="-" start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                            end-placeholder="结束日期" clearable>
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item label="订单类型"><el-select v-model="listQuery.orderType" placeholder="订单类型"
@@ -97,10 +97,14 @@ export default {
             this.listLoading = true;
             //将起止日期添加到请求参数中
             if (this.deadlineRange && this.deadlineRange.length > 0) {
+                console.log(this.deadlineRange)
                 let query = this.addDateRange(this.listQuery, this.deadlineRange);
                 query.beginTime = query.params.beginTime
                 query.endTime = query.params.endTime
                 query.params = undefined
+            }else{
+                this.listQuery.beginTime = ''
+                this.listQuery.endTime = ''
             }
             if(this.listQuery.orderType==='全部'){
                 this.listQuery.orderType=''

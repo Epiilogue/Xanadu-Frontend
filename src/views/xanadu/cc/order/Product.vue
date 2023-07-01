@@ -113,7 +113,6 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: undefined,
-        orderType: undefined,
       },
 
       opType: undefined,
@@ -133,8 +132,6 @@ export default {
   },
   created() {
     this.opType = this.$route.query.opType; // 操作类型
-    this.listQuery.orderType =
-      this.$cache.local.getJSON("operateOrder").orderType; // 订单类型
     this.newOrder = this.opType === "新订"; //是否新订
     if (!this.newOrder) {
       this.listQuery.orderId = this.$route.query.orderId;

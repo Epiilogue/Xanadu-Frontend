@@ -32,3 +32,47 @@ export function dispatchProduct(query) {
     })
 }
 
+// 根据id获取调度单
+export function getDispatch(id) {
+    return request({
+        url: `/dpc/dispatch/get/${id}`,
+        method: 'get',
+    })
+}
+
+// 删除调度单
+export function deleteDispatch(id) {
+    return request({
+        url: `/dpc/dispatch/deleteDispatch/${id}`,
+        method: 'delete',
+    })
+}
+
+// 编辑调度单
+export function editDispatch(data) {
+    return request({
+        url: `/dpc/dispatch/editDispatch`,
+        method: 'post',
+        data
+    })
+}
+
+// 调度单列表
+export function getDispatchList() {
+    return request({
+        url: `/dpc/dispatch/list`,
+        method: 'get',
+    })
+}
+
+// 任务单列表
+export function getTaskList() {
+    return request({
+        url: `/dpc/task/list`,
+        method: 'get',
+    })
+}
+
+
+
+
