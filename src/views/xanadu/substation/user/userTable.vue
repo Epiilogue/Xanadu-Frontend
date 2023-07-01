@@ -44,8 +44,7 @@
 <script>
 
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import { getSubCourierList, getCourierUserList, addCouriers, deleteCourier, getSubstationUserList, getSubstationManager } from '@/api/sub-user.js'
-import { AddSubstation, updateSubstation } from '@/api/sub.js'
+import { getSubCourierList, getCourierUserList, getSubstationUserList, getSubstationManager } from '@/api/sub-user.js'
 
 export default {
   name: "UserTable",
@@ -152,6 +151,7 @@ export default {
       // 分页
       this.queryList = this.userList
       this.getPageList()
+      console.log('用户信息', this.userList)
       this.loading = false;
     },
     // 分页
@@ -167,8 +167,9 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      if (!this.userList) return
       this.listLoading = true;
-      this.queryList = this.opList.filter((user) => {
+      this.queryList = this.userList.filter((user) => {
         // 查询条件
         let query = this.queryParams
         // 用户名称 手机号码 创建时间 **状态**
@@ -231,12 +232,12 @@ export default {
           fun = getSubCourierList
           break
       }
-      return new Promise(resolve=>{
+      return new Promise(resolve => {
         fun(this.subId).then((res) => {
           let list = res.data
-          let allId=[]
+          let allId = []
           if (list)
-            allId=list.map(item => item.userId)
+            allId = list.map(item => item.userId)
           resolve(allId)
         })
       });

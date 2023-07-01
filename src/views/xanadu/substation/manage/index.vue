@@ -2,22 +2,19 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!-- 1.查询:地址 名称 -->
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item class="form-item" label="地址">
-            <el-input v-model="listQuery.address" placeholder="分站地址" style="width: 200px; margin-right: 5px"/>
+            <el-input v-model="listQuery.address" placeholder="分站地址" style="width: 200px; margin-right: 5px" />
           </el-form-item>
           <el-form-item class="form-item" label="名称">
-            <el-input v-model="listQuery.name" placeholder="分站名称" style="width: 200px; margin-right: 5px"/>
+            <el-input v-model="listQuery.name" placeholder="分站名称" style="width: 200px; margin-right: 5px" />
           </el-form-item>
           <el-form-item class="form-item">
             <el-button type="primary" icon="el-icon-search" @click="handleFilter">
               查询
             </el-button>
-            <!-- 2.分站管理员不可访问 -->
-            <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit"
-              @click="handleCreate">
+            <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
               创建分站
             </el-button>
           </el-form-item>
@@ -26,7 +23,7 @@
     </div>
     <el-card>
       <el-table :key="tableKey" v-loading="listLoading"
-        :data="list.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit highlight-current-row
+        :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit highlight-current-row
         style="width: 100%;">
         <el-table-column label="ID" prop="id" align="center" width="80">
           <template slot-scope="{row}">
@@ -58,12 +55,12 @@
           </template>
         </el-table-column>
 
-        <!-- todo:ID列表展示 -->
+        <!-- todo:ID列表展示
         <el-table-column label="管理人ID" min-width="50px" prop="userId" align="center">
           <template slot-scope="{row}">
             <span class="link-type" @click="handleUpdate(row)">{{ row.userId }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <!-- 设置当前操作的分站 -->
         <el-table-column label="管理分站事务" min-width="100" align="center">
@@ -74,7 +71,6 @@
           </template>
         </el-table-column>
 
-        <!-- 分站管理员不可见 -->
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
           <template slot-scope="{row,$index}">
             <el-button type="primary" @click="handleUpdate(row)">
@@ -105,12 +101,12 @@
           <el-input v-model="temp.phone" />
         </el-form-item>
         <el-form-item label="分库ID" prop="subwareId">
-          <el-input v-model="temp.subwareId" disabled="true" />
+          <el-input v-model="temp.subwareId" :disabled="dialogStatus !== 'create'" />
         </el-form-item>
 
-        <el-form-item label="管理人ID" prop="UserId">
+        <!-- <el-form-item label="管理人ID" prop="UserId">
           <el-input v-model="temp.userId" />
-        </el-form-item>
+        </el-form-item> -->
 
 
       </el-form>
@@ -139,23 +135,24 @@ export default {
     return {
 
       // 是否已确定处理事务的分站id,未设置为''
-      selectedSub:'',
+      selectedSub: '',
 
       tableKey: 0,
       list: [],
-      showList: [],
+      queryList:[],
       total: 0,
       listLoading: true,
       currentPage: 1,//默认显示第一页
       pageSize: 5,//默认每页显示5条
       listQuery: {
+        address: '',
+        name: '',
       },
       rules: {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
         phone: [{ required: true, message: '请选择电话', trigger: 'blur' }],
         address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
         subwareId: [{ required: true, message: '请输入分库Id', trigger: 'blur' }],
-        userId: [{ required: true, message: '请输入管理人ID', trigger: 'blur' }]
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -176,15 +173,15 @@ export default {
   },
   created() {
     // 获取正在处理的分站id
-    let subId=this.$cache.session.get('subProcessing')
-    this.selectedSub=subId?Number(subId):''
+    let subId = this.$cache.session.get('subProcessing')
+    this.selectedSub = subId ? Number(subId) : ''
     this.getList()
   },
   // 缓存处理事务的分站id
-  beforeDestroy(){
-    if(this.selectedSub){
-      this.$cache.session.set('subProcessing',this.selectedSub)
-    }else if(this.$cache.session.get('subProcessing')){
+  beforeDestroy() {
+    if (this.selectedSub) {
+      this.$cache.session.set('subProcessing', this.selectedSub)
+    } else if (this.$cache.session.get('subProcessing')) {
       this.$cache.session.remove('subProcessing')
     }
   },
@@ -215,14 +212,26 @@ export default {
       fetchAllSubStation().then(response => {
         this.list = response.data
         this.total = response.data.length
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.queryList = this.list
+        this.listLoading = false
       })
     },
     handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
+      this.listLoading = true;
+      this.queryList = this.list.filter((sub) => {
+        // 查询条件
+        let query = this.listQuery
+        // 名称 地址
+        if (query.name !== '' && sub.name.indexOf(query.name)===-1) {
+          return false
+        }
+        if (query.address !== '' && sub.address.indexOf(query.address)===-1) {
+          return false
+        }
+        return true
+      });
+      this.total = this.queryList.length
+      this.listLoading = false;
     },
     resetTemp() {
       this.temp = {
@@ -301,11 +310,10 @@ export default {
             type: 'success',
             duration: 2000
           })
+          this.list.splice(index, 1)
         }
       }
       )
-
-      this.list.splice(index, 1)
     },
   }
 }

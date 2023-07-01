@@ -57,7 +57,7 @@ export function updateSubstation(data){
 export function deleteSubstation(id){
   return request({
     url: `delete/${id}`,
-    method: 'delete',
+    method: 'post',
     baseURL: 'http://localhost:8019/sub/substation',
   })
 }
