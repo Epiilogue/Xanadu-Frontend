@@ -94,9 +94,10 @@
             </el-card>
 
             <!-- 选择快递员 -->
-            <el-dialog title="选择快递员" :visible.sync="courierDialogVisible" @before-close="this.task = {}">
-                <SelectCourier ref="SelectCourier" v-if="courierDialogVisible" :subId="this.subId">
-                </SelectCourier>
+            <el-dialog title="选择快递员" :visible.sync="courierDialogVisible" @before-close="this.task = {}" width="70%">
+                <!-- <SelectCourier ref="SelectCourier" v-if="courierDialogVisible" :subId="this.subId">
+                </SelectCourier> -->
+                <UserTable v-if="courierDialogVisible" ref="SelectCourier" role="COURIER" opType="查看快递员" :subId="subId"></UserTable>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="close">取消</el-button>
                     <el-button type="primary" @click="assignTask">分配</el-button>
@@ -116,9 +117,10 @@ import Pagination from '@/components/Pagination'
 import SelectCourier from './selectCourier.vue'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from './taskColumn'
+import UserTable from './userTable'
 
 export default {
-    components: { Pagination, SelectCourier, Receipt },
+    components: { Pagination, SelectCourier, Receipt,UserTable },
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
@@ -142,7 +144,7 @@ export default {
             subId: '',   //分站id
             //数据
             task: {},    //当前操作的任务单
-            
+
             list: [],   //所有数据
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
@@ -202,19 +204,15 @@ export default {
                 // 日期 任务类型 任务状态 配送员
                 let range = query.deadlineRange
                 if (range !== null && (new Date(task.deadline) < new Date(range[0]) || new Date(task.deadline) > new Date(range[1]))) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.taskType !== '' && task.taskType !== query.taskType) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.taskStatus !== '' && task.taskStatus !== query.taskStatus) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.courierId != '' && (task.courierId).toString().indexOf(query.courierId) === -1) {
-                    this.listLoading = false;
                     return false
                 }
                 return true
@@ -347,16 +345,23 @@ export default {
         },
         // 分配任务
         assignTask() {
-            let courierId = this.$refs['SelectCourier'].getSelectedCourier();
-            if (courierId === undefined) {
+            let courierId = this.$refs['SelectCourier'].getIds();
+            if (!courierId || courierId.length===0) {
                 this.$message({
                     type: 'error',
                     message: '请选择任务配送员',
                     durarion: 1000,
                 });
                 return
-            }
-            assign(this.subId, courierId, this.task).then(res => {
+            }else if(courierId.length>1){
+                this.$message({
+                    type: 'error',
+                    message: '只能选择一个任务配送员',
+                    durarion: 1000,
+                });
+                return
+            }else{
+                assign(this.subId, courierId[0], this.task).then(res => {
                 //更新表格数据
                 this.handleOpChange(this.opType, false)
                 this.close()
@@ -365,7 +370,10 @@ export default {
                     message: res.msg,
                     durarion: 1000,
                 });
+                // 重置表格多选框
+                this.$refs['SelectCourier'].setIds()
             }).catch()
+            }
         },
         // 分配任务完成
         close() {
@@ -402,6 +410,7 @@ export default {
             if (success) {
                 this.handleOpChange(this.opType, false)
             }
+            this.receipt = false
         },
 
         // 删除任务

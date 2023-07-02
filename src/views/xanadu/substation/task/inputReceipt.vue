@@ -7,11 +7,12 @@
             </div>
             <el-form ref="form" :model="form" :rules="rule" label-width="120px">
                 <el-form-item label="任务编号">
-                    <el-input v-model="form.taskId" disabled/>
+                    <el-input v-model="form.taskId" disabled />
                 </el-form-item>
                 <el-form-item label="任务完成情况">
                     <el-select v-model="form.state">
-                        <el-option v-for="item of (payment? paymentStateOption:stateOption)" :label="item" :value="item" :key="item"></el-option>
+                        <el-option v-for="item of (payment ? paymentStateOption : stateOption)" :label="item" :value="item"
+                            :key="item"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="签收时间">
@@ -31,24 +32,24 @@
             <div slot="header" class="clearfix">
                 <span>商品信息</span>
             </div>
-            <el-descriptions>
-                <el-descriptions-item label="签收商品总数">{{
-                    form.numbers
-                }}</el-descriptions-item>
-                <el-descriptions-item label="任务交易金额">{{
-                    form.totalAmount
-                }}</el-descriptions-item>
-            </el-descriptions>
-            <el-button @click="confirmPro">
-                {{ confirm }}
-            </el-button>
+            <div class="product">
+                <el-descriptions :contentStyle="rowCenter" :labelStyle="rowCenter">
+                    <el-descriptions-item label="签收商品总数">{{
+                        form.numbers
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="任务交易金额">{{
+                        form.totalAmount
+                    }}</el-descriptions-item>
+                </el-descriptions>
+                <el-button @click="confirmPro" type="primary">
+                    {{ confirm }}
+                </el-button>
+            </div>
             <div>
                 <el-table :key="0" :row-key="(row) => row.productId" :data="form.products" border fit highlight-current-row
                     style="width: 100%">
                     <el-table-column label="商品编号" prop="productId" align="center" width="100"></el-table-column>
                     <el-table-column label="商品名称" prop="productName" width="100" align="center">
-                    </el-table-column>
-                    <el-table-column label="商品大类" prop="productCategary" min-width="100" align="center">
                     </el-table-column>
                     <el-table-column label="单价" prop="price" width="100" align="center">
                     </el-table-column>
@@ -56,8 +57,8 @@
                     </el-table-column>
                     <el-table-column label="签收数量" min-width="200" align="center" fixed="right">
                         <template slot-scope="{ row }">
-                            <el-input-number ref="inputNumber" v-model="row.actualNumber" :min="0" :max="row.number" width="80"
-                                size="small"></el-input-number>
+                            <el-input-number ref="inputNumber" v-model="row.actualNumber" :min="0" :max="row.number"
+                                width="80" size="small" :disabled="numDisabled"></el-input-number>
                         </template>
                     </el-table-column>
                     <el-table-column label="能否退货" class-name="status-col" width="100">
@@ -81,8 +82,8 @@
 
 import { fillPaymentReceipt, fillReceipt } from '@/api/sub-task'
 export default {
-    name:'Receipt',
-    props:['payment'],
+    name: 'Receipt',
+    props: ['payment'],
     data() {
         return {
             form: {
@@ -102,7 +103,11 @@ export default {
             paymentStateOption: ['成功', '失败'],
             ifShow: false,
             confirm: "确认",
-            success:false, //提交成功
+            success: false, //提交成功
+            rowCenter: {    //描述列表样式
+                "text-align": "center"
+            },
+            numDisabled:false
         };
     },
     created() {
@@ -116,6 +121,8 @@ export default {
         products.forEach(p => { //设置签收数量默认值
             p.actualNumber = p.number
         });
+        this.form.products=products
+        console.log(products)
     },
 
     methods: {
@@ -145,7 +152,7 @@ export default {
                             message: res.msg,
                             durarion: 1000,
                         });
-                        this.success=true
+                        this.success = true
                         this.Return()
                     });
                 }
@@ -153,10 +160,10 @@ export default {
         },
         // 返回
         Return() {
-            // 清除缓存 
+            // 清除缓存
             this.$cache.local.remove("selectedProduct")
             // 回到任务主页
-            this.$emit('close',this.success)
+            this.$emit('close', this.success)
         },
         // 确认商品签收情况
         confirmPro() {
@@ -164,10 +171,11 @@ export default {
                 // 计算总数和总价
                 this.form.numbers = this.form.products.reduce((sum, p) => sum + p.actualNumber,
                     0)
-                this.form.totalAmount = this.form.products.reduce((sum, p) => sum + p.actualNumber*p.price,
+                this.form.totalAmount = this.form.products.reduce((sum, p) => sum + p.actualNumber * p.price,
                     0)
                 // 禁用输入框
-                this.$refs.inputNumber.disabled=true
+
+                this.numDisabled=true
                 // 修改confirm
                 this.confirm = '编辑'
             } else {
@@ -175,7 +183,7 @@ export default {
                 this.form.numbers = 0
                 this.form.totalAmount = 0
                 // 启用输入框
-                this.$refs.inputNumber.disabled=false
+                this.numDisabled=false
                 // 修改confirm
                 this.confirm = '确认'
             }
@@ -185,23 +193,28 @@ export default {
 </script>
 
 <style scoped>
-
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .box-card {
-  width: 85%;
-  align-self: center;
-  margin: 5px;
+    width: 85%;
+    align-self: center;
+    margin: 5px;
 }
 
 .btn {
-  /* text-align: center; */
-  display: flex;
-  justify-content: space-around;
-  margin: 0px 0px 5px;
+    /* text-align: center; */
+    display: flex;
+    justify-content: space-around;
+    margin: 0px 0px 5px;
+}
+
+.product {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
 }
 </style>

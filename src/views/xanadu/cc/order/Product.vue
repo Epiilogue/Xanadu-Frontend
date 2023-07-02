@@ -39,7 +39,7 @@
         <template slot-scope="{ row }">
           <span>{{ row.price }}</span>
         </template>
-      </el-table-column>   
+      </el-table-column>
       <el-table-column label="能否退货" class-name="status-col" width="100">
         <template slot-scope="{ row }">
           <el-tag :type="row.refundAble ? 'success' : 'danger'">
@@ -64,7 +64,7 @@
           <span>{{ row.secondCategray }}</span>
         </template>
       </el-table-column>
-      
+
       <el-table-column v-if="newOrder" label="备注" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.comment }}</span>
@@ -113,7 +113,6 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: undefined,
-        orderType: undefined,
       },
 
       opType: undefined,
@@ -133,8 +132,6 @@ export default {
   },
   created() {
     this.opType = this.$route.query.opType; // 操作类型
-    this.listQuery.orderType =
-      this.$cache.local.getJSON("operateOrder").orderType; // 订单类型
     this.newOrder = this.opType === "新订"; //是否新订
     if (!this.newOrder) {
       this.listQuery.orderId = this.$route.query.orderId;
