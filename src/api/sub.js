@@ -34,6 +34,7 @@ export function fetchSubStationById(subId) {
     baseURL: 'http://localhost:8019/sub/substation',
   })
 }
+
 //添加分站
 export function AddSubstation(data){
   return request({

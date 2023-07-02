@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!--用户数据-->
+    <!--任务单快递员选择界面的表格-->
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="用户名称" prop="userName">
         <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px"
@@ -22,11 +22,12 @@
     <el-table v-loading="loading" :row-key="(row) => row.id" ref="multipleTable" :data="userList" @select="handleSelect"
       @select-all="handleSelect">
       <el-table-column type="selection" :reserve-selection="true" width="50" align="center" />
-      <el-table-column label="用户编号" align="center" key="userId" prop="userId" :show-overflow-tooltip="true"/>
+      <el-table-column label="用户编号" align="center" key="userId" prop="userId" />
       <el-table-column label="用户名称" align="center" key="userName" prop="userName" :show-overflow-tooltip="true" />
       <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" :show-overflow-tooltip="true" />
-      <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber"  :show-overflow-tooltip="true"/>
-      <el-table-column label="创建时间" align="center" prop="createTime":show-overflow-tooltip="true">
+      <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" :show-overflow-tooltip="true" />
+      <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" width="120" />
+      <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -39,7 +40,7 @@
       @pagination="getPageList" />
   </div>
 </template>
-
+  
 <script>
 
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -97,34 +98,12 @@ export default {
         { key: 4, label: `手机号码`, visible: true },
         { key: 6, label: `创建时间`, visible: true }
       ],
-      // 表单校验
-      rules: {
-        userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
-        ],
-        nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
-        ],
-        password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
-        ],
-        email: [
-          {
-            type: "email",
-            message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
-        ],
-        phonenumber: [
-          {
-            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-            message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
-      }
+      // 多选
+      ids: [],
+      // 分站快递员ID
+      courierIds: [],
+      // 分站管理员ID
+      masterIds: [],
     };
   },
   created() {
@@ -291,3 +270,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.title {
+  /* border:0.5px solid ; */
+  display: flex;
+  justify-content: space-between;
+}
+
+.clear {
+  color: cornflowerblue;
+}
+</style>

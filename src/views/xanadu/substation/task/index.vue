@@ -108,6 +108,7 @@
         <div v-else>
             <Receipt @close="submited(success)" :payment="this.task && this.task.taskType === '收款'"></Receipt>
         </div>
+
     </div>
 </template>
 <script>
@@ -144,7 +145,7 @@ export default {
             subId: '',   //分站id
             //数据
             task: {},    //当前操作的任务单
-
+            
             list: [],   //所有数据
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
@@ -405,7 +406,6 @@ export default {
         submited(success) {
             // 关闭回执页
             this.task = {}
-            this.receipt = false
             // 提交成功则刷新表格
             if (success) {
                 this.handleOpChange(this.opType, false)
