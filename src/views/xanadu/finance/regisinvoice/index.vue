@@ -24,19 +24,19 @@
           </el-form-item>
 
 
-          <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" style="margin-left: 100px">
+          <el-form :model="selection" ref="queryForm" size="small" :inline="true" v-show="showSearch" style="margin-left: 100px">
             <el-form-item prop="status">
-              <el-select v-model="queryParams.status" placeholder="发票状态" clearable>
+              <el-select v-model="selection.status" placeholder="发票状态" clearable>
                 <el-option
                   v-for="dict in options"
                   :key="dict.value"
                   :label="dict.label"
-                  :value="dict.value"
+                  :value="dict.label"
                 />
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">筛选</el-button>
+              <el-button type="primary" icon="el-icon-search" size="mini" @click="select(selection.status)">筛选</el-button>
               <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
             </el-form-item>
           </el-form>
@@ -143,11 +143,14 @@ export default {
       invoiceList: [],
       // 是否显示弹出层
       open: false,
+      // 筛选参数
+      selection: {
+        status: "",
+      },
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        status: undefined,
       },
       formData: {
         startNumber: '',
@@ -215,8 +218,23 @@ export default {
       this.resetForm("form");
     },
     /** 筛选按钮操作 */
-    getListlimited(){
-
+    select(){
+      console.log(this.selection.status);
+      const that = this
+      axios.get("http://localhost:8010/ac/invoice/listByState/"+this.selection.status).then( function(res){
+        //代表请求成功之后处理
+        console.log(res);
+        that.total = res.data.data.length;
+        that.invoiceList = res.data.data;
+        that.reset();
+        that.$message({
+          message: '筛选成功',
+          type: 'success'
+        });
+      }).catch( function (err){
+        //代表请求失败之后处理
+        console.log (err);
+      });
     },
     handleQuery() {
       this.queryParams.pageNum = 1;
