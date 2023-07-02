@@ -118,7 +118,7 @@ import Pagination from '@/components/Pagination'
 import SelectCourier from './selectCourier.vue'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from './taskColumn'
-import UserTable from '../user/userTable'
+import UserTable from './userTable'
 
 export default {
     components: { Pagination, SelectCourier, Receipt,UserTable },
