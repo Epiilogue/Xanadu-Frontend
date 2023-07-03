@@ -101,41 +101,50 @@ export default {
       } else {
         subList().then(res=>{
           var list = []
+          var taData = []
           list = res.data
           if (this.stockID !== ''){
-            this.tableData = []
+            taData = []
             for (let i = 0;i < list.length;i++) {
               if (list.at(i).subwareId == this.stockID)
-                this.tableData.push(list.at(i))
+                taData.push(list.at(i))
             }
-            list = this.tableData
+            list = taData
           }
           if (this.goodID !== ''){
-            this.tableData = []
+            taData = []
             for (let i = 0;i < list.length;i++) {
               if (list.at(i).productId == this.goodID)
-                this.tableData.push(list.at(i))
+                taData.push(list.at(i))
             }
-            list = this.tableData
+            list = taData
           }
           if (this.datevalue !== ''){
-            this.tableData = []
+            taData = []
             let start = this.todate(this.datevalue.at(0))
             let end = this.todate(this.datevalue.at(1))
             for (let i = 0;i < list.length;i++){
               if (list.at(i).createTime > start && list.at(i).createTime < end)
-                this.tableData.push(list.at(i))
+                taData.push(list.at(i))
             }
-            list = this.tableData
+            list = taData
           }
           if (this.datevalue1 !== ''){
-            this.tableData = []
+            taData = []
             let start = this.todate(this.datevalue1.at(0))
             let end = this.todate(this.datevalue1.at(1))
             for (let i = 0;i < list.length;i++){
               if (list.at(i).createTime > start && list.at(i).createTime < end)
-                this.tableData.push(list.at(i))
+                taData.push(list.at(i))
             }
+          }
+          if (taData.length === 0){
+            this.$message({
+              message:'没有找到符合条件的信息',
+              type:'error'
+            })
+          } else {
+            this.tableData = taData
           }
           for (let i = 0;i < this.tableData.length;i++){
             this.tableData.at(i).createTime = this.getLocalTime(this.tableData.at(i).createTime)

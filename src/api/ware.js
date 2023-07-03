@@ -28,7 +28,7 @@ export function subwareByID(id) {
 
 export function subwareAll() {
   return request({
-    url: '/ware/subwarelistAll',
+    url: '/ware/subware/listAll',
     method: 'get',
   })
 }
@@ -173,7 +173,7 @@ export function subWareList(query) {
 }
 export function subList(){
   return request({
-    url: '/ware/subStorageRecordlist',
+    url: '/ware/subStorageRecord/list',
     method: 'get',
   })
 }

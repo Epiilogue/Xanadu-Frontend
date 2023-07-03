@@ -73,6 +73,13 @@ export default {
       inId:'',
     }
   },
+  watch:{
+    dialogFormVisible:{
+      handler(){
+        this.reset()
+      }
+    }
+  },
   methods:{
     //入库
     toConfirm(row){
