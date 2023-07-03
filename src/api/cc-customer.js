@@ -3,10 +3,10 @@ import request from '@/utils/request'
 
 
 
-// 获取客户列表
+// 获取客户列表:分页
 export function getCustomerList(query) {
     return request({
-      url: `/cc/customer/list/${query.pageNum}/${query.pageSize}`,
+      url: `/cc/customer/query/${query.pageNum}/${query.pageSize}`,
       method: 'get',
       params: {
         name: query.name,
