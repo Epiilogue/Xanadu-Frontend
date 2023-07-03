@@ -103,6 +103,20 @@
                     <el-button type="primary" @click="assignTask">分配</el-button>
                 </span>
             </el-dialog>
+            <!--发票领用-->
+            <el-dialog title="发票领用" :visible.sync="invoicesDialogVisible" @before-close="this.task = {}" width="70%">
+              <Invoices v-if="invoicesDialogVisible"></Invoices>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="close">取消</el-button>
+              </span>
+            </el-dialog>
+            <!--分站发票领用-->
+            <el-dialog title="分站发票领用" :visible.sync="invoiceDialogVisible" @before-close="this.task = {}" width="70%">
+              <Invoice v-if="invoiceDialogVisible"></Invoice>
+              <span slot="footer" class="dialog-footer">
+                  <el-button @click="close">取消</el-button>
+                </span>
+            </el-dialog>
         </div>
         <!-- 回执录入 -->
         <div v-else>
@@ -119,9 +133,11 @@ import SelectCourier from './selectCourier.vue'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from './taskColumn'
 import UserTable from './userTable'
+import Invoices from "@/views/xanadu/substation/task/invoices.vue";
+import Invoice from "@/views/xanadu/substation/task/invoice.vue";
 
 export default {
-    components: { Pagination, SelectCourier, Receipt,UserTable },
+    components: {Invoices, Pagination, SelectCourier, Receipt,UserTable ,Invoice},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
@@ -145,7 +161,7 @@ export default {
             subId: '',   //分站id
             //数据
             task: {},    //当前操作的任务单
-            
+
             list: [],   //所有数据
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
@@ -170,12 +186,13 @@ export default {
             opTypeOption: ['分配任务', '取货', '发票领用', '打印签收单', '回执录入'],
             // dialog
             courierDialogVisible: false,
+            invoicesDialogVisible: false,
+            invoiceDialogVisible: false,
             tableColumns: undefined, //表格列
             receipt: false,  //是否展示回执录入页面
         }
     },
     methods: {
-
         getList(fun) {
             // 默认查询所有任务
             if (!fun) fun = getTaskList
@@ -264,7 +281,8 @@ export default {
                     await this.getList(listHanding)
                     // 只有新订的收款任务和已分配且未完成的任务需要领用发票
                     this.opList = this.list.filter(task => {
-                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType))
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType) )
+                          // &&['1'].includes(this.list.invoiceNeed))
                             return true
                     })
                     break
@@ -381,6 +399,8 @@ export default {
             // 关闭对话框
             this.task = {}
             this.courierDialogVisible = false
+            this.invoiceDialogVisible = false;
+            this.invoiceDialogVisible = false;
         },
 
         // 取货
@@ -466,6 +486,7 @@ export default {
          */
         assignInvoice() {
             console.log('发票领用')
+            this.invoicesDialogVisible = true;
         },
 
         // Todo:打印签收单
@@ -476,7 +497,8 @@ export default {
         // Todo:分站发票领用
         // 分站id是 this.subId
         handleAssignSubInvoice() {
-            console.log('分站发票领用')
+          this.invoiceDialogVisible = true;
+          console.log('分站发票领用')
         }
     },
 }
