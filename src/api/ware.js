@@ -21,51 +21,45 @@ export function addSubware(data) {
 
 export function subwareByID(id) {
   return request({
-    url: '/get/'+id,
+    url: '/ware/subware/get/'+id,
     method: 'get',
-    baseURL: 'http://localhost:8015/ware/subware'
   })
 }
 
 export function subwareAll() {
   return request({
-    url: 'listAll',
+    url: '/ware/subwarelistAll',
     method: 'get',
-    baseURL: 'http://localhost:8015/ware/subware'
   })
 }
 
 export function subwareEdit(data) {
   return request({
-    url:'/update',
+    url:'ware/subware/update',
     method:'post',
-    baseURL: 'http://localhost:8015/ware/subware',
     data
   })
 }
 
 export function subwareDetele(id) {
   return request({
-    url: '/delete/'+id,
+    url: 'ware/subware/delete/'+id,
     method :'get',
-    baseURL: 'http://localhost:8015/ware/subware'
   })
 }
 
 // 中心仓库 库存量
 export function cenlist(){
   return request({
-    url: '/list',
+    url: '/ware/centerStorageRecord/list',
     method :'get',
-    baseURL: 'http://localhost:8015/ware/centerStorageRecord'
   })
 }
 
 export function cenGoodById(id){
   return request({
-    url: '/getCount/'+id,
+    url: '/ware/centerStorageRecord/getCount/'+id,
     method:'get',
-    baseURL: 'http://localhost:8015/ware/centerStorageRecord'
   })
 }
 
@@ -81,43 +75,39 @@ export function centerStorageList(query) {
 //调拨出库
 export function cenDispatchOut(){
   return request({
-    url: '/getDispatchOutput',
+    url: '/ware/centerOutput/getDispatchOutput',
     method:'get',
-    baseURL: 'http://localhost:8015/ware/centerOutput'
   })
 }
 
 export function cenConfirmOut(id,number){
   return request({
-    url: '/confirm/'+id+'/'+number,
+    url: '/ware/centerOutput/confirm/'+id+'/'+number,
     method:'put',
-    baseURL: 'http://localhost:8015/ware/centerOutput'
   })
 }
 //退货出库
 export function cenRuturnOut(){
   return request({
-    url: '/getReturnOutput',
+    url: '/ware/centerOutput/getReturnOutput',
     method:'get',
-    baseURL: 'http://localhost:8015/ware/centerOutput'
+    baseURL: 'http://localhost:8015'
   })
 }
 //中心仓库 入库单
 //入库列表
 export function cenInputList(type){
   return request({
-    url: '/list/'+type,
+    url: '/ware/centerInput/list/'+type,
     method:'get',
-    baseURL:'http://localhost:8015/ware/centerInput'
   })
 }
 
 //入库
 export function cenInput(id,number){
   return request({
-    url: '/confirm/'+id+'/'+number,
+    url: '/ware/centerInput/confirm/'+id+'/'+number,
     method:'put',
-    baseURL: 'http://localhost:8015/ware/centerInput'
   })
 }
 
@@ -128,27 +118,24 @@ export function cenInput(id,number){
 //获取所有列表
 export function subInputList(type){
   return request({
-    url: '/list/'+type,
+    url: '/ware/subOutput/list/'+type,
     method:'get',
-    baseURL:'http://localhost:8015/ware/subOutput'
   })
 }
 
 //确认出库
 export function subConfirmOut(id, number){
   return request({
-    url: '/confirm/'+id+'/'+number,
+    url: '/ware/subOutput/confirm/'+id+'/'+number,
     method:'put',
-    baseURL:'http://localhost:8015/ware/subOutput'
   })
 }
 
 //删除退货记录
 export function deleteReturnRecord(id){
   return request({
-    url:'/delete/'+id,
+    url:'/ware/subOutput/delete/'+id,
     method:'delete',
-    baseURL:'http://localhost:8015/ware/subOutput'
   })
 }
 
@@ -156,26 +143,23 @@ export function deleteReturnRecord(id){
 //分库调拨入库列表
 export function subDispatchIn(subwareid){
   return request({
-    url:'/listDispatch/'+subwareid,
+    url:'/ware/subInput/listDispatch/'+subwareid,
     method:'get',
-    baseURL:'http://localhost:8015/ware/subInput'
   })
 }
 //分库退货入库列表
 export function subRefundIn(subwareid){
   return request({
-    url:'/listRefund/'+subwareid,
+    url:'/ware/subInput/listRefund/'+subwareid,
     method:'get',
-    baseURL:'http://localhost:8015/ware/subInput'
   })
 }
 
 //分库确认调拨入库
 export function subConfirmDispatchIn(id){
   return request({
-    url:'/confirmDispatch/'+id,
+    url:'ware/subInput/confirmDispatch/'+id,
     method:'post',
-    baseURL:'http://localhost:8015/ware/subInput'
   })
 }
 
@@ -189,8 +173,7 @@ export function subWareList(query) {
 }
 export function subList(){
   return request({
-    url: 'list',
+    url: '/ware/subStorageRecordlist',
     method: 'get',
-    baseURL: 'http://localhost:8015/ware/subStorageRecord'
   })
 }

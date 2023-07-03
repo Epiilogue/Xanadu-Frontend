@@ -150,7 +150,6 @@ export default {
         { 'name': '完成任务数', 'value': row.finishTaskNum },
         { 'name': '部分完成任务数', 'value': row.partFinishTaskNum }
       ]
-      console.log(this.chartData)
       //console.log("Button clicked for row:", row);
     },
     showTypeState(row) {
