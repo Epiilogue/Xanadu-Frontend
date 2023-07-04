@@ -22,6 +22,11 @@
           <dict-tag :options="dict.type.sys_invoice_normal" :value="scope.row.total"/>
         </template>
       </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="time" width="200">
+        <template slot-scope="scope">
+          <span>{{ parseTime()(scope.row.time, '{y}-{m}-{d}-{h}-{m}-{s}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button :disabled="scope.row.registration === '未登记'"
@@ -40,6 +45,7 @@
 
 <script>
 import axios from "axios";
+import {parseTime} from "@/utils/ruoyi";
 export default {
   name: "invoice",
   dicts: ['sys_invoice_normal'],
@@ -66,6 +72,9 @@ export default {
     this.subId = this.$cache.session.get('subProcessing')
   },
   methods: {
+    parseTime() {
+      return parseTime
+    },
     getList() {
       const that = this
       this.loading = true;
@@ -90,7 +99,6 @@ export default {
     getinvoice(row){
       const that = this
       row.substationId = that.subId;
-
       axios.post("http://localhost:8010/ac/invoices/update/",row)
         .then(function(promise){
           that.$message.success('领用成功');

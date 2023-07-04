@@ -105,7 +105,7 @@
             </el-dialog>
             <!--发票领用-->
             <el-dialog title="发票领用" :visible.sync="invoicesDialogVisible" @before-close="this.task = {}" width="70%">
-              <Invoices v-if="invoicesDialogVisible"></Invoices>
+              <Invoices v-if="invoicesDialogVisible" :task="this.task"></Invoices>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="close">取消</el-button>
               </span>
@@ -173,6 +173,7 @@ export default {
                 taskStatus: "",
                 taskType: "",
                 courierId: "",
+                needInvoice: "",
             },
             // 分页
             pageList: [],   //表格数据
@@ -281,8 +282,8 @@ export default {
                     await this.getList(listHanding)
                     // 只有新订的收款任务和已分配且未完成的任务需要领用发票
                     this.opList = this.list.filter(task => {
-                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType) )
-                          // &&['1'].includes(this.list.invoiceNeed))
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType)
+                          && task.needInvoice === true)
                             return true
                     })
                     break
@@ -400,7 +401,7 @@ export default {
             this.task = {}
             this.courierDialogVisible = false
             this.invoiceDialogVisible = false;
-            this.invoiceDialogVisible = false;
+            this.invoicesDialogVisible = false;
         },
 
         // 取货
