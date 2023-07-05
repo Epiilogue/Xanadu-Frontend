@@ -1,5 +1,21 @@
 <template>
   <div class="app-container">
+    <!-- 失效原因对话框 -->
+    <el-dialog title="发票作废" :visible.sync="open1" height="300px" width="600px" append-to-body>
+      <el-form ref="form" :model="dform"  label-width="80px" >
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="失效原因">
+              <el-input v-model="dform.details" type="textarea" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormd(dform)">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   <!-- 打印内容 -->
   <div v-show="false">
     <form method="get" action="#" id="printJS-form">
@@ -96,7 +112,7 @@
           <dict-tag :options="dict.type.sys_invoices_normal" :value="scope.row.employee"/>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="state" width="100">
+      <el-table-column label="领用状态" align="center" prop="state" width="100">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.state === '未领用' ? 'success' : (scope.row.state === '已领用' ?'warning':'danger')"
@@ -118,6 +134,17 @@
                      type="primary"
                      @click="receipt(scope.row)"
           >领用发票</el-button>
+          <el-button :disabled="scope.row.dstate === '已失效'"
+                     size="small"
+                     type="danger"
+                     @click="changedstate(scope.row)"
+          >发票作废</el-button>
+          <el-button :disabled="scope.row.dstate === '已失效'
+                              || scope.row.state === '未领用'"
+                     size="small"
+                     type="warning"
+                     @click="submitFormt(scope.row)"
+          >发票退回</el-button>
           <el-button :disabled="scope.row.dstate === '已失效'"
                      size="small"
                      type="warning"
@@ -144,53 +171,53 @@ export default {
     return {
       // 打印数据
       printform: {
+        id: "0",
         number: "暂无信息",
         printTime: "暂无信息",
         productName: "暂无信息"
       },
       taskmessage: {},
       open: false,
+      open1: false,
       form: {},
       // 分站id
       subId:'',
-      totalId: '1',
+      totalId: '',
       // 遮罩层
       loading: true,
       // 发票信息
       invoiceList: [],
+      dform: {},
     }
   },
   created() {
     this.getList();
-    this.subId = this.$cache.session.get('subProcessing')
   },
   methods: {
     parseTime() {
       return parseTime
     },
     getList(){
-      console.log(this.task);
+      this.subId = this.task.subId;
+      console.log(this.subId);
       const that = this;
-      axios.get("http://localhost:8010/ac/invoice/getTotalId/"+that.subId).then( function(res){
+      axios.get("http://localhost:8010/ac/invoice/getTotalId/"+ this.subId).then( function(res1){
         //代表请求成功之后处理
-        console.log(res);
-        that.totalId = res.data
-      }).catch( function (err){
-        //代表请求失败之后处理
-        that.$message.error('发票列表获取失败');
-      });
-      axios.get("http://localhost:8010/ac/invoices/getinvoicebytotalid/"+that.totalId).then( function(res){
-        //代表请求成功之后处理
-        that.total = res.data.data.length;
-        that.invoiceList = res.data.data;
-        that.loading = false;
+        axios.get("http://localhost:8010/ac/invoices/getinvoicebytotalid/"+res1.data.data).then( function(res2){
+          //代表请求成功之后处理
+          that.total = res2.data.data.length;
+          that.invoiceList = res2.data.data;
+          that.loading = false;
+        }).catch( function (err){
+          //代表请求失败之后处理
+        });
       }).catch( function (err){
         //代表请求失败之后处理
         that.$message.error('发票列表获取失败');
       });
     },
     printInvoice(row){
-      if(this.printform.number === '暂无信息'){
+      if(this.printform.number === '暂无信息' || this.printform.number !== row.id){
         this.$message.success('发票信息加载中');
         const id = row.id || this.ids;
         const that = this;
@@ -222,6 +249,9 @@ export default {
     print(){
       printJS('printJS-form','html')
     },
+    reset() {
+      this.form = undefined;
+    },
     cancel(){
       this.open = false;
     },
@@ -241,6 +271,20 @@ export default {
         console.log(err);
       })
     },
+    // 发票作废
+    changedstate(row){
+      this.open1 = true;
+      const id = row.id || this.ids;
+      const that = this
+      axios.get("http://localhost:8010/ac/invoice/getinvoice/"+id).then( function(res){
+        //代表请求成功之后处理
+        console.log(res);
+        that.dform = res.data.data;
+      }).catch( function (err){
+        that.$message.error('信息获取失败');
+        console.log (err);
+      });
+    },
     submitForm(form){
       const that = this
       that.form.state = '已领用';
@@ -255,8 +299,39 @@ export default {
         that.$message.error('提交失败');
       });
       that.getList();
+      that.open = false;
+    },
+    submitFormd: function(dform) {
+      this.open1 = false;
+      const that = this
+      that.dform.dstate = '已失效';
+      that.dform.state = '未领用';
+      axios.post("http://localhost:8010/ac/invoices/update/",dform)
+        .then(function(promise){
+          that.$message.success('操作成功');
+        }).catch( function (err){
+        //代表请求失败之后处理
+        console.log (err);
+        that.$message.error('操作失败');
+      });
+    },
+    submitFormt: function(row) {
+      const that = this;
+      row.state = '未领用';
+      row.employee = '暂无信息';
+      row.orderId = '无';
+      row.productNum = '无';
+      row.productName = '无';
+      axios.post("http://localhost:8010/ac/invoices/update/",row)
+        .then(function(promise){
+          that.$message.success('操作成功');
+        }).catch( function (err){
+        //代表请求失败之后处理
+        console.log (err);
+        that.$message.error('操作失败');
+      });
     }
-  }
+  },
 }
 </script>
 

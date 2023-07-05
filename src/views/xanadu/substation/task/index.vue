@@ -4,7 +4,7 @@
       <div v-show="false">
         <form method="get" action="#" id="printJS-form-task">
           <div class="receipt">
-            <h3 >Xanadu送货签收单</h3 >
+            <h3>Xanadu送货签收单</h3 >
             <h2>分库信息：</h2>
             <table class="receipt-table" title="分库信息">
               <tr>
@@ -21,23 +21,50 @@
               </tr>
             </table>
             <h2>任务信息：</h2>
-            <el-table :data="this.printform.task.products" >
-              <el-table-column label="开始号码" align="center" prop="actualNumber" class-name="small-padding fixed-width">
-                <template slot-scope="scope">
-                  <dict-tag  :value="this.printform.task.actualNumber"/>
-                </template>
-              </el-table-column>
-              <el-table-column label="开始号码" align="center" prop="actualNumber" class-name="small-padding fixed-width">
-                <template slot-scope="scope">
-                  <dict-tag  :value="scope.row.actualNumber"/>
-                </template>
-              </el-table-column>
-              <el-table-column label="开始号码" align="center" prop="actualNumber" class-name="small-padding fixed-width">
-                <template slot-scope="scope">
-                  <dict-tag  :value="scope.row.actualNumber"/>
-                </template>
-              </el-table-column>
-            </el-table>
+            <table class="receipt-table" >
+              <tr>
+                <td>收件人姓名：</td>
+                <td>{{ this.printform.task.receiverName }}</td>
+              </tr>
+              <tr>
+                <td>送货地址：</td>
+                <td>{{ this.printform.task.deliveryAddress }}</td>
+              </tr>
+              <tr>
+                <td>收件人电话：</td>
+                <td>{{ this.printform.task.phone }}</td>
+              </tr>
+              <tr>
+                <td>任务类型：</td>
+                <td>{{ this.printform.task.taskType }}</td>
+              </tr>
+              <tr>
+                <td>商品数量：</td>
+                <td>{{ this.printform.task.numbers }}</td>
+              </tr>
+              <tr>
+                <td>商品总价：</td>
+                <td>{{ this.printform.task.totalAmount }}</td>
+              </tr>
+            </table>
+            <h2>商品详细信息：</h2>
+            <h1 style="display: flex; justify-content: space-between;align-items: center;">
+              <div style="word-spacing: 10px;">商品名称</div>
+              <div style="color: white">-----------------</div>
+              <div style="word-spacing: 10px;">数量-------</div>
+              <div style="word-spacing: 10px;">单价</div>
+            </h1>
+            <table class="receipt-table">
+              <thead>
+              </thead>
+              <tbody>
+              <tr v-for="product in this.printform.task.products" :key="product.productId">
+                <td>{{ product.productName }}</td>
+                <td>{{ product.number }}</td>
+                <td>{{ product.price }}</td>
+              </tr>
+              </tbody>
+            </table>
           </div>
         </form>
       </div>
@@ -149,7 +176,7 @@
                 </span>
             </el-dialog>
             <!--发票领用-->
-            <el-dialog title="发票领用" :visible.sync="invoicesDialogVisible" @before-close="this.task = {}" width="70%">
+            <el-dialog title="发票领用" :visible.sync="invoicesDialogVisible" @before-close="this.task = {}" width="75%">
               <Invoices v-if="invoicesDialogVisible" :task="this.task"></Invoices>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="close">取消</el-button>
@@ -230,7 +257,7 @@ export default {
             printform: {
               substation:{
                 address: '',
-                name: '',
+                name: '暂无信息',
                 phone: '',
                 subwareId: ''
               },
@@ -242,8 +269,9 @@ export default {
                 deleted: '',
                 deliveryAddress: '',
                 needInvoice: '',
+                receiverName: '',
                 products: {
-                  actualNumber: '',
+                  productName: '',
                   number: '',
                   price: ''
                 },
@@ -567,18 +595,34 @@ export default {
 
         // Todo:打印签收单
         printSign() {
-          const id =this.task.id;
-          const that = this;
-          axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
-            //代表请求成功之后处理
-            that.printform = res.data.data;
-            console.log(that.printform);
-          }).catch( function (err){
-            //代表请求失败之后处理
-            alert ('进入catch')
-            console.log (err);
-          });
-          that.print();
+          if(this.printform.substation.name === '暂无信息'){
+            this.$message.success('发票信息加载中');
+            const id =this.task.id;
+            const that = this;
+            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+              //代表请求成功之后处理
+              that.printform = res.data.data;
+              console.log(that.printform);
+            }).catch( function (err){
+              //代表请求失败之后处理
+              alert ('进入catch')
+              console.log (err);
+            });
+          }
+          else{
+            const id =this.task.id;
+            const that = this;
+            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+              //代表请求成功之后处理
+              that.printform = res.data.data;
+              console.log(that.printform);
+            }).catch( function (err){
+              //代表请求失败之后处理
+              alert ('进入catch')
+              console.log (err);
+            });
+            that.print();
+          }
         },
         print(){
           printJS('printJS-form-task','html')
@@ -631,12 +675,10 @@ export default {
   font-size: 14px;
   margin-top: 10px;
 }
-.receipt-table td {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-}
 
 .receipt-table td:first-child {
   font-weight: bold;
 }
+
+
 </style>
