@@ -2,17 +2,17 @@
   <div class="app-container" >
     <!--  上方表单  -->
     <el-form :model="form" ref="elForm" :rules="rules" size="small"  label-width="68px" :inline="true">
-        <el-form-item label="开始时间" prop="startTime">
+        <el-form-item label="开始时间" prop="startTime" label-width="80px">
             <el-col>
               <el-date-picker type="date" placeholder="选择日期" v-model="form.startTime" style="width: 100%;"></el-date-picker>
             </el-col>
         </el-form-item>
-        <el-form-item label="结束时间" prop="startTime">
+        <el-form-item label="结束时间" prop="startTime" label-width="80px">
           <el-col>
             <el-date-picker type="date" placeholder="选择日期" v-model="form.endTime" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="供应商id" prop="supplierId">
+        <el-form-item label="供应商id" prop="supplierId" label-width="80px">
           <el-input v-model="form.supplierId"  placeholder="输入供应商id"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
@@ -211,7 +211,12 @@ export default {
       // 支出还是结算
       Type : undefined,
       // 表单
-      form: {},
+      form: {
+        startTime: undefined,
+        endTime: undefined,
+        supplierId: undefined,
+        productId: undefined
+      },
       // 总条数
       total: 0,
       // 查询数据
@@ -234,16 +239,19 @@ export default {
       // 表单校验
       rules: {
         startTime: [{
+          required: true,
           type: 'date',
           message: '请选择时间',
           trigger: 'blur'
         }],
         endTime: [{
+          required: true,
           type: 'data',
           message: '请选择时间',
           trigger: 'blur'
         }],
         supplyId: [{
+          required: true,
           message: '请输入供应商id',
           trigger: 'blur'
         }],
@@ -253,27 +261,42 @@ export default {
   methods: {
     /** 查询供应列表 */
     getList() {
-      this.open3 = false;
-      this.open2 = true;
-      const that = this;
-      this.loading = true;
-      axios.get("http://localhost:8010/ac/supply/listToSettlement",{
-        params: {
-          supplierId: that.form.supplierId,
-          startTime: that.form.startTime.toLocaleString(),
-          endTime: that.form.endTime.toLocaleString(),
-          productId: that.form.productId
-        }
-      }).then( function(res){
-        //代表请求成功之后处理
-        console.log(res);
-        that.total = res.data.data.length;
-        that.refundList = res.data.data;
-        that.loading = false;
-      }).catch( function (err){
-        //代表请求失败之后处理
-        console.log (err);
-      });
+      console.log(this.form.startTime);
+      console.log(this.form.supplierId);
+      if (this.form.startTime === undefined ||this.form.supplierId === undefined){
+        this.$message({
+          message: "请检查查询条件",
+          type: 'error'
+        });
+      }
+      else {
+        this.open3 = false;
+        this.open2 = true;
+        const that = this;
+        this.loading = true;
+        axios.get("http://localhost:8010/ac/supply/listToSettlement",{
+          params: {
+            supplierId: that.form.supplierId,
+            startTime: that.form.startTime.toLocaleString(),
+            endTime: that.form.endTime.toLocaleString(),
+            productId: that.form.productId
+          }
+        }).then( function(res){
+          that.$message({
+            message: res.data.msg,
+            type: 'success'
+          });
+          //代表请求成功之后处理
+          console.log(res);
+          that.total = res.data.data.length;
+          that.refundList = res.data.data;
+          that.loading = false;
+        }).catch( function (err){
+          //代表请求失败之后处理
+          console.log (err);
+        });
+        that.reset();
+      }
     },
     getToList() {
       const that = this
@@ -303,8 +326,8 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = undefined;
-      this.resetForm("form");
+      this.refundList = undefined;
+      this.resetForm("refundList");
     },
     handleQuery() {
       this.queryParams.pageNum = 1;

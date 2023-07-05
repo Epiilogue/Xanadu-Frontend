@@ -57,7 +57,7 @@
               <span>{{ row.productName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品大类" min-width="100" align="center">
+          <el-table-column label="商品种类编号" min-width="100" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productCategary }}</span>
             </template>
@@ -134,16 +134,15 @@
       <el-button @click="onReset">重置</el-button>
     </div>
 
-    <OrderInfo v-if="this.dialogFormVisible" title="订单详情" :temp="this.form" newOrder="true" :products="this.product"
-      :dialogFormVisible="this.dialogFormVisible" @close="close()"></OrderInfo>
+    <Order v-if="this.dialogFormVisible" ref="order" :id="this.form.id" :orderType="this.form.orderType"></Order>
   </div>
 </template>
 
 <script>
 import { createNewOrder } from "@/api/cc-order";
-import OrderInfo from "./OrderInfo.vue";
+import Order from '@/components/detail/order.vue'
 export default {
-  components: { OrderInfo },
+  components: { Order },
   data() {
     return {
       // 新订单表单
@@ -171,7 +170,6 @@ export default {
         newType: "", //新订类型
         deleted: false,
       },
-      products: [],
       rule: {
         customerId: [
           { required: true, message: "请选择订单客户", trigger: "change" },
@@ -209,10 +207,12 @@ export default {
               // 请求服务
               this.form.creareTime = new Date();
               createNewOrder(this.form).then((res) => {
-                this.form = res.data;
-                // 订单详情商品信息不更新
-                this.products = res.data.products;
+                // 展示订单详情
                 this.dialogFormVisible = true;
+                this.$nextTick(() => {
+                  this.$refs.order.getAndConvert(res.data.id)
+                })
+                this.onReset()
               });
             } else {
               this.$modal.alertWarning("请选择要购买的商品");
@@ -228,23 +228,12 @@ export default {
       this.form = this.$options.data().form;
       this.$cache.local.remove("selectedProduct");
       this.$cache.local.remove("selectedCustomer");
-      this.$message({
-        message: "reset!",
-        type: "warning",
-      });
     },
     handleSelectCustomer() {
       this.$router.push({ path: "/cc/customer" });
     },
     handleSelectProduct() {
       this.$router.push({ path: "/cc/product", query: { opType: "新订" } });
-    },
-    close() {
-      // 清除缓存
-      this.form = this.$options.data().form;
-      this.$cache.local.remove("selectedProduct");
-      this.$cache.local.remove("selectedCustomer");
-      this.dialogFormVisible = false;
     },
   },
   computed: {

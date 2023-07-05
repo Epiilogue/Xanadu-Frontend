@@ -5,8 +5,8 @@
         提交商品订单
       </el-button>
     </div>
-    <el-table :key="tableKey" :row-key="(row) => row.id" :data="list" ref="table" border fit highlight-current-row
-      style="width: 100%" @select="selectOne">
+    <el-table :key="tableKey" v-loading="listLoading" :row-key="(row) => row.id" :data="list" ref="table" border fit
+      highlight-current-row style="width: 100%" @select="selectOne">
       <el-table-column type="selection" width="120" align="center" fixed reserve-selection>
       </el-table-column>
       <el-table-column v-if="newOrder" label="ID" prop="id" align="center" width="100">
@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column v-if="newOrder" label="商品图片" width="100" align="center">
         <template slot-scope="{ row }">
-          <img :src="row.picture" width="40" height="40" class="head_pic"/>
+          <img :src="row.picture" width="40" height="40" class="head_pic" />
         </template>
       </el-table-column>
 
@@ -39,7 +39,7 @@
         <template slot-scope="{ row }">
           <span>{{ row.price }}</span>
         </template>
-      </el-table-column>   
+      </el-table-column>
       <el-table-column label="能否退货" class-name="status-col" width="100">
         <template slot-scope="{ row }">
           <el-tag :type="row.refundAble ? 'success' : 'danger'">
@@ -64,7 +64,7 @@
           <span>{{ row.secondCategray }}</span>
         </template>
       </el-table-column>
-      
+
       <el-table-column v-if="newOrder" label="备注" width="100" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.comment }}</span>
@@ -113,6 +113,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: undefined,
+        orderType:undefined,
       },
 
       opType: undefined,
@@ -133,8 +134,9 @@ export default {
   created() {
     this.opType = this.$route.query.opType; // 操作类型
     this.newOrder = this.opType === "新订"; //是否新订
+    this.listQuery.orderType = this.$route.query.orderType
     if (!this.newOrder) {
-      this.listQuery.orderId = this.$route.query.orderId;
+      this.listQuery.orderId = this.$route.query.orderId
       this.getListOfOrder();
     } else {
       // 新订
@@ -210,7 +212,8 @@ export default {
         // 设置表格信息
         this.list = list;
         this.total = res.data.total;
-      });
+        this.listLoading = false;
+      }).catch(this.listLoading = false);
     },
 
     // 订单中的商品
@@ -225,27 +228,24 @@ export default {
         // 设置表格信息
         this.list = list;
         this.total = list.length;
-      });
+        this.listLoading = false
+      }).catch(this.listLoading = false);
     },
 
     // 提交商品订单
     handleReturnPd() {
-      if (!this.currselectedPro) {
-        this.$store.commit("SET_PROCHANGED", this.selectedProduct);
-        this.$tab.closePage();
-        this.$router.back();
-        return;
+      if (this.currselectedPro) {
+        // 保存最后修改的商品
+        let row = { id: this.currselectedPro.id + 1 };
+        this.changeNum(row);
       }
-      // 保存最后修改的商品
-      let row = { id: this.currselectedPro.id + 1 };
-      this.changeNum(row);
 
       // 修改商品属性名
       this.selectedProduct = this.selectedProduct.map((g) => {
         return {
           productId: this.newOrder ? g.id : g.productId,
           productName: this.newOrder ? g.name : g.productName,
-          productCategary: g.categary,
+          productCategary: g.secondCategray,
           price: g.price,
           number: this.newOrder ? g.opNumber : g.number,
           refundAble: g.refundAble,

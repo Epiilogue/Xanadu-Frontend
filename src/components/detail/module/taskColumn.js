@@ -3,7 +3,7 @@ let tableColumns = [
     {
         prop: "id",
         label: "任务单编号",
-        show: true
+        show: false
     },
     {
         prop: "customerId",
@@ -45,11 +45,11 @@ let tableColumns = [
         label: "商品总价",
         show: true
     },
-    // {
-    //     prop: "deadline",
-    //     label: "要求完成日期",
-    //     show: true
-    // },
+    {
+        prop: "deadline",
+        label: "要求完成日期",
+        show: false //表格列是否展示
+    },
     {
         prop: "taskType",
         label: "任务类型",
@@ -65,11 +65,11 @@ let tableColumns = [
         label: "快递员编号",
         show: true
     },
-    // {
-    //     prop: "createTime",
-    //     label: "任务生成日期",
-    //     show: true
-    // },
+    {
+        prop: "createTime",
+        label: "任务生成日期",
+        show: false
+    },
     {
         prop: "receiptId",
         label: "回执编号",
@@ -87,8 +87,8 @@ let tableColumns = [
     // },
 ]
 // 要隐藏的列
-const all = ['courierId', 'createTime', 'receiptId']
-const assign = ['courierId', 'createTime', 'receiptId', 'taskStatus']
+const all = ['courierId', 'deadline','createTime', 'receiptId']
+const assign = ['courierId', 'deadline','createTime', 'receiptId', 'taskStatus']
 const assigned = ['receiptId']
 // 设置表格列的显示与隐藏
 /**
@@ -160,4 +160,4 @@ function getOption(opType) {
 
 
 
-export { getColumn, getOption }
+export { getColumn, getOption,tableColumns }

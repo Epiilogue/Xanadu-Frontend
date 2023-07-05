@@ -51,6 +51,12 @@
                 <!-- 动态列Table -->
                 <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%"
                     v-loading="listLoading">
+                    <!-- 点击编号查看详情 -->
+                    <el-table-column prop="id" label="任务单编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <Task :id="row.id" :task="row" v-if="refreshed"></Task>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>
@@ -72,15 +78,12 @@
                             }}</span>
                         </template>
                     </el-table-column>
-                    按钮
+                    <!-- 按钮 -->
                     <el-table-column label="操作" align="center" min-width="400" class-name="small-padding fixed-width"
                         fixed="right">
                         <template slot-scope="{ row, $index }">
                             <el-button type="primary" plain @click="handleTask(row)">
                                 操作任务单
-                            </el-button>
-                            <el-button type="primary" plain @click="handleViewTask(row)">
-                                任务详情
                             </el-button>
                             <el-button type="primary" plain @click="deleteTask(row)">
                                 删除
@@ -97,7 +100,8 @@
             <el-dialog title="选择快递员" :visible.sync="courierDialogVisible" @before-close="this.task = {}" width="70%">
                 <!-- <SelectCourier ref="SelectCourier" v-if="courierDialogVisible" :subId="this.subId">
                 </SelectCourier> -->
-                <UserTable v-if="courierDialogVisible" ref="SelectCourier" role="COURIER" opType="查看快递员" :subId="subId"></UserTable>
+                <UserTable v-if="courierDialogVisible" ref="SelectCourier" role="COURIER" opType="查看快递员" :subId="subId">
+                </UserTable>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="close">取消</el-button>
                     <el-button type="primary" @click="assignTask">分配</el-button>
@@ -117,11 +121,12 @@ import { getTaskList, assign, listHanding, takeProducts, deleteTask } from '@/ap
 import Pagination from '@/components/Pagination'
 import SelectCourier from './selectCourier.vue'
 import Receipt from './inputReceipt.vue'
-import { getColumn, getOption } from './taskColumn'
+import { getColumn, getOption } from '@/components/detail/module/taskColumn'
+import Task from '@/components/detail/task.vue'
 import UserTable from './userTable'
 
 export default {
-    components: { Pagination, SelectCourier, Receipt,UserTable },
+    components: { Pagination, SelectCourier, Receipt, UserTable, Task },
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
@@ -145,11 +150,12 @@ export default {
             subId: '',   //分站id
             //数据
             task: {},    //当前操作的任务单
-            
+
             list: [],   //所有数据
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
             total: 0,   //分页
+            refreshed:true,
             listLoading: false,
             //查询
             listQuery: {
@@ -191,10 +197,14 @@ export default {
             })
         },
         getPageList() {
+            this.refreshed=false
             this.total = this.queryList.length
             let pageNum = this.pageInfo.pageNum
             let pageSize = this.pageInfo.pageSize
             this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+            this.$nextTick(()=>{
+                this.refreshed=true
+            })
         },
         //查询
         handleFilter() {
@@ -211,6 +221,7 @@ export default {
                     return false
                 }
                 if (query.taskStatus !== '' && task.taskStatus !== query.taskStatus) {
+                    console.log(task.taskStatus + query.taskStatus)
                     return false
                 }
                 if (query.courierId != '' && (task.courierId).toString().indexOf(query.courierId) === -1) {
@@ -273,7 +284,7 @@ export default {
                     // 已分配且未完成的任务需要打印签收单
                     await this.getList(listHanding)
                     this.opList = this.list.filter(task => {
-                        if (['已分配', '已领货'].includes(task.taskStatus))
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['送货', '送货收款'].includes(task.taskType))
                             return true
                     })
                     break
@@ -305,10 +316,6 @@ export default {
             this.getPageList()
             this.listLoading = false;
         },
-
-        // 查看任务当前状态对应的流程分步表单
-        // 查看任务详情
-        handleViewTask() { },
 
         // 任务单操作
         handleTask(row) {
@@ -347,33 +354,33 @@ export default {
         // 分配任务
         assignTask() {
             let courierId = this.$refs['SelectCourier'].getIds();
-            if (!courierId || courierId.length===0) {
+            if (!courierId || courierId.length === 0) {
                 this.$message({
                     type: 'error',
                     message: '请选择任务配送员',
                     durarion: 1000,
                 });
                 return
-            }else if(courierId.length>1){
+            } else if (courierId.length > 1) {
                 this.$message({
                     type: 'error',
                     message: '只能选择一个任务配送员',
                     durarion: 1000,
                 });
                 return
-            }else{
+            } else {
                 assign(this.subId, courierId[0], this.task).then(res => {
-                //更新表格数据
-                this.handleOpChange(this.opType, false)
-                this.close()
-                this.$message({
-                    type: 'success',
-                    message: res.msg,
-                    durarion: 1000,
-                });
-                // 重置表格多选框
-                this.$refs['SelectCourier'].setIds()
-            }).catch()
+                    //更新表格数据
+                    this.handleOpChange(this.opType, false)
+                    this.close()
+                    this.$message({
+                        type: 'success',
+                        message: res.msg,
+                        durarion: 1000,
+                    });
+                    // 重置表格多选框
+                    this.$refs['SelectCourier'].setIds()
+                }).catch()
             }
         },
         // 分配任务完成

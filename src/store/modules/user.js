@@ -1,5 +1,7 @@
 import { login, logout, getInfo, refreshToken, loginByEmail } from '@/api/login'
 import { getToken, setToken, setExpiresIn, removeToken } from '@/utils/auth'
+import Vue from 'vue'
+import { fetchSubStation } from '@/api/sub'
 
 const user = {
   state: {
@@ -87,6 +89,14 @@ const user = {
           }
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', avatar)
+          // 分站长但不是管理员，缓存分站id
+          let auth = Vue.prototype.$auth
+          let cache = Vue.prototype.$cache
+          if(auth.hasRole("SUBSTATION_MANAGER") && !auth.hasRole("COURIER")){
+            fetchSubStation(user.userId).then(res=>{
+              cache.session.set('subProcessing', res.id)
+            })
+          }
           resolve(res)
         }).catch(error => {
           reject(error)
