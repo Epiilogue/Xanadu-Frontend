@@ -217,7 +217,7 @@ export default {
       });
     },
     printInvoice(row){
-      if(this.printform.number === '暂无信息' || this.printform.number !== row.id){
+      if(this.printform.number === '暂无信息'){
         this.$message.success('发票信息加载中');
         const id = row.id || this.ids;
         const that = this;

@@ -35,8 +35,24 @@
                 <td>{{ this.printform.task.phone }}</td>
               </tr>
               <tr>
+                <td>创建时间：</td>
+                <td>{{ parseTime()(this.printform.task.createTime, '{y}-{m}-{d}-{h}:{m}:{s}') }}</td>
+              </tr>
+              <tr>
+                <td>截止时间：</td>
+                <td>{{  parseTime()(this.printform.task.deadline, '{y}-{m}-{d}-{h}:{m}:{s}') }}</td>
+              </tr>
+              <tr>
                 <td>任务类型：</td>
                 <td>{{ this.printform.task.taskType }}</td>
+              </tr>
+              <tr>
+                <td>任务状态：</td>
+                <td>{{ this.printform.task.taskStatus }}</td>
+              </tr>
+              <tr>
+                <td>是否要发票：</td>
+                <td>{{ this.printform.task.needInvoice === false ? '否' : '是' }}</td>
               </tr>
               <tr>
                 <td>商品数量：</td>
@@ -211,6 +227,7 @@ import Invoice from "@/views/xanadu/substation/task/invoice.vue";
 import axios from "axios";
 import printJS from "print-js";
 import Vue from 'vue'
+import {parseTime} from "@/utils/ruoyi";
 Vue.use(print)
 
 
@@ -296,6 +313,9 @@ export default {
         }
     },
     methods: {
+      parseTime() {
+        return parseTime
+      },
         getList(fun) {
             // 默认查询所有任务
             if (!fun) fun = getTaskList
