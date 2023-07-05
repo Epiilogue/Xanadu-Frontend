@@ -107,6 +107,11 @@
           <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.total"/>
         </template>
       </el-table-column>
+      <el-table-column label="领用分站" align="center" prop="substationId" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.substationId"/>
+        </template>
+      </el-table-column>
       <el-table-column label="登记状态" align="center" prop="registration" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-tag

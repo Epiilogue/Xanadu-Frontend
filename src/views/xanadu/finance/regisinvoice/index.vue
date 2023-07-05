@@ -187,7 +187,6 @@ export default {
     this.getList();
   },
   methods: {
-    right,
     /** 查询公告列表 */
     getList() {
       const that = this

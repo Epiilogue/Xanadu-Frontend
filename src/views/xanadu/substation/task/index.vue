@@ -1,5 +1,46 @@
 <template>
     <div class="app-container">
+      <!--   打印内容   -->
+      <div v-show="false">
+        <form method="get" action="#" id="printJS-form-task">
+          <div class="receipt">
+            <h3 >Xanadu送货签收单</h3 >
+            <h2>分库信息：</h2>
+            <table class="receipt-table" title="分库信息">
+              <tr>
+                <td>分库名：</td>
+                <td>{{ this.printform.substation.name }}</td>
+              </tr>
+              <tr>
+                <td>分库地址：</td>
+                <td>{{ this.printform.substation.address }}</td>
+              </tr>
+              <tr>
+                <td>联系方式：</td>
+                <td>{{ this.printform.substation.phone }}</td>
+              </tr>
+            </table>
+            <h2>任务信息：</h2>
+            <el-table :data="this.printform.task.products" >
+              <el-table-column label="开始号码" align="center" prop="actualNumber" class-name="small-padding fixed-width">
+                <template slot-scope="scope">
+                  <dict-tag  :value="this.printform.task.actualNumber"/>
+                </template>
+              </el-table-column>
+              <el-table-column label="开始号码" align="center" prop="actualNumber" class-name="small-padding fixed-width">
+                <template slot-scope="scope">
+                  <dict-tag  :value="scope.row.actualNumber"/>
+                </template>
+              </el-table-column>
+              <el-table-column label="开始号码" align="center" prop="actualNumber" class-name="small-padding fixed-width">
+                <template slot-scope="scope">
+                  <dict-tag  :value="scope.row.actualNumber"/>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </form>
+      </div>
         <div v-if="!receipt">
             <!-- 提示当前任务操作 -->
             <div class="alert">
@@ -107,6 +148,20 @@
                     <el-button type="primary" @click="assignTask">分配</el-button>
                 </span>
             </el-dialog>
+            <!--发票领用-->
+            <el-dialog title="发票领用" :visible.sync="invoicesDialogVisible" @before-close="this.task = {}" width="70%">
+              <Invoices v-if="invoicesDialogVisible" :task="this.task"></Invoices>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="close">取消</el-button>
+              </span>
+            </el-dialog>
+            <!--分站发票领用-->
+            <el-dialog title="分站发票领用" :visible.sync="invoiceDialogVisible" @before-close="this.task = {}" width="70%">
+              <Invoice v-if="invoiceDialogVisible"></Invoice>
+              <span slot="footer" class="dialog-footer">
+                  <el-button @click="close">取消</el-button>
+                </span>
+            </el-dialog>
         </div>
         <!-- 回执录入 -->
         <div v-else>
@@ -124,9 +179,16 @@ import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
 import Task from '@/components/detail/task.vue'
 import UserTable from './userTable'
+import Invoices from "@/views/xanadu/substation/task/invoices.vue";
+import Invoice from "@/views/xanadu/substation/task/invoice.vue";
+import axios from "axios";
+import printJS from "print-js";
+import Vue from 'vue'
+Vue.use(print)
+
 
 export default {
-    components: { Pagination, SelectCourier, Receipt, UserTable, Task },
+    components: {Invoices, Pagination, SelectCourier, Receipt, UserTable, Task ,Invoice},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
@@ -150,7 +212,7 @@ export default {
             subId: '',   //分站id
             //数据
             task: {},    //当前操作的任务单
-
+            
             list: [],   //所有数据
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
@@ -163,6 +225,29 @@ export default {
                 taskStatus: "",
                 taskType: "",
                 courierId: "",
+                needInvoice: "",
+            },
+            printform: {
+              substation:{
+                address: '',
+                name: '',
+                phone: '',
+                subwareId: ''
+              },
+              task: {
+                courierId: '',
+                createTime: '',
+                customerId: '',
+                deadline: '',
+                deleted: '',
+                deliveryAddress: '',
+                needInvoice: '',
+                products: {
+                  actualNumber: '',
+                  number: '',
+                  price: ''
+                },
+              }
             },
             // 分页
             pageList: [],   //表格数据
@@ -176,12 +261,13 @@ export default {
             opTypeOption: ['分配任务', '取货', '发票领用', '打印签收单', '回执录入'],
             // dialog
             courierDialogVisible: false,
+            invoicesDialogVisible: false,
+            invoiceDialogVisible: false,
             tableColumns: undefined, //表格列
             receipt: false,  //是否展示回执录入页面
         }
     },
     methods: {
-
         getList(fun) {
             // 默认查询所有任务
             if (!fun) fun = getTaskList
@@ -275,7 +361,8 @@ export default {
                     await this.getList(listHanding)
                     // 只有新订的收款任务和已分配且未完成的任务需要领用发票
                     this.opList = this.list.filter(task => {
-                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType))
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType)
+                          && task.needInvoice === true)
                             return true
                     })
                     break
@@ -388,6 +475,8 @@ export default {
             // 关闭对话框
             this.task = {}
             this.courierDialogVisible = false
+            this.invoiceDialogVisible = false;
+            this.invoicesDialogVisible = false;
         },
 
         // 取货
@@ -473,17 +562,32 @@ export default {
          */
         assignInvoice() {
             console.log('发票领用')
+            this.invoicesDialogVisible = true;
         },
 
         // Todo:打印签收单
         printSign() {
-            console.log('打印签收单')
+          const id =this.task.id;
+          const that = this;
+          axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+            //代表请求成功之后处理
+            that.printform = res.data.data;
+            console.log(that.printform);
+          }).catch( function (err){
+            //代表请求失败之后处理
+            alert ('进入catch')
+            console.log (err);
+          });
+          that.print();
         },
-
+        print(){
+          printJS('printJS-form-task','html')
+        },
         // Todo:分站发票领用
         // 分站id是 this.subId
         handleAssignSubInvoice() {
-            console.log('分站发票领用')
+          this.invoiceDialogVisible = true;
+          console.log('分站发票领用')
         }
     },
 }
@@ -514,5 +618,25 @@ export default {
     margin-bottom: 0px;
     height: 100%;
     /* vertical-align:middle; */
+}
+.receipt {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+.receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 10px;
+}
+.receipt-table td {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+}
+
+.receipt-table td:first-child {
+  font-weight: bold;
 }
 </style>
