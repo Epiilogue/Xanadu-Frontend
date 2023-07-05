@@ -38,6 +38,12 @@
                 <!-- 动态列Table -->
                 <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%"
                     v-loading="listLoading">
+                    <!-- 点击编号查看详情 -->
+                    <el-table-column prop="id" label="任务单编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <Task :id="row.id" :task="row" v-if="refreshed"></Task>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>
@@ -71,10 +77,11 @@
 
 import { getTaskList } from '@/api/dpc-dispatch'
 import Pagination from '@/components/Pagination'
-import { getColumn, getOption } from '@/views/xanadu/substation/task/taskColumn'
+import { getColumn, getOption } from '@/components/detail/module/taskColumn'
+import Task from '@/components/detail/task.vue'
 
 export default {
-    components: { Pagination },
+    components: { Pagination,Task },
     created() {
         this.handleOpChange(this.opType, false);
     },
@@ -90,6 +97,7 @@ export default {
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
             total: 0,   //分页
+            refreshed:true,
             listLoading: false,
             //查询
             listQuery: {
@@ -129,10 +137,14 @@ export default {
             })
         },
         getPageList() {
+            this.refreshed=false
             this.total = this.queryList.length
             let pageNum = this.pageInfo.pageNum
             let pageSize = this.pageInfo.pageSize
             this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+            this.$nextTick(()=>{
+                this.refreshed=true
+            })
         },
         //查询
         handleFilter() {

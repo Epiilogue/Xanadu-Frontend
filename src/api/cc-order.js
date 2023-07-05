@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 // 获取订单列表
-export function fetchList(query) {
+export function fetchList(customerId) {
   return request({
-    url: `/cc/order/list`+(query.customerId?`/${query.customerId}`:''),
+    url: `/cc/order/list`+(customerId?`/${customerId}`:''),
     method: 'get',
-    params: query
+    // params: query
   })
 }
 

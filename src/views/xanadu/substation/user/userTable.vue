@@ -88,6 +88,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
+      // 多选
+      ids: [],
       // 列信息
       columns: [
         { key: 0, label: `用户编号`, visible: true },

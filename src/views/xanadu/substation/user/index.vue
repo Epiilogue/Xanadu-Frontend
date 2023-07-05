@@ -65,6 +65,13 @@ export default {
         }else{
             this.subId = Number(this.$cache.session.get('subProcessing'))
         }
+        // 只有管理员可以管理分站长
+        if(this.$auth.hasRole("admin")){
+
+            this.roleOption=['快递员','分站管理员']
+        }else{
+            this.roleOption=['快递员']
+        }
         this.setOpOption()
     },
     data(){
