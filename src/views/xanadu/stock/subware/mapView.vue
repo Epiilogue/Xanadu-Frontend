@@ -22,9 +22,12 @@
         <el-form-item label="仓库名称">
           <el-input v-model="subware.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="仓库管理员">
-          <el-input v-model="subware.master" autocomplete="off"></el-input>
-        </el-form-item>
+        <el-form-item label="仓库管理员"></el-form-item>
+          <div>
+            <el-checkbox-group v-model="checkedUsers" @change="handleSelectUser">
+              <el-checkbox v-for="u in user" :label="u" >库管员id：{{u.userId}}，库管员名称：{{u.userName}}</el-checkbox>
+            </el-checkbox-group>
+          </div>
       </el-form>
       <el-form-item class="sumbit">
         <el-button type="primary" @click="addStock">提交</el-button>
@@ -38,7 +41,7 @@
 import loadBMap from '@/utils/loadBMap.js'
 import axios from 'axios'
 import subware from './index'
-import { addSubware } from '@/api/ware'
+import { addSubware, userList } from '@/api/ware'
 export default {
   name :'mapView',
   data() {
@@ -60,33 +63,45 @@ export default {
         address:'',
         x:'',
         y:'',
-        master:'',
-        city:''
-      }
+        city:'',
+        managerIds:[]
+      },
+      user:[],
+      checkedUsers:[],
     }
   },
   async mounted() {
     await loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
     this.initMap()
+
+    userList().then((res)=>{
+      this.user.push(res.data)
+      this.user = this.user[0]
+    })
+
   },
   methods: {
+    handleSelectUser(){
+      this.subware.managerIds = []
+      for (let i = 0;i < this.checkedUsers.length;i++){
+        this.subware.managerIds.push(this.checkedUsers[i].userId)
+      }
+    },
     //添加仓库
     addStock() {
       this.subware.address = this.form.address
       this.subware.x = this.form.addrPoint.lat
       this.subware.y = this.form.addrPoint.lng
       this.subware.city = this.form.city
-      console.log(this.subware)
       if (!this.subware.name){
         this.$message.error('请输入仓库名称')
-      } else if (!this.subware.master){
-        this.$message.error('请输入仓库管理员')
+      } else if (this.subware.managerIds.length === 0){
+        this.$message.error('请选择仓库管理员')
       } else if (!this.subware.address){
         this.$message.error('请输入仓库地址')
       } else if (!this.subware.city){
         this.$message.error('请选择仓库位置')
-      }
-      else {
+      } else {
         addSubware(this.subware).then((res)=>{
           if (res.msg == '创建分库成功'){
             this.$message({
@@ -94,7 +109,6 @@ export default {
               type:'success'
             })
             this.$emit('showMapView',false)
-
           }
         })
       }

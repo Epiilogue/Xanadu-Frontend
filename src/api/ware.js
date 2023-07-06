@@ -177,3 +177,19 @@ export function subList(){
     method: 'get',
   })
 }
+
+//获取待入职的库管员
+export function userList(){
+  return request({
+    url:'/ware/subware/getSubwareUserList',
+    method:'get',
+  })
+}
+
+//获取仓库原本库管员
+export function orgList(subwareId){
+  return request({
+    url:'/ware/subware/getSubwareManager/'+subwareId,
+    method:'get'
+  })
+}
