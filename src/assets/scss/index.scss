@@ -94,8 +94,7 @@
       // 底部数据
       .bototm-box {
         margin-top: 0.125rem;
-        display: grid;
-        grid-template-columns: repeat(2, 50%);
+        display: flex;
       }
     }
 

@@ -94,6 +94,7 @@ export default {
               type:'success'
             })
             this.$emit('showMapView',false)
+
           }
         })
       }

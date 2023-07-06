@@ -61,6 +61,13 @@ export default {
       outId:'',
     }
   },
+  watch:{
+    dialogFormVisible:{
+      handler(){
+        this.reset()
+      }
+    }
+  },
   methods:{
     //toConfirm
     toConfirm(row){
