@@ -1,9 +1,53 @@
 <template>
+  <div class="app-container">
+    <!--   打印内容   -->
+    <div v-show="false">
+      <form method="get" action="#" id="printJS-form-output">
+        <div >
+          <h3>Xanadu出库单</h3 >
+          <table class="product-table">
+            <thead>
+            <tr>
+              <th>名称</th>
+              <th>单价</th>
+              <th>总数</th>
+              <th>供货商名称</th>
+              <th>总价格</th>
+              <th>日期</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="product in this.printform" :key="product.productId">
+              <td>{{ product.productName }}</td>
+              <td>{{ product.productPrice }}</td>
+              <td>{{ product.totalNum }}</td>
+              <td>{{ product.supplierName }}</td>
+              <td>{{ product.totalPrice }}</td>
+              <td>{{ parseTime()(product.date, '{y}-{m}-{d}') }}</td>
+            </tr>
+            </tbody>
+          </table>
 
-  <div>
+        </div>
+      </form>
+    </div>
     <!--表格-->
     <el-card style="margin: 10px 0">
-      <el-button type="primary" size="default" icon="el-icon-refresh-right" style="margin-right: 10px"  @click="reset">刷  新</el-button>
+
+      <el-form :model="printData" ref="elForm" :rules="rules" size="small"  label-width="68px" :inline="true">
+        <el-form-item label="选择日期" prop="data" label-width="80px">
+          <el-col>
+            <el-date-picker type="date" placeholder="选择日期" v-model="printData.data" style="width: 100%;"></el-date-picker>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="商品名称" prop="productId">
+          <el-input v-model="printData.productName"  placeholder="输入商品名称"
+                    prefix-icon='el-icon-paperclip' width="120%"></el-input>
+        </el-form-item>
+        <el-button type="primary" size="small" @click="printDispatchOut">打印出库单</el-button>
+        <el-button type="primary" size="small" icon="el-icon-refresh-right" style="margin-right: 10px"  @click="reset">刷  新</el-button>
+      </el-form>
+
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
@@ -49,10 +93,12 @@
       <el-slider v-model="outNum" show-input :max="Math.ceil(this.outvalue*1.5)" :min="Math.floor(this.outvalue*0.5)" :step="1">
       </el-slider>
       <el-button type="primary" round @click="confirmOut">提交</el-button>
+
     </el-dialog>
 
 
   </div>
+
 </template>
 
 <script>
@@ -60,6 +106,11 @@
 import {cenDispatchOut, cenConfirmOut} from '@/api/ware'
 import subware from '../../../../components/detail/subware'
 import product from '../../../../components/detail/product'
+import printJS from "print-js";
+import Vue from 'vue'
+import axios from "axios";
+import {parseTime} from "@/utils/ruoyi";
+Vue.use(print)
 
 export default {
   name: 'DispatchOut',
@@ -73,10 +124,33 @@ export default {
       dialogFormVisible:false,
       outvalue:'',
       outNum:'',
-
+      printData: {
+        data: null,
+        productName: '',
+      },
+      printform: {
+        productName: '无',
+        productPrice: '',
+        number: '',
+        supplierName: '',
+        totalNum: '',
+        totalPrice: '',
+        date: '',
+      },
+      rules: {
+        data: [{
+          required: true,
+          type: 'date',
+          message: '请选择日期',
+          trigger: 'blur'
+        }]
+      }
     }
   },
   methods:{
+    parseTime() {
+      return parseTime
+    },
 
     toConfirm(row){
       this.outId = row.id
@@ -96,8 +170,38 @@ export default {
         }
       })
     },
-
-
+    printDispatchOut(){
+      if(this.printData.data === null){
+        this.$message({
+          message:'请选择日期',
+          type:'warning'
+        })
+      }
+      else{
+        const that = this;
+        axios.get("http://localhost:8015/ware/centerOutput/printInventoryList",{
+          params: {
+            date: that.printData.data.toLocaleString(),
+            productName: that.printData.productName,
+          }
+        }).then( function(res){
+          //代表请求成功之后处理
+          that.printform = res.data.data;
+          console.log(that.printform);
+        }).catch( function (err){
+          //代表请求失败之后处理
+          that.$message({
+            message: "后端请求失败",
+            type: 'error'
+          });
+          console.log (err);
+        });
+        that.print();
+      }
+    },
+    print(){
+      printJS('printJS-form-output','html')
+    },
     //时间戳转换
     getLocalTime(nS) {
       var date = new Date(nS);
@@ -154,5 +258,28 @@ export default {
 </script>
 
 <style scoped>
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px; /* 设置表格字体大小 */
+}
 
+.product-table th,
+.product-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.product-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.product-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.product-table tbody tr:hover {
+  background-color: #ebebeb;
+}
 </style>

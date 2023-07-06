@@ -68,7 +68,7 @@
               <div style="word-spacing: 10px;">商品名称</div>
               <div style="color: white">-----------------</div>
               <div style="word-spacing: 10px;">数量-------</div>
-              <div style="word-spacing: 10px;">单价</div>
+              <div style="word-spacing: 10px;">单价----</div>
             </h1>
             <table class="receipt-table">
               <thead>
@@ -81,6 +81,7 @@
               </tr>
               </tbody>
             </table>
+            <h1>------------------------------------------------</h1>
           </div>
         </form>
       </div>
@@ -625,7 +626,10 @@ export default {
               console.log(that.printform);
             }).catch( function (err){
               //代表请求失败之后处理
-              alert ('进入catch')
+              that.$message({
+                message: "后端请求失败",
+                type: 'error'
+              });
               console.log (err);
             });
           }
@@ -638,7 +642,10 @@ export default {
               console.log(that.printform);
             }).catch( function (err){
               //代表请求失败之后处理
-              alert ('进入catch')
+              that.$message({
+                message: "后端请求失败",
+                type: 'error'
+              });
               console.log (err);
             });
             that.print();
