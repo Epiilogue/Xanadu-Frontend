@@ -93,9 +93,9 @@ const assigned = ['receiptId']
 // 设置表格列的显示与隐藏
 /**
  * 可分配的任务，商品列表存在products里
- * 
+ *
  * 分配任务后，显示快递员编号和任务生成日期，商品列表存在json里
- * 
+ *
  * 录入回执后，显示回执编号
  */
 function getColumn(opType) {

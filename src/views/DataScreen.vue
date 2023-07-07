@@ -57,27 +57,22 @@
           <div class="body-box">
             <!-- 第三行数据 -->
             <div class="content-box">
-              <!--中间左侧 各库出货量排行榜-->
+              <!--中间左侧 满意度排行榜-->
               <div>
                 <dv-border-box-12>
                   <centerLeft />
                 </dv-border-box-12>
               </div>
-              <!-- 中间 地图-各仓库分布-->
+              <!-- 中间 订单统计-->
               <div>
                 <dv-border-box1 style="margin-left: 10px;width: 8rem">
                   <center />
                 </dv-border-box1>
               </div>
-              <!-- 中间右侧 配送员满意度和订单展示 -->
+              <!-- 中间右侧 分库出库量比例 -->
               <div>
-                <dv-border-box8 style="margin-left: 10px">
-                  <centerRight1 />
-                </dv-border-box8>
-              </div>
-              <div>
-                <dv-border-box-13 style="margin-left: 30px">
-                  <centerRight2 />
+                <dv-border-box-13 style="margin-left: 10px">
+                  <centerRight />
                 </dv-border-box-13>
               </div>
             </div>
@@ -85,11 +80,11 @@
             <!-- 底部-->
             <div class="bototm-box">
               <!--各商品订购折线图-->
-              <dv-border-box-13 style="z-index: 2">
+              <dv-border-box-13 style="width: 12rem">
                 <bottomLeft />
               </dv-border-box-13>
-              <!--分站分析-->
-              <dv-border-box-12>
+              <!--地图-->
+              <dv-border-box-12 style="width: 8rem">
                 <bottomRight />
               </dv-border-box-12>
             </div>
@@ -108,8 +103,7 @@
 //各分组件
 import centerLeft from './xanadu/DataScreen/centerLeft'
 import center from './xanadu/DataScreen/center'
-import centerRight2 from './xanadu/DataScreen/centerRight2'
-import centerRight1 from './xanadu/DataScreen/centerRight1'
+import centerRight from './xanadu/DataScreen/centerRight'
 import bottomRight from './xanadu/DataScreen/bottomRight'
 import bottomLeft from './xanadu/DataScreen/bottomLeft'
 
@@ -127,8 +121,7 @@ export default {
   components:{
     centerLeft,
     center,
-    centerRight2,
-    centerRight1,
+    centerRight,
     bottomRight,
     bottomLeft
   },
@@ -193,7 +186,6 @@ export default {
   padding: 0.2rem 0.2rem 0 0.2rem;
   background-size: cover;
   background-position: center center;
-
 }
 
 </style>

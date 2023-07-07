@@ -73,7 +73,6 @@
 
 import mapview from './mapView.vue'
 import updateView from './updateView'
-import personal from '../subStorage/personal'
 
 import { subwareByID,subwareAll ,subwareDetele} from '@/api/ware'
 import Subware from '@/components/detail/subware.vue'
@@ -104,9 +103,19 @@ export default {
 
     }
   },
-
+  watch:{
+    dialogFormVisible:{
+      handler(){
+        this.reset()
+      }
+    },
+    dialogFormVisible1:{
+      handler() {
+        this.reset()
+      }
+    }
+  },
   methods: {
-
     //跳转库存量
     goto(row){
       this.$router.push(({
@@ -114,7 +123,6 @@ export default {
         query:{stockId:row.id}
       }))
     },
-
     //跳转领货出库
     goto1(row){
       this.$router.push(({
@@ -129,7 +137,6 @@ export default {
         query:{stockId:row.id}
       }))
     },
-
     //跳转调拨入库
     goto3(row){
       this.$router.push(({
@@ -137,7 +144,6 @@ export default {
         query:{stockId:row.id}
       }))
     },
-
     //跳转退货入库
     goto4(row){
       this.$router.push(({
@@ -151,12 +157,22 @@ export default {
       if (this.stockID === ''){
         this.$message.error('请输入仓库ID')
       } else {
-        subwareByID(this.stockID).then(res=>{
-          var list=[]
-          list.push(res.data)
-          this.tableData=list
-          console.log(this.tableData)
-        })
+        var flag = true
+        var numReg = /^[0-9]+$/
+        var numTe = new RegExp(numReg)
+        flag = numTe.test(this.stockID)
+        if (!flag){
+          this.$message({
+            type: 'error',
+            message: '输入信息不合法'
+          });
+        } else {
+          subwareByID(this.stockID).then(res=>{
+            var list=[]
+            list.push(res.data)
+            this.tableData=list
+          })
+        }
       }
     },
     //重置
@@ -197,7 +213,6 @@ export default {
 
     //删除仓库
     deleteStock(row) {
-      console.log(row.id)
       subwareDetele(row.id).then(res=>{
         console.log(res)
         if (res.msg === '删除分库成功'){
@@ -232,7 +247,6 @@ export default {
   mounted() {
     subwareAll().then(res=>{
       this.tableData = res.data;
-      console.log(res)
     })
   }
 }
