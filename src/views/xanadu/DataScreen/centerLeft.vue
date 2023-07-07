@@ -14,46 +14,23 @@
 </template>
 
 <script>
+import {listTop} from '../../../api/dataScreen'
+
 export default {
   name: 'centerLeft',
   data() {
     return{
-      list:[
-        {
-          name: "李嘉伟",
-          value: 89
-        },
-        {
-          name: "徐高松",
-          value: 4
-        },
-        {
-          name: "邢凯",
-          value: 100
-        },
-        {
-          name: "阿伟罗",
-          value: 7
-        },
-        {
-          name: "李志鹏",
-          value: 66
-        },
-        {
-          name: "李志鹅",
-          value: 77
-        },
-        {
-          name: "刘益先",
-          value: 56
-        }
-      ],
+      list:[],
       config:{
         data:[]
       }
     }
   },
   mounted() {
+    /* TODO*/
+    // listTop(5).then((res)=>{
+    //   console.log(res)
+    // })
     for (let i = 0;i < this.list.length;i++)
       this.config.data.push(this.list[i])
   }

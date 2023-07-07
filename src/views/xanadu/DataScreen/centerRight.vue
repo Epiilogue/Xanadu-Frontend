@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { PickOutList } from '../../../api/dataScreen'
 export default {
   name: 'centerRight',
   data() {
@@ -15,7 +16,6 @@ export default {
     }
   },
   mounted() {
-    this.getEchartData()
   },
   methods: {
     getEchartData(){
@@ -24,7 +24,7 @@ export default {
         const myChart = this.$echarts.init(chart)
         const option = {
           title:{
-            text:'各分库出库量',
+            text:'各分库领货出库量',
             textStyle: {
               color: 'white'
             },
@@ -42,7 +42,23 @@ export default {
           series: [
             {
               type: 'pie',
-              data: this.pieData
+              data: this.pieData,
+              radius: ['50%', '70%'],
+              avoidLabelOverlap: false,
+              label: {
+                show: false,
+                position: 'center'
+              },
+              labelLine: {
+                show: false
+              },
+              emphasis: {
+                label: {
+                  show: true,
+                  fontSize: '20',
+                  fontWeight: 'bold'
+                }
+              },
             }
           ]
         }
@@ -51,26 +67,18 @@ export default {
     }
   },
   created() {
-    let list = [
-        {
-          value: 335,
-          name: '阿伟罗软蛋'
-        },
-        {
-          value: 234,
-          name: '阿伟李硬蛋'
-        },
-        {
-          value: 1548,
-          name: '阿伟徐傻蛋'
-        },
-        {
-          value: 1139,
-          name: '李志鹏滚蛋'
-        }
-      ]
-    for (let i = 0;i < list.length;i++)
-      this.pieData.push(list[i])
+    PickOutList().then((res)=>{
+      for (let i = 0;i < res.data.length;i++){
+        this.pieData.push(
+          {
+            name:'仓库id:'+res.data[i].subwareId+' 商品id:'+res.data[i].productId,
+            value:res.data[i].actualNum
+          }
+        )
+      }
+      this.getEchartData()
+    })
+
   },
 }
 </script>

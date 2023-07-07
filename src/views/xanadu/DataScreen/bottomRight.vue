@@ -6,17 +6,27 @@
 
 <script>
 import china from '../../../common/china'
-
+import { listAllStations } from '../../../api/dataScreen'
 export default {
   name: 'bottomRight',
   data() {
     return{
       wareData:[],
-      lineData:[]
+      lineData:[],
+      cen: {
+        name:'',
+        value:[]
+      },
+      sub:[]
     }
   },
   mounted() {
-    this.getEchartData2()
+    listAllStations().then((res)=>{
+      this.cen.name = res.center.name
+      this.cen.value = [res.center.x,res.center.y]
+      this.wareData.push(this.cen)
+      this.getEchartData2()
+    })
   },
   methods:{
     getEchartData2() {
@@ -117,7 +127,7 @@ export default {
                 position: 'right',
                 formatter: '{b}',
                 color: '#b3e2f2',
-                fontSize: 8
+                fontSize: 10
               }
             },
             data: this.wareData,
@@ -165,26 +175,9 @@ export default {
   },
   watch: {},
   created() {
-    let list = [
-      {
-        name: "北京",
-        value: [116.24, 39.55, 100]
-      },
-      {
-        name: "深圳",
-        value: [114.271522, 22.753644]
-      },
-      {
-        name: "重庆",
-        value: [106.54, 29.59]
-      },
-      {
-        name: "浙江",
-        value: [120.19, 30.26]
-      },
-    ]
-    for (let i = 0;i < list.length;i++)
-      this.wareData.push(list[i])
+
+
+
     let list1 = [
       {
         fromName: "深圳",
@@ -214,8 +207,8 @@ export default {
         ]
       }
     ]
-    for (let i = 0;i < list1.length;i++)
-      this.lineData.push(list1[i])
+    // for (let i = 0; list1.length;i++)
+    //   this.lineData.push(list1[i])
   }
 }
 </script>
