@@ -102,10 +102,9 @@
           </el-select>
         </el-form-item>
         <el-form-item label="投递分站">
-          <el-select v-model="form.substationId">
-            <el-option v-for="item of substationIdOption" :label="item.label" :value="item.value"
-              :key="item.value"></el-option>
-          </el-select>
+          <el-input placeholder="请选择分站" v-model="form.substationId" class="input-with-select">
+            <el-button slot="append" icon="el-icon-search" @click="selectSub"></el-button>
+          </el-input>
         </el-form-item>
         <el-form-item label="要求到货日期">
           <el-date-picker v-model="form.deadline" type="date" placeholder="Pick a date" style="width: 100%" />
@@ -135,14 +134,27 @@
     </div>
 
     <Order v-if="this.dialogFormVisible" ref="order" :id="this.form.id" :orderType="this.form.orderType"></Order>
+
+    <el-dialog title="选择分站" :visible.sync="subDialogFormVisible" style="padding-left: 5%" width="70%">
+      <substation v-if="subDialogFormVisible" switchTitle="设为订单分站" :searchAble="true" :id="-1" ref="substation" width="50%"></substation>
+      <div slot="footer" class="dialog-footer">
+          <el-button @click="subDialogFormVisible = false">
+            取消
+          </el-button>
+          <el-button type="primary" @click="setSub">
+            提交
+          </el-button>
+        </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { createNewOrder } from "@/api/cc-order";
 import Order from '@/components/detail/order.vue'
+import substation from '@/views/xanadu/cc/order/substation'
 export default {
-  components: { Order },
+  components: { Order,substation },
   data() {
     return {
       // 新订单表单
@@ -190,6 +202,8 @@ export default {
       ],
       ifShow: true,
       dialogFormVisible: false,
+      subDialogFormVisible:false,
+      substationId:{},
     };
   },
   methods: {
@@ -235,6 +249,24 @@ export default {
     handleSelectProduct() {
       this.$router.push({ path: "/cc/product", query: { opType: "新订" } });
     },
+    // 选择订单分站
+    selectSub(){
+      this.subDialogFormVisible=true
+    },
+    // 设置订单分站
+    setSub(){
+      let subId=this.$refs.substation.getSubId()
+      if(subId){
+        this.form.substationId=subId
+        this.subDialogFormVisible=false
+      }else{
+        this.$message({
+          message: "请选择要分配订单的分站",
+          type: "error",
+          duration: 1000,
+        });
+      }
+    }
   },
   computed: {
     proChanged() {
