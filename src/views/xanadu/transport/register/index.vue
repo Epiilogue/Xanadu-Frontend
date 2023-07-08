@@ -163,7 +163,11 @@
           <el-input v-model="temp.cost"/>
         </el-form-item>
         <el-form-item label="供应商ID" prop="supplierId">
-          <el-input v-model="temp.supplierId"/>
+          <SupplierSelect
+            :value="temp.supplierId"
+            :single="true"
+            @getInfo="getSupplierId"
+          />
         </el-form-item>
 
         <el-form-item label="是否可退货" prop="refundAble">
@@ -223,6 +227,7 @@ import { timestampToTime } from '@/utils/ruoyi'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import Product from '@/components/detail/product.vue'
 import Supplier from '@/components/detail/supplier.vue'
+import SupplierSelect from '@/components/Pop/Supplier/index.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -239,7 +244,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Supplier, Product, SingleUpload, Pagination },
+  components: { Supplier, Product, SingleUpload, Pagination, SupplierSelect },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -302,14 +307,14 @@ export default {
       },
       rules: {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-        cost: [{ required: true, message: '请输入成本', trigger: 'blur', type: 'number' }],
-        price: [{ required: true, message: '请输入价格', trigger: 'blur', type: 'number' }],
-        upplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur', type: 'number' }],
+        cost: [{ required: true, message: '请输入成本', trigger: 'blur' }],
+        price: [{ required: true, message: '请输入价格', trigger: 'blur' }],
+        supplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur' }],
         firstCategray: [{ required: true, message: '请选择商品大类', trigger: 'blur' }],
         secondCategray: [{ required: true, message: '请选择商品小类', trigger: 'blur' }],
         comment: [{ required: true, message: '请输入商品备注', trigger: 'blur' }],
-        maxCount: [{ required: true, message: '请输入最大库存量', trigger: 'blur', type: 'number' }],
-        safeStock: [{ required: true, message: '请输入安全库存量', trigger: 'blur', type: 'number' }]
+        maxCount: [{ required: true, message: '请输入最大库存量', trigger: 'blur' }],
+        safeStock: [{ required: true, message: '请输入安全库存量', trigger: 'blur' }]
       },
       imageUrl: '',
       options: [],
@@ -330,7 +335,7 @@ export default {
         host: ''
         // callback:'',
       },
-      downloadLoading: false
+      downloadLoading: false,
     }
   },
   created() {
@@ -373,7 +378,13 @@ export default {
       let len = this.list.length
 
     },
+    getSupplierId(selections) {
+      if(selections.length>0){
+        this.temp.supplierId = selections[0].id+''
+      }
+    },
     getList(name) {
+      this.list=[]
       this.listLoading = true
       fetchList().then(response => {
         console.log(response)
@@ -381,7 +392,7 @@ export default {
         this.total = response.data.length
         setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+        }, 300)
       })
     },
     handleFilter() {
@@ -439,9 +450,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         this.temp.deleted = false
         if (valid) {
-          this.getList()
           createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -449,7 +458,11 @@ export default {
               type: 'success',
               duration: 2000
             })
-          })
+          }).then(
+            ()=> {
+              this.getList()
+            }
+          )
         } else {
           this.$notify({
             title: 'Error',
@@ -465,9 +478,11 @@ export default {
       this.category.push(this.temp.firstCategray)
       this.category.push(this.temp.secondCategray)
       this.temp = Object.assign({}, row) // copy obj
+      this.temp.supplierId=row.supplierId+''
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      console.log(this.temp)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
