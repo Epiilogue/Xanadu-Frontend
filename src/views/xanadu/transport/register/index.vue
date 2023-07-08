@@ -43,19 +43,19 @@
 
         <el-table-column label="商品大类" prop="firstCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.firstCategray }}</span>
+            <span>{{ row.firstName }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="商品小类" prop="secondCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.secondCategray }}</span>
+            <span>{{ row.secondName }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="价格" min-width="50px" prop="price" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.price }}</span>
+            <span>{{ row.price }}</span>
           </template>
         </el-table-column>
 
@@ -67,19 +67,29 @@
 
         <el-table-column label="可否退货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.refundAble }}</span>
+            <div v-if="row.refundAble">
+              <el-tag type="success">可退货</el-tag>
+            </div>
+            <div v-else>
+              <el-tag type="danger">不可退货</el-tag>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column label="可否换货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.changeAble }}</span>
+            <div v-if="row.changeAble">
+              <el-tag type="success">可换货</el-tag>
+            </div>
+            <div v-else>
+              <el-tag type="danger">不可换货</el-tag>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column label="备注" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.comment }}</span>
+            <span>{{ row.comment }}</span>
           </template>
         </el-table-column>
 
@@ -96,13 +106,13 @@
         </el-table-column>
         <el-table-column label="最大库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span >{{ row.maxCount }}</span>
+            <span>{{ row.maxCount }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="安全库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span >{{ row.safeStock }}</span>
+            <span>{{ row.safeStock }}</span>
           </template>
         </el-table-column>
 
@@ -134,7 +144,8 @@
         :page-sizes="[1, 2, 5, 7]"
         :page-size="5"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total">
+        :total="total"
+      >
       </el-pagination>
 
     </el-card>
@@ -204,12 +215,11 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateProduct, deleteProduct } from '@/api/distribution'
+import { createArticle, deleteProduct, fetchList, fetchPv, updateProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
 import { timestampToTime } from '@/utils/ruoyi'
-import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import Product from '@/components/detail/product.vue'
 import Supplier from '@/components/detail/supplier.vue'
@@ -256,7 +266,7 @@ export default {
            pageSize: 20,  */
       defaultParams: {
         label: 'category',
-        value: 'category',
+        value: 'id',
         children: 'children'
       },
       currentPage: 1,//默认显示第一页
@@ -292,14 +302,14 @@ export default {
       },
       rules: {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-        cost: [{ required: true, message: '请输入成本', trigger: 'blur' }],
-        price: [{ required: true, message: '请输入价格', trigger: 'blur' }],
-        upplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur' }],
+        cost: [{ required: true, message: '请输入成本', trigger: 'blur', type: 'number' }],
+        price: [{ required: true, message: '请输入价格', trigger: 'blur', type: 'number' }],
+        upplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur', type: 'number' }],
         firstCategray: [{ required: true, message: '请选择商品大类', trigger: 'blur' }],
         secondCategray: [{ required: true, message: '请选择商品小类', trigger: 'blur' }],
         comment: [{ required: true, message: '请输入商品备注', trigger: 'blur' }],
-        maxCount: [{ required: true, message: '请输入最大库存量', trigger: 'blur' }],
-        safeStock: [{ required: true, message: '请输入安全库存量', trigger: 'blur' }]
+        maxCount: [{ required: true, message: '请输入最大库存量', trigger: 'blur', type: 'number' }],
+        safeStock: [{ required: true, message: '请输入安全库存量', trigger: 'blur', type: 'number' }]
       },
       imageUrl: '',
       options: [],
@@ -327,7 +337,7 @@ export default {
     this.getList()
   },
   methods: {
-    getOne(id){
+    getOne(id) {
       console.log(this.$children)
       //this.$children[0].getProduct(id);
     },
@@ -426,7 +436,6 @@ export default {
       })
     },
     createData() {
-      console.log(this.temp.picture)
       this.$refs['dataForm'].validate((valid) => {
         this.temp.deleted = false
         if (valid) {
@@ -442,7 +451,12 @@ export default {
             })
           })
         } else {
-          alert('!!!')
+          this.$notify({
+            title: 'Error',
+            message: '表单校验失败',
+            type: 'error',
+            duration: 1000
+          })
         }
       })
     },
@@ -478,9 +492,9 @@ export default {
     },
     handleDelete(row, index) {
       console.log(row)
-      deleteProduct(row.id).then((res)=>{
+      deleteProduct(row.id).then((res) => {
           console.log(res)
-          if(res.code === 200){
+          if (res.code === 200) {
             this.$notify({
               title: 'Success',
               message: 'Delete Successfully',
@@ -522,7 +536,7 @@ export default {
           return v[j]
         }
       }))
-    },
+    }
   }
 }
 </script>
