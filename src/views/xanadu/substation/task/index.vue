@@ -182,8 +182,6 @@
 
             <!-- 选择快递员 -->
             <el-dialog title="选择快递员" :visible.sync="courierDialogVisible" @before-close="this.task = {}" width="70%">
-                <!-- <SelectCourier ref="SelectCourier" v-if="courierDialogVisible" :subId="this.subId">
-                </SelectCourier> -->
                 <UserTable v-if="courierDialogVisible" ref="SelectCourier" role="COURIER" opType="查看快递员" :subId="subId">
                 </UserTable>
                 <span slot="footer" class="dialog-footer">
@@ -217,7 +215,6 @@
 
 import { getTaskList, assign, listHanding, takeProducts, deleteTask } from '@/api/sub-task'
 import Pagination from '@/components/Pagination'
-import SelectCourier from './selectCourier.vue'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
 import Task from '@/components/detail/task.vue'
@@ -232,7 +229,7 @@ Vue.use(print)
 
 
 export default {
-    components: {Invoices, Pagination, SelectCourier, Receipt, UserTable, Task ,Invoice},
+    components: {Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
