@@ -61,7 +61,7 @@
 
         <el-table-column label="供应商ID" min-width="50px" prop="supplierId " align="center">
           <template slot-scope="{row}">
-            <supplier :id="row.id"></supplier>
+            <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
 

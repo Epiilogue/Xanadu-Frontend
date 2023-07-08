@@ -186,9 +186,6 @@ export default {
         this.dataList = res.data;
         this.total = res.data.length;
         this.loading = false;
-        this.$nextTick(() => {
-          this.setSelectRow();
-        });
       }).then(
         ()=>{
           //如果搜索条件有值，就进行过滤
@@ -207,6 +204,9 @@ export default {
             (this.pageNo - 1) * this.pageSize,
             this.pageNo * this.pageSize
           );
+          this.$nextTick(() => {
+            this.setSelectRow();
+          });
         }
       );
     },
