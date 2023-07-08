@@ -210,6 +210,11 @@ export default {
         }
       );
     },
+    // 排序
+    resetSearch() {
+      this.$refs.searchForm.resetFields();
+      this.refreshList();
+    },
     // 每页数
     sizeChangeHandle(val) {
       this.pageSize = val;
@@ -219,11 +224,6 @@ export default {
     // 当前页
     currentChangeHandle(val) {
       this.pageNo = val;
-      this.refreshList();
-    },
-    // 排序
-    resetSearch() {
-      this.$refs.searchForm.resetFields();
       this.refreshList();
     },
     // 选中数据

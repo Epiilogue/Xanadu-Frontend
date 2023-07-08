@@ -41,6 +41,13 @@
             <Order :id="row.id" :orderType="row.orderType"></Order>
           </template>
         </el-table-column>
+
+        <el-table-column label="客户编号" prop="id" align="center" width="100">
+          <template slot-scope="{ row }">
+            <Customer :id="row.customerId"></Customer>
+          </template>
+        </el-table-column>
+
         <!-- 一般表格列 -->
         <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label" v-if="column.show"
           min-width="120" align="center">
@@ -101,10 +108,11 @@ import waves from "@/directive/waves"; // waves directive
 
 import { getColumn } from '@/components/detail/module/orderColumn'
 import Order from '@/components/detail/order.vue'
+import Customer from '@/components/detail/customer.vue' // secondary package based on el-pagination
 
 export default {
   name: "OrderList",
-  components: { Order },
+  components: { Order,Customer },
   directives: { waves },
   data() {
     return {
