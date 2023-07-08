@@ -19,9 +19,9 @@ export function getOrder(query) {
 }
 
 // 获取商品列表
-export function getProductList(query) {
+export function getProductList() {
   return request({
-    url: `/dbc/product/list/${query.pageNum}/${query.pageSize}`,
+    url: `/dbc/product/listAll`,
     method: 'get',
     // params: query.customerId
   })
