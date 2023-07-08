@@ -45,7 +45,7 @@ export function getRefundList(){
 
 export function LackRecordInspect(id,isCheck){
   return request({
-    url: `/dbc/lackRecordgetLackRecord/${id}/${true}`,
+    url: `/dbc/lackRecord/getLackRecord/${id}/${true}`,
     method: 'get',
   })
 }
@@ -78,7 +78,7 @@ export function fetchList(query) {
 //删除商品
   export function deleteProduct(id) {
     return request({
-      url: `/dbc/productdelete/${id}`,
+      url: `/dbc/product/delete/${id}`,
       method: 'get',
     })
   }
@@ -102,7 +102,7 @@ export function fetchList(query) {
   }
   export function getOneProduct(id){
     return request({
-      url: `/dbc/productget/${id}`,
+      url: `/dbc/product/get/${id}`,
       method: 'get',
     })
   }

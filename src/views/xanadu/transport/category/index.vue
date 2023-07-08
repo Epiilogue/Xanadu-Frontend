@@ -1,19 +1,53 @@
 <template>
   <div class="custom-tree-container">
-
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>商品分类</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="showDialog(null,'create')">添加父类
-        </el-button>
-      </div>
-      <el-tree
-        :data="category"
-        show-checkbox
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false"
-      >
+    <el-container>
+      <el-header style="text-align: left; font-size: 12px; height: 30px; margin-bottom: 50px">
+        <el-form
+          size="small"
+          :inline="true"
+          ref="searchForm"
+          :model="searchForm"
+          @keyup.enter.native="refreshList()"
+          @submit.native.prevent
+        >
+          <el-form-item prop="cateName">
+            <el-input
+              size="small"
+              v-model="cateName"
+              placeholder="分类名称"
+              clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              @click="refreshList()"
+              size="small"
+              icon="el-icon-search"
+            >查询
+            </el-button>
+            <el-button
+              @click="resetSearch()"
+              size="small"
+              icon="el-icon-refresh-right"
+            >重置
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-header>
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>商品分类</span>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="showDialog(null,'create')">添加父类
+          </el-button>
+        </div>
+        <el-tree
+          :data="category"
+          show-checkbox
+          node-key="id"
+          default-expand-all
+          :expand-on-click-node="false"
+        >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ data.category }}</span>
         <span>
@@ -41,8 +75,9 @@
           </el-button>
         </span>
       </span>
-      </el-tree>
-    </el-card>
+        </el-tree>
+      </el-card>
+    </el-container>
 
     <div class="block">
 
@@ -78,7 +113,8 @@ export default {
       form: {
         name: ''
       },
-      formLabelWidth: '80px'
+      formLabelWidth: '80px',
+      cateName:''
       //data: JSON.parse(JSON.stringify(data))
     }
   },
@@ -88,6 +124,20 @@ export default {
   },
 
   methods: {
+    // 获取后台数据，如果searchForm中有值，拿到全部数据后做个过滤，然后按照分页参数分页
+    refreshList() {
+      if (this.cateName!=='') {
+        this.category = this.category.filter(item => item.category.indexOf(this.cateName) > -1)
+      }else{
+        this.cateName=''
+        this.getCategory()
+      }
+    },
+    resetSearch() {
+      this.cateName=''
+      this.getCategory()
+    },
+
     showDialog(data, flag) {
       this.dialogName = flag
       this.dialogFormVisible = true

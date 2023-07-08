@@ -43,43 +43,53 @@
 
         <el-table-column label="商品大类" prop="firstCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.firstCategray }}</span>
+            <span>{{ row.firstName }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="商品小类" prop="secondCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.secondCategray }}</span>
+            <span>{{ row.secondName }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="价格" min-width="50px" prop="price" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.price }}</span>
+            <span>{{ row.price }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="供应商ID" min-width="50px" prop="supplierId " align="center">
           <template slot-scope="{row}">
-            <supplier :id="row.id"></supplier>
+            <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
 
         <el-table-column label="可否退货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.refundAble }}</span>
+            <div v-if="row.refundAble">
+              <el-tag type="success">可退货</el-tag>
+            </div>
+            <div v-else>
+              <el-tag type="danger">不可退货</el-tag>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column label="可否换货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.changeAble }}</span>
+            <div v-if="row.changeAble">
+              <el-tag type="success">可换货</el-tag>
+            </div>
+            <div v-else>
+              <el-tag type="danger">不可换货</el-tag>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column label="备注" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.comment }}</span>
+            <span>{{ row.comment }}</span>
           </template>
         </el-table-column>
 
@@ -96,13 +106,13 @@
         </el-table-column>
         <el-table-column label="最大库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span >{{ row.maxCount }}</span>
+            <span>{{ row.maxCount }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="安全库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span >{{ row.safeStock }}</span>
+            <span>{{ row.safeStock }}</span>
           </template>
         </el-table-column>
 
@@ -134,7 +144,8 @@
         :page-sizes="[1, 2, 5, 7]"
         :page-size="5"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total">
+        :total="total"
+      >
       </el-pagination>
 
     </el-card>
@@ -152,7 +163,11 @@
           <el-input v-model="temp.cost"/>
         </el-form-item>
         <el-form-item label="供应商ID" prop="supplierId">
-          <el-input v-model="temp.supplierId"/>
+          <SupplierSelect
+            :value="temp.supplierId"
+            :single="true"
+            @getInfo="getSupplierId"
+          />
         </el-form-item>
 
         <el-form-item label="是否可退货" prop="refundAble">
@@ -204,15 +219,15 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateProduct, deleteProduct } from '@/api/distribution'
+import { createArticle, deleteProduct, fetchList, fetchPv, updateProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
 import { timestampToTime } from '@/utils/ruoyi'
-import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import Product from '@/components/detail/product.vue'
 import Supplier from '@/components/detail/supplier.vue'
+import SupplierSelect from '@/components/Pop/Supplier/index.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -229,7 +244,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Supplier, Product, SingleUpload, Pagination },
+  components: { Supplier, Product, SingleUpload, Pagination, SupplierSelect },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -256,7 +271,7 @@ export default {
            pageSize: 20,  */
       defaultParams: {
         label: 'category',
-        value: 'category',
+        value: 'id',
         children: 'children'
       },
       currentPage: 1,//默认显示第一页
@@ -294,7 +309,7 @@ export default {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
         cost: [{ required: true, message: '请输入成本', trigger: 'blur' }],
         price: [{ required: true, message: '请输入价格', trigger: 'blur' }],
-        upplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur' }],
+        supplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur' }],
         firstCategray: [{ required: true, message: '请选择商品大类', trigger: 'blur' }],
         secondCategray: [{ required: true, message: '请选择商品小类', trigger: 'blur' }],
         comment: [{ required: true, message: '请输入商品备注', trigger: 'blur' }],
@@ -320,14 +335,14 @@ export default {
         host: ''
         // callback:'',
       },
-      downloadLoading: false
+      downloadLoading: false,
     }
   },
   created() {
     this.getList()
   },
   methods: {
-    getOne(id){
+    getOne(id) {
       console.log(this.$children)
       //this.$children[0].getProduct(id);
     },
@@ -363,7 +378,13 @@ export default {
       let len = this.list.length
 
     },
+    getSupplierId(selections) {
+      if(selections.length>0){
+        this.temp.supplierId = selections[0].id+''
+      }
+    },
     getList(name) {
+      this.list=[]
       this.listLoading = true
       fetchList().then(response => {
         console.log(response)
@@ -371,7 +392,7 @@ export default {
         this.total = response.data.length
         setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+        }, 300)
       })
     },
     handleFilter() {
@@ -426,13 +447,10 @@ export default {
       })
     },
     createData() {
-      console.log(this.temp.picture)
       this.$refs['dataForm'].validate((valid) => {
         this.temp.deleted = false
         if (valid) {
-          this.getList()
           createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -440,9 +458,18 @@ export default {
               type: 'success',
               duration: 2000
             })
-          })
+          }).then(
+            ()=> {
+              this.getList()
+            }
+          )
         } else {
-          alert('!!!')
+          this.$notify({
+            title: 'Error',
+            message: '表单校验失败',
+            type: 'error',
+            duration: 1000
+          })
         }
       })
     },
@@ -451,9 +478,11 @@ export default {
       this.category.push(this.temp.firstCategray)
       this.category.push(this.temp.secondCategray)
       this.temp = Object.assign({}, row) // copy obj
+      this.temp.supplierId=row.supplierId+''
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      console.log(this.temp)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -478,9 +507,9 @@ export default {
     },
     handleDelete(row, index) {
       console.log(row)
-      deleteProduct(row.id).then((res)=>{
+      deleteProduct(row.id).then((res) => {
           console.log(res)
-          if(res.code === 200){
+          if (res.code === 200) {
             this.$notify({
               title: 'Success',
               message: 'Delete Successfully',
@@ -522,7 +551,7 @@ export default {
           return v[j]
         }
       }))
-    },
+    }
   }
 }
 </script>
