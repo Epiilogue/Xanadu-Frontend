@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name" placeholder="Name" style="width: 200px;" class="filter-item"
+      <el-input v-model="queryName" placeholder="Name" style="width: 200px;" class="filter-item"
                 @keyup.enter.native="handleFilter"
       />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getShowList">
         搜索
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
@@ -22,7 +22,7 @@
       <el-table
         :key="tableKey"
         v-loading="listLoading"
-        :data="list.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+        :data="pagedData"
         border
         fit
         highlight-current-row
@@ -127,26 +127,26 @@
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
           <template slot-scope="{row,$index}">
             <el-button type="primary" @click="handleUpdate(row)">
-              Edit
+              编辑
             </el-button>
             <el-button type="danger" @click="handleDelete(row,$index)">
-              Delete
+              删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[1, 2, 5, 7]"
-        :page-size="5"
+        background
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
-      </el-pagination>
+        @size-change="handleSizeChange"
+        :page-sizes="[1, 2, 5, 7]"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="filteredData.length"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+
 
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style="width: 100%;padding-left: 5%">
@@ -264,6 +264,7 @@ export default {
       category: [],
       tableKey: 0,
       list: null,
+      queryName:null,
       showList: null,
       total: 0,
       listLoading: true,
@@ -335,17 +336,24 @@ export default {
         host: ''
         // callback:'',
       },
-      downloadLoading: false,
+      filteredData : null,
+      downloadLoading: false
     }
   },
   created() {
     this.getList()
   },
-  methods: {
-    getOne(id) {
-      console.log(this.$children)
-      //this.$children[0].getProduct(id);
+  computed: {
+    tableKey() {
+      return 'table_' + Date.now(); // 用于刷新表格的 key
     },
+    pagedData() {
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return this.filteredData.slice(startIndex, endIndex);
+    },
+  },
+  methods: {
     timestampToTime() {
       return timestampToTime
     },
@@ -368,27 +376,37 @@ export default {
       const that = this
       axios.get('dbc/categary/listAll')
         .then(function(res) {
-          //console.log(res)
+          console.log(res.data)
           that.options = res.data.data
         })
     },
     //todo 查询方法
-    getShowList(name) {
-      this.showList = []
-      let len = this.list.length
-
+    getShowList() {
+      const searchText = this.queryName.toLowerCase().trim();
+      if (searchText) {
+        this.filteredData = this.list.filter(
+          item =>
+            item.name.toLowerCase().includes(searchText) ||
+            item.comment.toLowerCase().includes(searchText)
+        );
+      } else {
+        this.filteredData = this.list; // 没有搜索关键字时，显示全部数据
+      }
+      this.currentPage = 1; // 重置当前页数
+      this.tableKey = 'table_' + Date.now(); // 刷新表格
     },
     getSupplierId(selections) {
-      if(selections.length>0){
-        this.temp.supplierId = selections[0].id+''
+      if (selections.length > 0) {
+        this.temp.supplierId = selections[0].id + ''
       }
     },
     getList(name) {
-      this.list=[]
+      this.list = []
       this.listLoading = true
       fetchList().then(response => {
-        console.log(response)
+        console.log(response.data)
         this.list = response.data
+        this.filteredData = this.list
         this.total = response.data.length
         setTimeout(() => {
           this.listLoading = false
@@ -401,7 +419,7 @@ export default {
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: '操作Success',
+        message: '修改成功',
         type: 'success'
       })
       row.status = status
@@ -459,7 +477,7 @@ export default {
               duration: 2000
             })
           }).then(
-            ()=> {
+            () => {
               this.getList()
             }
           )
@@ -478,7 +496,7 @@ export default {
       this.category.push(this.temp.firstCategray)
       this.category.push(this.temp.secondCategray)
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.supplierId=row.supplierId+''
+      this.temp.supplierId = row.supplierId + ''
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -501,6 +519,7 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList()
           })
         }
       })
