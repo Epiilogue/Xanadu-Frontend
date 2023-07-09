@@ -71,8 +71,15 @@ export default {
       outId:'',
     }
   },
+  watch:{
+    dialogFormVisible:{
+      handler(){
+        this.reset()
+      }
+    }
+  },
+
   methods:{
-//toConfirm
     toConfirm(row){
       this.outId = row.id
       this.outValue = row.outputNum

@@ -77,6 +77,13 @@ export default {
       inNum:'',
     }
   },
+  watch:{
+    dialogFormVisible:{
+      handler(){
+        this.reset()
+      }
+    }
+  },
   methods:{
     //时间戳转换
     getLocalTime(nS) {

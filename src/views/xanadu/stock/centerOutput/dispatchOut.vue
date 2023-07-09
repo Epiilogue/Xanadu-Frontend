@@ -147,6 +147,13 @@ export default {
       }
     }
   },
+  watch:{
+    dialogFormVisible:{
+      handler(){
+        this.reset()
+      }
+    }
+  },
   methods:{
     parseTime() {
       return parseTime
@@ -160,7 +167,6 @@ export default {
     },
     confirmOut(){
       cenConfirmOut(this.outId, this.outNum).then(res=>{
-        console.log(res.msg)
         if (res.msg === '操作成功'){
           this.dialogFormVisible = false
           this.$message({
@@ -234,7 +240,6 @@ export default {
 
     reset(){
       cenDispatchOut().then(res=>{
-        console.log(res.data)
         this.tableData = res.data
         for (let i = 0;i < this.tableData.length;i++){
           this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
@@ -245,7 +250,6 @@ export default {
   },
   mounted() {
     cenDispatchOut().then(res=>{
-      console.log(res.data)
       this.tableData = res.data
       for (let i = 0;i < this.tableData.length;i++){
         this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)

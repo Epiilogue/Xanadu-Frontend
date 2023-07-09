@@ -76,6 +76,7 @@ export default {
               message: '出库成功!'
             });
           }
+          this.reset()
         })
       }).catch(() => {
         this.$message({
@@ -115,7 +116,6 @@ export default {
     },
     reset(){
       cenRuturnOut().then(res=>{
-        console.log(res.data)
         this.tableData = res.data
         for (let i = 0;i < this.tableData.length;i++){
           this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
@@ -126,7 +126,6 @@ export default {
   },
   mounted() {
     cenRuturnOut().then(res=>{
-      console.log(res.data)
       this.tableData = res.data
       for (let i = 0;i < this.tableData.length;i++){
         this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)

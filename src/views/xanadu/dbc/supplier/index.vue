@@ -16,17 +16,17 @@
     <el-table :key="tableKey" :data="list" border fit highlight-current-row style="width: 100%" v-loading="listLoading">
       <el-table-column label="ID" prop="id" align="center" width="100">
       </el-table-column>
-      <el-table-column label="供应商名称" prop="name" width="100" align="center">
+      <el-table-column label="供应商名称" prop="name" width="200" align="center">
       </el-table-column>
-      <el-table-column label="地址" prop="address" width="100" align="center">
+      <el-table-column label="地址" prop="address" width="200" align="center">
       </el-table-column>
       <el-table-column label="联系人" prop="contactPerson" width="200" align="center">
       </el-table-column>
-      <el-table-column label="联系电话" prop="phone" width="100" align="center">
+      <el-table-column label="联系电话" prop="phone" width="130" align="center">
       </el-table-column>
-      <el-table-column label="开户行" prop="bankAccount" width="100" align="center">
+      <el-table-column label="开户行" prop="bankAccount" width="150" align="center">
       </el-table-column>
-      <el-table-column label="备注" prop="comment" width="100" align="center">
+      <el-table-column label="备注" prop="remarks" width="150" align="center">
       </el-table-column>
       <el-table-column label="创建日期" width="200" align="center">
         <template slot-scope="{ row }">
@@ -45,7 +45,7 @@
         </template>
       </el-table-column>
       <!-- 按钮 -->
-      <el-table-column label="Actions" align="center" min-width="390" class-name="small-padding fixed-width"
+      <el-table-column label="Actions" align="center" min-width="50" class-name="small-padding fixed-width"
         fixed="right">
         <template slot-scope="{ row, $index }">
           <el-button type="primary" plain @click="handleEdit(row, $event)">
@@ -139,6 +139,7 @@ export default {
       this.listLoading = true;
       // 加载列表
       fun(this.listQuery).then((response) => {
+        console.log(response.data)
         this.list = response.data.records;
         this.total = response.data.total;
         if(show){

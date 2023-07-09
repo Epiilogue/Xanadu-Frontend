@@ -11,11 +11,6 @@ let tableColumns = [
         show: true
     },
     {
-        prop: "customerId",
-        label: "客户编号",
-        show: true
-    },
-    {
         prop: "orderType",
         label: "订单类型",
         show: true

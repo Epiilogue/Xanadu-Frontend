@@ -17,24 +17,7 @@
           </div>
         </el-form-item>
       </el-form>
-      <el-table key=1 :row-key="(row) => row.id" :data="this.substation" border fit highlight-current-row
-        style="width: 100%">
-        <el-table-column label="分站编号" prop="id" align="center" min-width="100">
-        </el-table-column>
-        <el-table-column label="分站名称" prop="name" min-width="100" align="center">
-        </el-table-column>
-        <el-table-column label="分站地址" prop="address" min-width="100" align="center">
-        </el-table-column>
-        <el-table-column label="联系电话" prop="phone" min-width="100" align="center">
-        </el-table-column>
-        <el-table-column label="设为任务分站" min-width="100" align="center">
-          <template slot-scope="{ row }">
-            <el-switch :value="row.id === selectedSub" @change="handleChange(row)" :disabled="disabled">
-            </el-switch>
-          </template>
-        </el-table-column>
-      </el-table>
-
+      <substation switchTitle="设为任务分站" :searchAble="false" :id="temp.substationId?temp.substationId:-1" refs="substation" width="50%"></substation>
     </el-card>
     <el-card class="box-card" shadow="always">
       <div slot="header" class="clearfix">
@@ -129,30 +112,22 @@
         </el-table-column>
       </el-table>
     </el-card>
-
-  <!-- <div class="btn">
-      <el-button type="primary" @click="handleSubmit"> 提交 </el-button>
-      <el-button @click="() => this.$emit('return')"> 返回 </el-button>
-      </div> -->
   </div>
 </template>
 
 <script>
 
+import substation from '@/views/xanadu/cc/order/substation'
 export default {
   name: "Info",
-  props: ['temp', 'title',],
+  props: ['temp', 'title'],
+  components:{substation},
   data() {
     return {
       // 是否已确定分站id
       selectedSub: this.temp.substationId ? this.temp.substationId : undefined,
       disabled: this.temp.substationId ? true : false,
       outDate: "",
-      // 模拟分站数据
-      substation: [{ id: 1, name: '华东', address: '上海', phone: '13536457895' },
-      { id: 2, name: '华北', address: '北京', phone: '13536457893' },
-      { id: 3, name: '华南', address: '深圳', phone: '13536457894' },
-      { id: 4, name: '东北', address: '沈阳', phone: '13536457896' }],
       // 日期
       pickerOptions: {
         disabledDate(time) {
@@ -193,6 +168,7 @@ export default {
     },
 
     handleSubmit() {
+      this.selectedSub=this.$refs.substation.getSubId()
       if (this.selectedSub && this.outDate) {
         console.log(this.outDate)
         this.outDate=this.$moment(new Date(this.outDate)).format("YYYY-MM-DD HH:mm:ss")

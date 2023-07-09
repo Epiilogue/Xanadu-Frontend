@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name" placeholder="Name" style="width: 200px;" class="filter-item"
+      <el-input v-model="queryName" placeholder="Name" style="width: 200px;" class="filter-item"
                 @keyup.enter.native="handleFilter"
       />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getShowList">
         搜索
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
@@ -22,7 +22,7 @@
       <el-table
         :key="tableKey"
         v-loading="listLoading"
-        :data="list.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+        :data="pagedData"
         border
         fit
         highlight-current-row
@@ -43,43 +43,53 @@
 
         <el-table-column label="商品大类" prop="firstCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.firstCategray }}</span>
+            <span>{{ row.firstName }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="商品小类" prop="secondCategray" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.secondCategray }}</span>
+            <span>{{ row.secondName }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="价格" min-width="50px" prop="price" align="center">
           <template slot-scope="{row}">
-            <span >{{ row.price }}</span>
+            <span>{{ row.price }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="供应商ID" min-width="50px" prop="supplierId " align="center">
           <template slot-scope="{row}">
-            <supplier :id="row.id"></supplier>
+            <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
 
         <el-table-column label="可否退货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.refundAble }}</span>
+            <div v-if="row.refundAble">
+              <el-tag type="success">可退货</el-tag>
+            </div>
+            <div v-else>
+              <el-tag type="danger">不可退货</el-tag>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column label="可否换货" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.changeAble }}</span>
+            <div v-if="row.changeAble">
+              <el-tag type="success">可换货</el-tag>
+            </div>
+            <div v-else>
+              <el-tag type="danger">不可换货</el-tag>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column label="备注" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span  >{{ row.comment }}</span>
+            <span>{{ row.comment }}</span>
           </template>
         </el-table-column>
 
@@ -96,13 +106,13 @@
         </el-table-column>
         <el-table-column label="最大库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span >{{ row.maxCount }}</span>
+            <span>{{ row.maxCount }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="安全库存量" min-width="80px">
           <template slot-scope="{row}">
-            <span >{{ row.safeStock }}</span>
+            <span>{{ row.safeStock }}</span>
           </template>
         </el-table-column>
 
@@ -117,25 +127,26 @@
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
           <template slot-scope="{row,$index}">
             <el-button type="primary" @click="handleUpdate(row)">
-              Edit
+              编辑
             </el-button>
             <el-button type="danger" @click="handleDelete(row,$index)">
-              Delete
+              删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[1, 2, 5, 7]"
-        :page-size="5"
+        background
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total">
-      </el-pagination>
+        @size-change="handleSizeChange"
+        :page-sizes="[1, 2, 5, 7]"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="filteredData.length"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+
 
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style="width: 100%;padding-left: 5%">
@@ -152,7 +163,11 @@
           <el-input v-model="temp.cost"/>
         </el-form-item>
         <el-form-item label="供应商ID" prop="supplierId">
-          <el-input v-model="temp.supplierId"/>
+          <SupplierSelect
+            :value="temp.supplierId"
+            :single="true"
+            @getInfo="getSupplierId"
+          />
         </el-form-item>
 
         <el-form-item label="是否可退货" prop="refundAble">
@@ -204,15 +219,15 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateProduct, deleteProduct } from '@/api/distribution'
+import { createArticle, deleteProduct, fetchList, fetchPv, updateProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
 import { timestampToTime } from '@/utils/ruoyi'
-import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import Product from '@/components/detail/product.vue'
 import Supplier from '@/components/detail/supplier.vue'
+import SupplierSelect from '@/components/Pop/Supplier/index.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -229,7 +244,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Supplier, Product, SingleUpload, Pagination },
+  components: { Supplier, Product, SingleUpload, Pagination, SupplierSelect },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -249,6 +264,7 @@ export default {
       category: [],
       tableKey: 0,
       list: null,
+      queryName:null,
       showList: null,
       total: 0,
       listLoading: true,
@@ -256,7 +272,7 @@ export default {
            pageSize: 20,  */
       defaultParams: {
         label: 'category',
-        value: 'category',
+        value: 'id',
         children: 'children'
       },
       currentPage: 1,//默认显示第一页
@@ -294,7 +310,7 @@ export default {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
         cost: [{ required: true, message: '请输入成本', trigger: 'blur' }],
         price: [{ required: true, message: '请输入价格', trigger: 'blur' }],
-        upplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur' }],
+        supplierId: [{ required: true, message: '请输入供应商ID', trigger: 'blur' }],
         firstCategray: [{ required: true, message: '请选择商品大类', trigger: 'blur' }],
         secondCategray: [{ required: true, message: '请选择商品小类', trigger: 'blur' }],
         comment: [{ required: true, message: '请输入商品备注', trigger: 'blur' }],
@@ -320,17 +336,24 @@ export default {
         host: ''
         // callback:'',
       },
+      filteredData : null,
       downloadLoading: false
     }
   },
   created() {
     this.getList()
   },
-  methods: {
-    getOne(id){
-      console.log(this.$children)
-      //this.$children[0].getProduct(id);
+  computed: {
+    tableKey() {
+      return 'table_' + Date.now(); // 用于刷新表格的 key
     },
+    pagedData() {
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return this.filteredData.slice(startIndex, endIndex);
+    },
+  },
+  methods: {
     timestampToTime() {
       return timestampToTime
     },
@@ -353,25 +376,41 @@ export default {
       const that = this
       axios.get('dbc/categary/listAll')
         .then(function(res) {
-          //console.log(res)
+          console.log(res.data)
           that.options = res.data.data
         })
     },
     //todo 查询方法
-    getShowList(name) {
-      this.showList = []
-      let len = this.list.length
-
+    getShowList() {
+      const searchText = this.queryName.toLowerCase().trim();
+      if (searchText) {
+        this.filteredData = this.list.filter(
+          item =>
+            item.name.toLowerCase().includes(searchText) ||
+            item.comment.toLowerCase().includes(searchText)
+        );
+      } else {
+        this.filteredData = this.list; // 没有搜索关键字时，显示全部数据
+      }
+      this.currentPage = 1; // 重置当前页数
+      this.tableKey = 'table_' + Date.now(); // 刷新表格
+    },
+    getSupplierId(selections) {
+      if (selections.length > 0) {
+        this.temp.supplierId = selections[0].id + ''
+      }
     },
     getList(name) {
+      this.list = []
       this.listLoading = true
       fetchList().then(response => {
-        console.log(response)
+        console.log(response.data)
         this.list = response.data
+        this.filteredData = this.list
         this.total = response.data.length
         setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+        }, 300)
       })
     },
     handleFilter() {
@@ -380,7 +419,7 @@ export default {
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: '操作Success',
+        message: '修改成功',
         type: 'success'
       })
       row.status = status
@@ -426,13 +465,10 @@ export default {
       })
     },
     createData() {
-      console.log(this.temp.picture)
       this.$refs['dataForm'].validate((valid) => {
         this.temp.deleted = false
         if (valid) {
-          this.getList()
           createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -440,9 +476,18 @@ export default {
               type: 'success',
               duration: 2000
             })
-          })
+          }).then(
+            () => {
+              this.getList()
+            }
+          )
         } else {
-          alert('!!!')
+          this.$notify({
+            title: 'Error',
+            message: '表单校验失败',
+            type: 'error',
+            duration: 1000
+          })
         }
       })
     },
@@ -451,9 +496,11 @@ export default {
       this.category.push(this.temp.firstCategray)
       this.category.push(this.temp.secondCategray)
       this.temp = Object.assign({}, row) // copy obj
+      this.temp.supplierId = row.supplierId + ''
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      console.log(this.temp)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -472,15 +519,16 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList()
           })
         }
       })
     },
     handleDelete(row, index) {
       console.log(row)
-      deleteProduct(row.id).then((res)=>{
+      deleteProduct(row.id).then((res) => {
           console.log(res)
-          if(res.code === 200){
+          if (res.code === 200) {
             this.$notify({
               title: 'Success',
               message: 'Delete Successfully',
@@ -522,7 +570,7 @@ export default {
           return v[j]
         }
       }))
-    },
+    }
   }
 }
 </script>

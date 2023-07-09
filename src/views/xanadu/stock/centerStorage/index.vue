@@ -109,6 +109,17 @@ export default {
     //搜索 id time
     search(){
       if (this.goodID !== ''){//商品id查找
+        var flag = true
+        var numReg = /^[0-9]+$/
+        var numTe = new RegExp(numReg)
+        flag = numTe.test(this.goodID)
+        if (!flag){
+          this.$message({
+            type: 'error',
+            message: '输入信息不合法'
+          });
+          return
+        }
         cenGoodById(this.goodID).then(res=>{
           var list = []
           list.push(res.data)
