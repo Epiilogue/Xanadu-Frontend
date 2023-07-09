@@ -8,6 +8,13 @@ export function getSupList(query) {
     })
   }
 
+export function getAllSupList() {
+  return request({
+    url: `/dbc/supplier/listAll`,
+    method: 'get',
+  })
+}
+
 export function getSupplier(query) {
   return request({
     url: `/dbc/supplier/get/${query}`,

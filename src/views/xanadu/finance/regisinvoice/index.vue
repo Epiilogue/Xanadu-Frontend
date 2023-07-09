@@ -24,20 +24,20 @@
           </el-form-item>
 
 
-          <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" style="margin-left: 100px">
+          <el-form :model="selection" ref="queryForm" size="small" :inline="true" v-show="showSearch" style="margin-left: 100px">
             <el-form-item prop="status">
-              <el-select v-model="queryParams.status" placeholder="发票状态" clearable>
+              <el-select v-model="selection.status" placeholder="发票状态" clearable>
                 <el-option
                   v-for="dict in options"
                   :key="dict.value"
                   :label="dict.label"
-                  :value="dict.value"
+                  :value="dict.label"
                 />
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">筛选</el-button>
-              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+              <el-button type="primary" icon="el-icon-search" size="mini" @click="select(selection.status)">筛选</el-button>
+              <el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -45,7 +45,7 @@
 
 
     <!--  发票列表  -->
-    <el-table v-loading="loading" :data="invoiceList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="invoiceList">
       <el-table-column label="序号" align="center" prop="id" width="50" />
       <el-table-column label="开始号码" align="center" prop="startNumber" width="240">
         <template slot-scope="scope">
@@ -95,13 +95,8 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <Pagination v-show="total > 0" :total="total" :page.sync="pageInfo.pageNum" :limit.sync="pageInfo.pageSize"
+                @pagination="getPageList" />
   </div>
 </template>
 
@@ -143,11 +138,15 @@ export default {
       invoiceList: [],
       // 是否显示弹出层
       open: false,
-      // 查询参数
-      queryParams: {
+      // 筛选参数
+      selection: {
+        status: "",
+      },
+      refreshed:true,
+      pageList: [],   //表格数据
+      pageInfo: {
         pageNum: 1,
         pageSize: 10,
-        status: undefined,
       },
       formData: {
         startNumber: '',
@@ -184,7 +183,6 @@ export default {
     this.getList();
   },
   methods: {
-    right,
     /** 查询公告列表 */
     getList() {
       const that = this
@@ -203,7 +201,6 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
-      this.reset();
     },
     resetQuery() {
       this.resetForm("queryForm");
@@ -211,16 +208,28 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = undefined;
-      this.resetForm("form");
+      this.getList();
+      this.$message({
+        message: '重置成功',
+        type: 'success'
+      });
     },
     /** 筛选按钮操作 */
-    getListlimited(){
-
-    },
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getListlimited();
+    select(){
+      const that = this
+      axios.get("http://localhost:8010/ac/invoice/listByState/"+this.selection.status).then( function(res){
+        //代表请求成功之后处理
+        console.log(res);
+        that.total = res.data.data.length;
+        that.invoiceList = res.data.data;
+        that.$message({
+          message: '筛选成功',
+          type: 'success'
+        });
+      }).catch( function (err){
+        //代表请求失败之后处理
+        console.log (err);
+      });
     },
     handleState2(row) {
       const that = this
@@ -259,7 +268,6 @@ export default {
         axios.post("http://localhost:8010/ac/invoice/register/",row)
           .then(function(promise){
             console.log(promise.data)
-            that.reset();
             that.$message({
               message: '登记成功',
               type: 'success'
@@ -270,11 +278,15 @@ export default {
         });
       }
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.noticeId)
-      this.single = selection.length!=1
-      this.multiple = !selection.length
+    getPageList() {
+      this.refreshed = false
+      this.total = this.queryList.length
+      let pageNum = this.pageInfo.pageNum
+      let pageSize = this.pageInfo.pageSize
+      this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+      this.$nextTick(()=>{
+        this.refreshed=true
+      })
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -291,7 +303,6 @@ export default {
           .then(function(){
             console.log(that.formData)
             that.getList();
-            that.reset();
             that.$message({
               message: '提交成功',
               type: 'success'
@@ -304,7 +315,6 @@ export default {
             type: 'error'
           });
         });
-        that.reset();
       }
     }
   },

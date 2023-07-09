@@ -167,11 +167,11 @@ export default {
     // this.form.status = this.form.opType === "换货" ? "换货" : "退货"; //退换货状态
 
     let order = this.$cache.local.getJSON("operateOrder");
-    (this.form.customerId = order.customerId),
-      (this.form.orderType = order.orderType),
-      (this.form.createTime = order.createTime),
-      (this.form.deadline = order.deadline),
-      (this.form.status = order.status);
+    this.form.customerId = order.customerId
+    this.form.orderType = order.orderType
+    this.form.createTime = order.createTime
+    this.form.deadline = order.deadline
+    this.form.status = order.status
     getCustomer(order.customerId).then((res) => {
       this.form.customerName = res.data.name;
     });
@@ -240,10 +240,10 @@ export default {
     },
     // 删除缓存 重置表单
     onReset() {
-      (this.form.reason = ""),
-        (this.form.deadline = ""),
-        (this.form.products = []),
-        this.$cache.local.remove("selectedProduct");
+      this.form.reason = ""
+      this.form.deadline = ""
+      this.form.products = []
+      this.$cache.local.remove("selectedProduct")
       this.$message({
         message: "reset!",
         type: "warning",
@@ -252,7 +252,7 @@ export default {
     handleSelectProduct() {
       this.$router.push({
         path: "/cc/product",
-        query: { orderId: this.form.orderId, opType: this.form.operationType },
+        query: { orderId: this.form.orderId, opType: this.form.operationType ,orderType:this.form.orderType},
       });
     },
   },

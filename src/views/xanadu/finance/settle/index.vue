@@ -2,17 +2,17 @@
   <div class="app-container" >
     <!--  上方表单  -->
     <el-form :model="form" ref="elForm" :rules="rules" size="small"  label-width="68px" :inline="true">
-        <el-form-item label="开始时间" prop="startTime">
+        <el-form-item label="开始时间" prop="startTime" label-width="80px">
             <el-col>
               <el-date-picker type="date" placeholder="选择日期" v-model="form.startTime" style="width: 100%;"></el-date-picker>
             </el-col>
         </el-form-item>
-        <el-form-item label="结束时间" prop="startTime">
+        <el-form-item label="结束时间" prop="startTime" label-width="80px">
           <el-col>
             <el-date-picker type="date" placeholder="选择日期" v-model="form.endTime" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="供应商id" prop="supplierId">
+        <el-form-item label="供应商id" prop="supplierId" label-width="80px">
           <el-input v-model="form.supplierId"  placeholder="输入供应商id"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
@@ -34,12 +34,12 @@
         </template>
       </el-result>
     </div>
+
       <!--  查询之后显示结算信息列表  -->
     <div v-show="open2">
       <el-table :data="refundList" ref="refundTableRefs"
                 border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
         <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
@@ -65,19 +65,21 @@
             <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.returnNum"/>
           </template>
         </el-table-column>
+        <el-table-column label="支出还是退款" align="center" prop="settleType" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.settleType === '支出' ? 'process' : 'warning'"
+              disable-transitions>{{scope.row.settleType}}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="结算数量" align="center" prop="totalNum"  class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
+            <dict-tag :options="dict.type.sys_settle_normal" :value="Math.abs(scope.row.totalNum)"/>
           </template>
         </el-table-column>
         <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
-          </template>
-        </el-table-column>
-        <el-table-column label="日期" align="center" prop="time" class-name="small-padding fixed-width" >
-          <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
+            <dict-tag :options="dict.type.sys_settle_normal" :value="Math.abs((scope.row.supplyNum - scope.row.returnNum) * scope.row.price)"/>
           </template>
         </el-table-column>
       </el-table>
@@ -100,7 +102,6 @@
     <el-dialog :visible.sync="open" width="780px" append-to-body>
       <el-table v-loading="loading" :data="this.selectList"
                 border >
-        <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
         <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
@@ -116,21 +117,23 @@
             <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
           </template>
         </el-table-column>
+        <el-table-column label="支出还是退款" align="center" prop="settleType" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.settleType === '支出' ? 'process' : 'warning'"
+              disable-transitions>{{scope.row.settleType}}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
-          </template>
-        </el-table-column>
-        <el-table-column label="日期" align="center" prop="refundTime" class-name="small-padding fixed-width" >
-          <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
       </el-table>
 
       <el-form size="small"  label-width="68px" :inline="true" style="margin-top: 10px;margin-left: 390px">
         <el-form-item label="合计金额" prop="totalprice">
-          <el-input v-model="this.totalprice"  placeholder="合计金额"
+          <el-input v-model="Math.abs(this.totalprice) + '(' + this.Type + ')'"  placeholder="合计金额"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
         <el-form-item>
@@ -144,7 +147,6 @@
     <el-dialog :visible.sync="open1" width="1080px" append-to-body>
       <el-table v-loading="loading" :data="this.alreadyform"
                 border >
-        <el-table-column label="序号" align="center" prop="id" width="50" class-name="small-padding fixed-width"/>
         <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
@@ -157,12 +159,12 @@
         </el-table-column>
         <el-table-column label="结算数量" align="center" prop="finalcount"  class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplyNum - scope.row.returnNum"/>
+            <dict-tag :options="dict.type.sys_settle_normal" :value="Math.abs(scope.row.supplyNum - scope.row.returnNum)"/>
           </template>
         </el-table-column>
         <el-table-column label="结算金额" align="center" prop="finalPrice"  class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="(scope.row.supplyNum - scope.row.returnNum) * scope.row.price"/>
+            <dict-tag :options="dict.type.sys_settle_normal" :value="Math.abs((scope.row.supplyNum - scope.row.returnNum) * scope.row.price)"/>
           </template>
         </el-table-column>
         <el-table-column label="结算日期" align="center" prop="refundTime" class-name="small-padding fixed-width" >
@@ -206,8 +208,15 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      // 支出还是结算
+      Type : undefined,
       // 表单
-      form: {},
+      form: {
+        startTime: undefined,
+        endTime: undefined,
+        supplierId: undefined,
+        productId: undefined
+      },
       // 总条数
       total: 0,
       // 查询数据
@@ -230,16 +239,19 @@ export default {
       // 表单校验
       rules: {
         startTime: [{
+          required: true,
           type: 'date',
           message: '请选择时间',
           trigger: 'blur'
         }],
         endTime: [{
+          required: true,
           type: 'data',
           message: '请选择时间',
           trigger: 'blur'
         }],
         supplyId: [{
+          required: true,
           message: '请输入供应商id',
           trigger: 'blur'
         }],
@@ -249,27 +261,42 @@ export default {
   methods: {
     /** 查询供应列表 */
     getList() {
-      this.open3 = false;
-      this.open2 = true;
-      const that = this;
-      this.loading = true;
-      axios.get("http://localhost:8010/ac/supply/listToSettlement",{
-        params: {
-          supplierId: that.form.supplierId,
-          startTime: that.form.startTime.toLocaleString(),
-          endTime: that.form.endTime.toLocaleString(),
-          productId: that.form.productId
-        }
-      }).then( function(res){
-        //代表请求成功之后处理
-        console.log(res);
-        that.total = res.data.data.length;
-        that.refundList = res.data.data;
-        that.loading = false;
-      }).catch( function (err){
-        //代表请求失败之后处理
-        console.log (err);
-      });
+      console.log(this.form.startTime);
+      console.log(this.form.supplierId);
+      if (this.form.startTime === undefined ||this.form.supplierId === undefined){
+        this.$message({
+          message: "请检查查询条件",
+          type: 'error'
+        });
+      }
+      else {
+        this.open3 = false;
+        this.open2 = true;
+        const that = this;
+        this.loading = true;
+        axios.get("http://localhost:8010/ac/supply/listToSettlement",{
+          params: {
+            supplierId: that.form.supplierId,
+            startTime: that.form.startTime.toLocaleString(),
+            endTime: that.form.endTime.toLocaleString(),
+            productId: that.form.productId
+          }
+        }).then( function(res){
+          that.$message({
+            message: res.data.msg,
+            type: 'success'
+          });
+          //代表请求成功之后处理
+          console.log(res);
+          that.total = res.data.data.length;
+          that.refundList = res.data.data;
+          that.loading = false;
+        }).catch( function (err){
+          //代表请求失败之后处理
+          console.log (err);
+        });
+        that.reset();
+      }
     },
     getToList() {
       const that = this
@@ -299,8 +326,8 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = undefined;
-      this.resetForm("form");
+      this.refundList = undefined;
+      this.resetForm("refundList");
     },
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -320,6 +347,12 @@ export default {
           this.totalprice += (this.selectList[i].supplyNum - this.selectList[i].returnNum) * this.selectList[i].price;
           i = i + 1;
       }
+      if(this.totalprice > 0){
+        this.Type = '支出'
+      }
+      else{
+        this.Type = '退款'
+      }
       if(this.selectList.length === 0){
         this.$message.error('请选择至少一条结算数据');
       }
@@ -334,11 +367,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let i = 0;
-        while(i < this.selectList.length){
-          this.selectList[i].status = '已结算';
-          i = i + 1;
-        }
         const that = this;
         let j = 0;
         while(j < this.selectList.length){

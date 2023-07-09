@@ -1,5 +1,89 @@
 <template>
     <div class="app-container">
+      <!--   打印内容   -->
+      <div v-show="false">
+        <form method="get" action="#" id="printJS-form-task">
+          <div class="receipt">
+            <h3>Xanadu送货签收单</h3 >
+            <h2>分库信息：</h2>
+            <table class="receipt-table" title="分库信息">
+              <tr>
+                <td>分库名：</td>
+                <td>{{ this.printform.substation.name }}</td>
+              </tr>
+              <tr>
+                <td>分库地址：</td>
+                <td>{{ this.printform.substation.address }}</td>
+              </tr>
+              <tr>
+                <td>联系方式：</td>
+                <td>{{ this.printform.substation.phone }}</td>
+              </tr>
+            </table>
+            <h2>任务信息：</h2>
+            <table class="receipt-table" >
+              <tr>
+                <td>收件人姓名：</td>
+                <td>{{ this.printform.task.receiverName }}</td>
+              </tr>
+              <tr>
+                <td>送货地址：</td>
+                <td>{{ this.printform.task.deliveryAddress }}</td>
+              </tr>
+              <tr>
+                <td>收件人电话：</td>
+                <td>{{ this.printform.task.phone }}</td>
+              </tr>
+              <tr>
+                <td>创建时间：</td>
+                <td>{{ parseTime()(this.printform.task.createTime, '{y}-{m}-{d}-{h}:{m}:{s}') }}</td>
+              </tr>
+              <tr>
+                <td>截止时间：</td>
+                <td>{{  parseTime()(this.printform.task.deadline, '{y}-{m}-{d}-{h}:{m}:{s}') }}</td>
+              </tr>
+              <tr>
+                <td>任务类型：</td>
+                <td>{{ this.printform.task.taskType }}</td>
+              </tr>
+              <tr>
+                <td>任务状态：</td>
+                <td>{{ this.printform.task.taskStatus }}</td>
+              </tr>
+              <tr>
+                <td>是否要发票：</td>
+                <td>{{ this.printform.task.needInvoice === false ? '否' : '是' }}</td>
+              </tr>
+              <tr>
+                <td>商品数量：</td>
+                <td>{{ this.printform.task.numbers }}</td>
+              </tr>
+              <tr>
+                <td>商品总价：</td>
+                <td>{{ this.printform.task.totalAmount }}</td>
+              </tr>
+            </table>
+            <h2>商品详细信息：</h2>
+            <h1 style="display: flex; justify-content: space-between;align-items: center;">
+              <div style="word-spacing: 10px;">商品名称</div>
+              <div style="color: white">-----------------</div>
+              <div style="word-spacing: 10px;">数量-------</div>
+              <div style="word-spacing: 10px;">单价</div>
+            </h1>
+            <table class="receipt-table">
+              <thead>
+              </thead>
+              <tbody>
+              <tr v-for="product in this.printform.task.products" :key="product.productId">
+                <td>{{ product.productName }}</td>
+                <td>{{ product.number }}</td>
+                <td>{{ product.price }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
         <div v-if="!receipt">
             <!-- 提示当前任务操作 -->
             <div class="alert">
@@ -51,6 +135,12 @@
                 <!-- 动态列Table -->
                 <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%"
                     v-loading="listLoading">
+                    <!-- 点击编号查看详情 -->
+                    <el-table-column prop="id" label="任务单编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <Task :id="row.id" :task="row" v-if="refreshed"></Task>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>
@@ -72,15 +162,12 @@
                             }}</span>
                         </template>
                     </el-table-column>
-                    按钮
+                    <!-- 按钮 -->
                     <el-table-column label="操作" align="center" min-width="400" class-name="small-padding fixed-width"
                         fixed="right">
                         <template slot-scope="{ row, $index }">
                             <el-button type="primary" plain @click="handleTask(row)">
                                 操作任务单
-                            </el-button>
-                            <el-button type="primary" plain @click="handleViewTask(row)">
-                                任务详情
                             </el-button>
                             <el-button type="primary" plain @click="deleteTask(row)">
                                 删除
@@ -94,12 +181,26 @@
             </el-card>
 
             <!-- 选择快递员 -->
-            <el-dialog title="选择快递员" :visible.sync="courierDialogVisible" @before-close="this.task = {}">
-                <SelectCourier ref="SelectCourier" v-if="courierDialogVisible" :subId="this.subId">
-                </SelectCourier>
+            <el-dialog title="选择快递员" :visible.sync="courierDialogVisible" @before-close="this.task = {}" width="70%">
+                <UserTable v-if="courierDialogVisible" ref="SelectCourier" role="COURIER" opType="查看快递员" :subId="subId">
+                </UserTable>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="close">取消</el-button>
                     <el-button type="primary" @click="assignTask">分配</el-button>
+                </span>
+            </el-dialog>
+            <!--发票领用-->
+            <el-dialog title="发票领用" :visible.sync="invoicesDialogVisible" @before-close="this.task = {}" width="75%">
+              <Invoices v-if="invoicesDialogVisible" :task="this.task"></Invoices>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="close">取消</el-button>
+              </span>
+            </el-dialog>
+            <!--分站发票领用-->
+            <el-dialog title="分站发票领用" :visible.sync="invoiceDialogVisible" @before-close="this.task = {}" width="70%">
+              <Invoice v-if="invoiceDialogVisible"></Invoice>
+              <span slot="footer" class="dialog-footer">
+                  <el-button @click="close">取消</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -107,18 +208,28 @@
         <div v-else>
             <Receipt @close="submited(success)" :payment="this.task && this.task.taskType === '收款'"></Receipt>
         </div>
+
     </div>
 </template>
 <script>
 
 import { getTaskList, assign, listHanding, takeProducts, deleteTask } from '@/api/sub-task'
 import Pagination from '@/components/Pagination'
-import SelectCourier from './selectCourier.vue'
 import Receipt from './inputReceipt.vue'
-import { getColumn, getOption } from './taskColumn'
+import { getColumn, getOption } from '@/components/detail/module/taskColumn'
+import Task from '@/components/detail/task.vue'
+import UserTable from './userTable'
+import Invoices from "@/views/xanadu/substation/task/invoices.vue";
+import Invoice from "@/views/xanadu/substation/task/invoice.vue";
+import axios from "axios";
+import printJS from "print-js";
+import Vue from 'vue'
+import {parseTime} from "@/utils/ruoyi";
+Vue.use(print)
+
 
 export default {
-    components: { Pagination, SelectCourier, Receipt },
+    components: {Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
@@ -142,11 +253,11 @@ export default {
             subId: '',   //分站id
             //数据
             task: {},    //当前操作的任务单
-            
             list: [],   //所有数据
             queryList: [],  //查询后数据
             opList: [],  //操作的数据
             total: 0,   //分页
+            refreshed:true,
             listLoading: false,
             //查询
             listQuery: {
@@ -154,6 +265,30 @@ export default {
                 taskStatus: "",
                 taskType: "",
                 courierId: "",
+                needInvoice: "",
+            },
+            printform: {
+              substation:{
+                address: '',
+                name: '暂无信息',
+                phone: '',
+                subwareId: ''
+              },
+              task: {
+                courierId: '',
+                createTime: '',
+                customerId: '',
+                deadline: '',
+                deleted: '',
+                deliveryAddress: '',
+                needInvoice: '',
+                receiverName: '',
+                products: {
+                  productName: '',
+                  number: '',
+                  price: ''
+                },
+              }
             },
             // 分页
             pageList: [],   //表格数据
@@ -167,12 +302,16 @@ export default {
             opTypeOption: ['分配任务', '取货', '发票领用', '打印签收单', '回执录入'],
             // dialog
             courierDialogVisible: false,
+            invoicesDialogVisible: false,
+            invoiceDialogVisible: false,
             tableColumns: undefined, //表格列
             receipt: false,  //是否展示回执录入页面
         }
     },
     methods: {
-
+      parseTime() {
+        return parseTime
+      },
         getList(fun) {
             // 默认查询所有任务
             if (!fun) fun = getTaskList
@@ -188,10 +327,14 @@ export default {
             })
         },
         getPageList() {
+            this.refreshed=false
             this.total = this.queryList.length
             let pageNum = this.pageInfo.pageNum
             let pageSize = this.pageInfo.pageSize
             this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+            this.$nextTick(()=>{
+                this.refreshed=true
+            })
         },
         //查询
         handleFilter() {
@@ -202,19 +345,16 @@ export default {
                 // 日期 任务类型 任务状态 配送员
                 let range = query.deadlineRange
                 if (range !== null && (new Date(task.deadline) < new Date(range[0]) || new Date(task.deadline) > new Date(range[1]))) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.taskType !== '' && task.taskType !== query.taskType) {
-                    this.listLoading = false;
                     return false
                 }
                 if (query.taskStatus !== '' && task.taskStatus !== query.taskStatus) {
-                    this.listLoading = false;
+                    console.log(task.taskStatus + query.taskStatus)
                     return false
                 }
                 if (query.courierId != '' && (task.courierId).toString().indexOf(query.courierId) === -1) {
-                    this.listLoading = false;
                     return false
                 }
                 return true
@@ -265,7 +405,8 @@ export default {
                     await this.getList(listHanding)
                     // 只有新订的收款任务和已分配且未完成的任务需要领用发票
                     this.opList = this.list.filter(task => {
-                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType))
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType)
+                          && task.needInvoice === true)
                             return true
                     })
                     break
@@ -274,7 +415,7 @@ export default {
                     // 已分配且未完成的任务需要打印签收单
                     await this.getList(listHanding)
                     this.opList = this.list.filter(task => {
-                        if (['已分配', '已领货'].includes(task.taskStatus))
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['送货', '送货收款'].includes(task.taskType))
                             return true
                     })
                     break
@@ -306,10 +447,6 @@ export default {
             this.getPageList()
             this.listLoading = false;
         },
-
-        // 查看任务当前状态对应的流程分步表单
-        // 查看任务详情
-        handleViewTask() { },
 
         // 任务单操作
         handleTask(row) {
@@ -347,31 +484,43 @@ export default {
         },
         // 分配任务
         assignTask() {
-            let courierId = this.$refs['SelectCourier'].getSelectedCourier();
-            if (courierId === undefined) {
+            let courierId = this.$refs['SelectCourier'].getIds();
+            if (!courierId || courierId.length === 0) {
                 this.$message({
                     type: 'error',
                     message: '请选择任务配送员',
                     durarion: 1000,
                 });
                 return
-            }
-            assign(this.subId, courierId, this.task).then(res => {
-                //更新表格数据
-                this.handleOpChange(this.opType, false)
-                this.close()
+            } else if (courierId.length > 1) {
                 this.$message({
-                    type: 'success',
-                    message: res.msg,
+                    type: 'error',
+                    message: '只能选择一个任务配送员',
                     durarion: 1000,
                 });
-            }).catch()
+                return
+            } else {
+                assign(this.subId, courierId[0], this.task).then(res => {
+                    //更新表格数据
+                    this.handleOpChange(this.opType, false)
+                    this.close()
+                    this.$message({
+                        type: 'success',
+                        message: res.msg,
+                        durarion: 1000,
+                    });
+                    // 重置表格多选框
+                    this.$refs['SelectCourier'].setIds()
+                }).catch()
+            }
         },
         // 分配任务完成
         close() {
             // 关闭对话框
             this.task = {}
             this.courierDialogVisible = false
+            this.invoiceDialogVisible = false;
+            this.invoicesDialogVisible = false;
         },
 
         // 取货
@@ -397,11 +546,11 @@ export default {
         submited(success) {
             // 关闭回执页
             this.task = {}
-            this.receipt = false
             // 提交成功则刷新表格
             if (success) {
                 this.handleOpChange(this.opType, false)
             }
+            this.receipt = false
         },
 
         // 删除任务
@@ -457,17 +606,48 @@ export default {
          */
         assignInvoice() {
             console.log('发票领用')
+            this.invoicesDialogVisible = true;
         },
 
         // Todo:打印签收单
         printSign() {
-            console.log('打印签收单')
+          if(this.printform.substation.name === '暂无信息'){
+            this.$message.success('发票信息加载中');
+            const id =this.task.id;
+            const that = this;
+            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+              //代表请求成功之后处理
+              that.printform = res.data.data;
+              console.log(that.printform);
+            }).catch( function (err){
+              //代表请求失败之后处理
+              alert ('进入catch')
+              console.log (err);
+            });
+          }
+          else{
+            const id =this.task.id;
+            const that = this;
+            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+              //代表请求成功之后处理
+              that.printform = res.data.data;
+              console.log(that.printform);
+            }).catch( function (err){
+              //代表请求失败之后处理
+              alert ('进入catch')
+              console.log (err);
+            });
+            that.print();
+          }
         },
-
+        print(){
+          printJS('printJS-form-task','html')
+        },
         // Todo:分站发票领用
         // 分站id是 this.subId
         handleAssignSubInvoice() {
-            console.log('分站发票领用')
+          this.invoiceDialogVisible = true;
+          console.log('分站发票领用')
         }
     },
 }
@@ -499,4 +679,22 @@ export default {
     height: 100%;
     /* vertical-align:middle; */
 }
+.receipt {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+.receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.receipt-table td:first-child {
+  font-weight: bold;
+}
+
+
 </style>

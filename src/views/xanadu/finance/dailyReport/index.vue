@@ -136,13 +136,15 @@ export default {
 
     handleButtonClick(row) {
       updateDailyReportStatus(row.id).then(res=>{
-        row.isSettled = true
+        if(res.code === 200){
+          console.log(res)
+          row.isSettled = true
+          this.$message.success("操作成功")
+        }
       })
-      console.log('Button clicked for row:', row)
     },
 
     showTaskState(row) {
-      // Handle the button click event for the corresponding row
       this.title = '任务状态'
       this.showState = true
       this.chartData = [

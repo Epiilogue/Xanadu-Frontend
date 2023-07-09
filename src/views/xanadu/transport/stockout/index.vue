@@ -283,7 +283,7 @@ export default {
       this.list = []
       this.listLoading = false
       if (flag === 2) {
-        fetchLackRecordList().then(response => {
+        fetchLackRecordList(this.isCheck=== '1').then(response => {
           if (that.isCheck === '') {
             let res = response.data
             console.log(res)
@@ -314,7 +314,7 @@ export default {
             type: 'warning'
           })
         } else {
-          LackRecordInspect(parseInt(this.queryInfo), true).then(response => {
+          LackRecordInspect(parseInt(this.queryInfo), this.isCheck=== '1').then(response => {
             if (this.isCheck === '1') {
               this.list.push(response.data)
             } else {

@@ -4,12 +4,7 @@
     <el-card class="box-card" shadow="always">
       <div slot="header" class="clearfix">
         <span>客户信息</span>
-        <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
-          @click="handleSelectCustomer"
-          >查看客户列表</el-button
-        >
+        <el-button style="float: right; padding: 3px 0" type="text" @click="handleSelectCustomer">查看客户列表</el-button>
       </div>
       <el-form ref="form1" :model="form" :rules="rule" label-width="120px">
         <el-form-item label="客户编号" prop="customerId">
@@ -32,13 +27,8 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>商品信息</span>
-        <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
-          @click="handleSelectProduct"
-        >
-          查看商品列表</el-button
-        >
+        <el-button style="float: right; padding: 3px 0" type="text" @click="handleSelectProduct">
+          查看商品列表</el-button>
       </div>
       <el-descriptions>
         <el-descriptions-item label="商品总数">{{
@@ -55,15 +45,8 @@
       </div>
       <!-- v-for不刷新 -->
       <div :v-if="this.ifShow">
-        <el-table
-          :key="0"
-          :row-key="(row) => row.productId"
-          :data="this.form.products"
-          border
-          fit
-          highlight-current-row
-          style="width: 100%"
-        >
+        <el-table :key="0" :row-key="(row) => row.productId" :data="this.form.products" border fit highlight-current-row
+          style="width: 100%">
           <el-table-column label="ID" prop="id" align="center" width="100">
             <template slot-scope="{ row }">
               <span>{{ row.productId }}</span>
@@ -74,7 +57,7 @@
               <span>{{ row.productName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品大类" min-width="100" align="center">
+          <el-table-column label="商品种类编号" min-width="100" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productCategary }}</span>
             </template>
@@ -115,48 +98,23 @@
       <el-form ref="form" :model="form" :rules="rule" label-width="120px">
         <el-form-item label="订单类型">
           <el-select v-model="form.orderType" disabled>
-            <el-option
-              v-for="item of orderTypeOption"
-              :label="item"
-              :value="item"
-              :key="item"
-            ></el-option>
+            <el-option v-for="item of orderTypeOption" :label="item" :value="item" :key="item"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="投递分站">
-          <el-select v-model="form.substationId">
-            <el-option
-              v-for="item of substationIdOption"
-              :label="item.label"
-              :value="item.value"
-              :key="item.value"
-            ></el-option>
-          </el-select>
+          <el-input placeholder="请选择分站" v-model="form.substationId" class="input-with-select">
+            <el-button slot="append" icon="el-icon-search" @click="selectSub"></el-button>
+          </el-input>
         </el-form-item>
         <el-form-item label="要求到货日期">
-          <el-date-picker
-            v-model="form.deadline"
-            type="date"
-            placeholder="Pick a date"
-            style="width: 100%"
-          />
+          <el-date-picker v-model="form.deadline" type="date" placeholder="Pick a date" style="width: 100%" />
         </el-form-item>
         <el-form-item label="预计送货日期">
-          <el-date-picker
-            v-model="form.deliveryTime"
-            type="date"
-            placeholder="Pick a date"
-            style="width: 100%"
-          />
+          <el-date-picker v-model="form.deliveryTime" type="date" placeholder="Pick a date" style="width: 100%" />
         </el-form-item>
         <el-form-item label="付款方式">
           <el-select v-model="form.newType">
-            <el-option
-              v-for="item of newTypeOption"
-              :label="item"
-              :value="item"
-              :key="item"
-            ></el-option>
+            <el-option v-for="item of newTypeOption" :label="item" :value="item" :key="item"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="是否需要发票" prop="invoiceNeed">
@@ -175,22 +133,28 @@
       <el-button @click="onReset">重置</el-button>
     </div>
 
-    <OrderInfo
-      title="订单详情"
-      :temp="this.form"
-      newOrder="true"
-      :products="this.product"
-      :dialogFormVisible="this.dialogFormVisible"
-      @close="close()"
-    ></OrderInfo>
+    <Order v-if="this.dialogFormVisible" ref="order" :id="this.form.id" :orderType="this.form.orderType"></Order>
+
+    <el-dialog title="选择分站" :visible.sync="subDialogFormVisible" style="padding-left: 5%" width="70%">
+      <substation v-if="subDialogFormVisible" switchTitle="设为订单分站" :searchAble="true" :id="-1" ref="substation" width="50%"></substation>
+      <div slot="footer" class="dialog-footer">
+          <el-button @click="subDialogFormVisible = false">
+            取消
+          </el-button>
+          <el-button type="primary" @click="setSub">
+            提交
+          </el-button>
+        </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { createNewOrder } from "@/api/cc-order";
-import OrderInfo from "./OrderInfo.vue";
+import Order from '@/components/detail/order.vue'
+import substation from '@/views/xanadu/cc/order/substation'
 export default {
-  components: { OrderInfo },
+  components: { Order,substation },
   data() {
     return {
       // 新订单表单
@@ -215,10 +179,9 @@ export default {
         deadline: "",
         deliveryTime: "",
         comment: "",
-        newType:"", //新订类型
+        newType: "", //新订类型
         deleted: false,
       },
-      products:undefined,
       rule: {
         customerId: [
           { required: true, message: "请选择订单客户", trigger: "change" },
@@ -230,7 +193,7 @@ export default {
       },
       // 和操作类型相同
       orderTypeOption: ["新订", "退订", "退货", "撤销", "换货"],
-      newTypeOption:['付款送货','货到付款'],
+      newTypeOption: ['付款送货', '货到付款'],
       substationIdOption: [
         { label: "华东", value: 1 },
         { label: "华北", value: 2 },
@@ -239,6 +202,8 @@ export default {
       ],
       ifShow: true,
       dialogFormVisible: false,
+      subDialogFormVisible:false,
+      substationId:{},
     };
   },
   methods: {
@@ -256,10 +221,12 @@ export default {
               // 请求服务
               this.form.creareTime = new Date();
               createNewOrder(this.form).then((res) => {
-                this.form = res.data;
-                // 订单详情商品信息不更新
-                this.products=res.data.products;
+                // 展示订单详情
                 this.dialogFormVisible = true;
+                this.$nextTick(() => {
+                  this.$refs.order.getAndConvert(res.data.id)
+                })
+                this.onReset()
               });
             } else {
               this.$modal.alertWarning("请选择要购买的商品");
@@ -275,10 +242,6 @@ export default {
       this.form = this.$options.data().form;
       this.$cache.local.remove("selectedProduct");
       this.$cache.local.remove("selectedCustomer");
-      this.$message({
-        message: "reset!",
-        type: "warning",
-      });
     },
     handleSelectCustomer() {
       this.$router.push({ path: "/cc/customer" });
@@ -286,13 +249,24 @@ export default {
     handleSelectProduct() {
       this.$router.push({ path: "/cc/product", query: { opType: "新订" } });
     },
-    close() {
-      // 清除缓存
-      this.form = this.$options.data().form;
-      this.$cache.local.remove("selectedProduct");
-      this.$cache.local.remove("selectedCustomer");
-      this.dialogFormVisible = false;
+    // 选择订单分站
+    selectSub(){
+      this.subDialogFormVisible=true
     },
+    // 设置订单分站
+    setSub(){
+      let subId=this.$refs.substation.getSubId()
+      if(subId){
+        this.form.substationId=subId
+        this.subDialogFormVisible=false
+      }else{
+        this.$message({
+          message: "请选择要分配订单的分站",
+          type: "error",
+          duration: 1000,
+        });
+      }
+    }
   },
   computed: {
     proChanged() {

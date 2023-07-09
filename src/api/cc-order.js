@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 // 获取订单列表
-export function fetchList(query) {
+export function fetchList(customerId) {
   return request({
-    url: `/cc/order/list`+(query.customerId?`/${query.customerId}`:''),
+    url: `/cc/order/list`+(customerId?`/${customerId}`:''),
     method: 'get',
-    params: query
+    // params: query
   })
 }
 
@@ -19,9 +19,9 @@ export function getOrder(query) {
 }
 
 // 获取商品列表
-export function getProductList(query) {
+export function getProductList() {
   return request({
-    url: `/dbc/product/list/${query.pageNum}/${query.pageSize}`,
+    url: `/dbc/product/listAll`,
     method: 'get',
     // params: query.customerId
   })

@@ -1,52 +1,48 @@
 <template>
   <div class="app-container" >
     <!--筛选框-->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" >
+    <el-form :model="selection" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item prop="status">
-        <el-select v-model="queryParams.status" placeholder="发票状态" clearable>
+        <el-select v-model="selection.status" placeholder="发票状态" clearable>
           <el-option
             v-for="dict in options"
             :key="dict.value"
             :label="dict.label"
-            :value="dict.value"
+            :value="dict.label"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">筛选</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="select(selection.status)">筛选</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
 
-    <!--  打印内容  -->
+    <!-- 打印内容 -->
     <div v-show="false">
       <form method="get" action="#" id="printJS-form">
-        <div class="invoice">
-          <div style="justify-content: space-between; font-size: 14px; margin-bottom: 5px;" >
-            <!-- 发票头部内容 -->
-            <h1>Xanadu物流管理中心</h1>
-          </div>
-            <div class="headerMessage" style="justify-content: space-between; font-size: 8px; margin-bottom: 5px;">
-              <!-- 在此处放置发票信息，例如发票号码、日期等 -->
-              <p>发票号码：{{ this.printform.number }}</p>
-              <p>打印时间：{{ parseTime(this.printform.printTime, '{y}-{m}-{d}-{h}:{m}:{s}') }}</p>
-            </div>
-          <div>------------详细信息-------------</div>
-          <div class="content" style=" justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
-            <p>商品名称：{{ this.printform.productName }}</p>
-            <p>商品数量：{{ this.printform.productNum }}</p>
-            <p>分站id：{{ this.printform.substationId }}</p>
-            <p>金额：{{ this.printform.amount }}</p>
-            <p>批次：{{ this.printform.batch }}</p>
-            <p>本数：{{ this.printform.total }}</p>
-            <!-- 在此处放置发票项目列表、数量、价格等 -->
-          </div>
-          <div>--------------------------------</div>
-          <div class="footer" style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
-            <p>负责人签字：</p>
-            <p></p>
-            <p>Xanadu公司盖章：</p>
-          </div>
+        <div style="justify-content: space-between; font-size: 14px; margin-bottom: 5px;" >
+          <!-- 发票头部内容 -->
+          <h1>Xanadu物流管理中心</h1>
+        </div>
+        <div class="headerMessage" style="justify-content: space-between; font-size: 8px; margin-bottom: 5px;">
+          <!-- 在此处放置发票信息，例如发票号码、日期等 -->
+          <p>发票号码：{{ this.printform.number }}</p>
+          <p>打印时间：{{ parseTime()(this.printform.printTime, '{y}-{m}-{d}-{h}:{m}:{s}') }}</p>
+          <p>分站id：{{ this.printform.substationId }}</p>
+        </div>
+        <div>------------详细信息-------------</div>
+        <div class="content" style=" justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+          <p>商品数量：{{ this.printform.productNum }}</p>
+          <p>商品总价：{{ this.printform.productName }}</p>
+          <p>批次：{{ this.printform.batch }}</p>
+          <!-- 在此处放置发票项目列表、数量、价格等 -->
+        </div>
+        <div>--------------------------------</div>
+        <div class="footer" style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
+          <p>负责人签字：</p>
+          <p></p>
+          <p>Xanadu公司盖章：</p>
         </div>
       </form>
     </div>
@@ -107,6 +103,11 @@
           <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.total"/>
         </template>
       </el-table-column>
+      <el-table-column label="领用分站" align="center" prop="substationId" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.substationId"/>
+        </template>
+      </el-table-column>
       <el-table-column label="登记状态" align="center" prop="registration" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-tag
@@ -120,7 +121,7 @@
             size="small"
             type="primary"
             @click="getinvoice(scope.row)"
-          >领用发票</el-button>
+          >领用信息</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -174,12 +175,6 @@
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <el-button :disabled="scope.row.state === '已领用'
-                             || scope.row.dstate === '已失效'"
-                       size="small"
-                       type="primary"
-                       @click="receipt(scope.row)"
-            >录入信息</el-button>
             <el-button :disabled="scope.row.dstate === '已失效'"
               size="small"
               type="warning"
@@ -206,6 +201,7 @@
 import axios from 'axios'
 import printJS from "print-js";
 import Vue from 'vue'
+import {parseTime} from "@/utils/ruoyi";
 Vue.use(print)
 
 export default {
@@ -218,14 +214,19 @@ export default {
       //发票状态
       options: [{
         value: '选项1',
-        label: '已领用'
+        label: '已登记'
       }, {
         value: '选项2',
-        label: '未领用'
+        label: '未登记'
       }],
       // 打印数据
-      printform: {},
-
+      printform: {
+        id: '0'
+      },
+      // 筛选参数
+      selection: {
+        status: "",
+      },
       opendetails: false,
       // 显示搜索条件
       showSearch: true,
@@ -271,6 +272,27 @@ export default {
     this.getList();
   },
   methods: {
+    /** 筛选按钮操作 */
+    select(){
+      console.log(this.selection.status);
+      const that = this
+      axios.get("http://localhost:8010/ac/invoice/listByState/"+this.selection.status).then( function(res){
+        //代表请求成功之后处理
+        console.log(res);
+        that.total = res.data.data.length;
+        that.invoiceList = res.data.data;
+        that.$message({
+          message: '筛选成功',
+          type: 'success'
+        });
+      }).catch( function (err){
+        //代表请求失败之后处理
+        console.log (err);
+      });
+    },
+    parseTime() {
+      return parseTime
+    },
     /** 查询公告列表 */
     getList() {
       const that = this
@@ -289,17 +311,14 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
-      this.reset();
     },
     // 表单重置
     reset() {
-      this.form = undefined;
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
       this.getList();
+      this.$message({
+        message: '重置成功',
+        type: 'success'
+      });
     },
     getinvoice(row){
       this.opendetails = true;
@@ -335,18 +354,34 @@ export default {
       })
     },
     printInvoice(row){
-      const id = row.id || this.ids;
-      const that = this;
-      axios.get("http://localhost:8010/ac/invoices/printInvoices/"+id).then( function(res){
-        //代表请求成功之后处理
-        that.printform = res.data.data;
-        console.log(that.printform);
-      }).catch( function (err){
-        //代表请求失败之后处理
-        alert ('进入catch')
-        console.log (err);
-      });
-      that.print();
+      if(this.printform.id === 0 || this.printform.id !== row.id){
+        this.$message.success('发票信息加载中');
+        const id = row.id || this.ids;
+        const that = this;
+        axios.get("http://localhost:8010/ac/invoices/printInvoices/"+id).then( function(res){
+          //代表请求成功之后处理
+          that.printform = res.data.data;
+          console.log(that.printform);
+        }).catch( function (err){
+          //代表请求失败之后处理
+          alert ('进入catch')
+          console.log (err);
+        });
+      }
+      else{
+        const id = row.id || this.ids;
+        const that = this;
+        axios.get("http://localhost:8010/ac/invoices/printInvoices/"+id).then( function(res){
+          //代表请求成功之后处理
+          that.printform = res.data.data;
+          console.log(that.printform);
+        }).catch( function (err){
+          //代表请求失败之后处理
+          alert ('进入catch')
+          console.log (err);
+        });
+        that.print();
+      }
     },
     print(){
       printJS('printJS-form','html')
