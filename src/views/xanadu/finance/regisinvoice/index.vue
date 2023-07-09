@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" >
     <!--  上方表单  -->
-    <el-form :model="formData" ref="elForm" :rules="rules" size="small"  label-width="68px">
+    <el-form   :model="formData" ref="elForm" :rules="rules" size="small"  label-width="68px">
           <el-form-item label="开始号码" prop="startNumber" label-width="100px">
             <el-input  v-model="formData.startNumber" placeholder="DW20230606005" :maxlength="13"
                       show-word-limit clearable prefix-icon='el-icon-tickets'></el-input>
@@ -103,13 +103,13 @@
 <script>
 
 import axios from 'axios'
-import {right} from "core-js/internals/array-reduce";
+import ElementUI from 'element-ui';
+import Vue from "vue";
+Vue.use(ElementUI);
 
 export default {
   name: "RegisInvoice",
   dicts: ['sys_normal_disable', 'sys_regisinvoice_registration', 'sys_regisinvoice_batch','sys_regisinvoice_endnumber','sys_regisinvoice_startnumber','sys_regisinvoice_total'],
-  components: {},
-  props: [],
   data: function () {
     return {
       //发票状态
@@ -157,12 +157,13 @@ export default {
       rules: {
         startNumber: [{
           required: true,
+          validator: this.validateInvoiceNumber,
           message: '开始号码不能为空',
           trigger: 'blur'
         }],
         endNumber: [{
           required: true,
-          length: 13,
+          validator: this.validateInvoiceNumber,
           message: '结束号码不能为空',
           trigger: 'blur'
         }],
@@ -179,6 +180,7 @@ export default {
       },
     };
   },
+
   created() {
     this.getList();
   },
@@ -230,6 +232,15 @@ export default {
         //代表请求失败之后处理
         console.log (err);
       });
+    },
+    // 发票号码校验
+    validateInvoiceNumber(rule, value, callback){
+      const pattern = /^[A-Z]{2}\d{8}$/;
+      if (pattern.test(value)) {
+        callback(); // 校验通过
+      } else {
+        callback(new Error('请输入有效的发票号码')); // 校验不通过，返回错误消息
+      }
     },
     handleState2(row) {
       const that = this
@@ -290,32 +301,35 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
-      if(this.formData.startNumber === ''||this.formData.endNumber === ''||this.formData.batch === ''
-      ||this.formData.total === ''){
-        this.$message({
-          message: '提交信息有误，请重新输入',
-          type: 'error'
-        });
-      }
-      else{
-        const that = this
-        axios.post("http://localhost:8010/ac/invoice/addinvoice/",that.formData)
-          .then(function(){
-            console.log(that.formData)
-            that.getList();
+      this.$refs["elForm"].validate((valid)=> {
+        if (valid) {
+          // 表单校验通过，执行提交操作
+          const that = this;
+          axios.post("http://localhost:8010/ac/invoice/addinvoice/",that.formData)
+            .then(function(){
+              console.log(that.formData)
+              that.getList();
+              that.$message({
+                message: '提交成功',
+                type: 'success'
+              });
+            }).catch( function (err){
+            //代表请求失败之后处理
+            console.log (err);
             that.$message({
-              message: '提交成功',
-              type: 'success'
+              message: '提交失败',
+              type: 'error'
             });
-          }).catch( function (err){
-          //代表请求失败之后处理
-          console.log (err);
-          that.$message({
-            message: '提交失败',
+          });
+        } else {
+          // 表单校验不通过
+          this.$message({
+            message: '请检查输入格式',
             type: 'error'
           });
-        });
-      }
+          return false;
+        }
+      });
     }
   },
 };
