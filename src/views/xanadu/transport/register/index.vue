@@ -10,7 +10,7 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
                  @click="handleCreate"
       >
-        创建商品
+        手工创建
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
                  @click="patchCreate"
@@ -642,10 +642,10 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.list.splice(index, 1)
           }
         }
       )
-      this.list.splice(index, 1)
     },
     handleDownload() {
       this.downloadLoading = true
