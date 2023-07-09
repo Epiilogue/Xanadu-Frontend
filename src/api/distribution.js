@@ -11,11 +11,10 @@ import * as http from 'http'
 //获取所有缺货记录
 export function fetchLackRecordList(query) {
   return request({
-    url: '/getAllLackRecord',
+    url: '/dbc/lackRecord/getAllLackRecord',
     method: 'get',
     //params: { pageNum, pageSize },
     //params: query,
-    baseURL: 'http://localhost:8004/dbc/lackRecord'
   })
 }
 //生成采购单
