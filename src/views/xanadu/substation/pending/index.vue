@@ -25,53 +25,14 @@
             <el-table :key="tableKey" v-loading="listLoading"
                 :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit
                 highlight-current-row style="width: 100%;">
-                <el-table-column label="ID" prop="id" align="center" width="80">
-                    <template slot-scope="{row}">
-                        <span>{{ row.id }}</span>
-                    </template>
-                </el-table-column>
-
-                <el-table-column label="任务编号" prop="taskId" min-width="50px" align="center">
-                    <template slot-scope="{row}">
-                        <span class="link-type">{{ row.taskId }}</span>
-                    </template>
-                </el-table-column>
-
-                <el-table-column label="商品编号" prop="productId" min-width="50px" align="center">
-                    <template slot-scope="{row}">
-                        <span class="link-type">{{ row.productId }}</span>
-                    </template>
-                </el-table-column>
-
-                <el-table-column label="商品名称" prop="productName" min-width="50px" align="center">
-                    <template slot-scope="{row}">
-                        <span class="link-type">{{ row.productName }}</span>
-                    </template>
-                </el-table-column>
-
-                <el-table-column label="商品单价" min-width="50px" prop="productPrice" align="center">
-                    <template slot-scope="{row}">
-                        <span class="link-type">{{ row.productPrice }}</span>
-                    </template>
-                </el-table-column>
-
-                <el-table-column label="待处理数量" min-width="50px" prop="dealNumber" align="center">
-                    <template slot-scope="{row}">
-                        <span class="link-type">{{ row.dealNumber }}</span>
-                    </template>
-                </el-table-column>
-
-                <el-table-column label="来源" min-width="50px" prop="source" align="center">
-                    <template slot-scope="{row}">
-                        <span class="link-type">{{ row.source }}</span>
-                    </template>
-                </el-table-column>
-
-                <el-table-column label="分库编号" min-width="50px" prop="subwareId" align="center">
-                    <template slot-scope="{row}">
-                        <span class="link-type">{{ row.subwareId }}</span>
-                    </template>
-                </el-table-column>
+                <el-table-column label="ID" prop="id" align="center" width="80"></el-table-column>
+                <el-table-column label="任务编号" prop="taskId" min-width="50px" align="center"></el-table-column>
+                <el-table-column label="商品编号" prop="productId" min-width="50px" align="center"></el-table-column>
+                <el-table-column label="商品名称" prop="productName" min-width="50px" align="center"></el-table-column>
+                <el-table-column label="商品单价" min-width="50px" prop="productPrice" align="center"></el-table-column>
+                <el-table-column label="待处理数量" min-width="50px" prop="dealNumber" align="center"></el-table-column>
+                <el-table-column label="来源" min-width="50px" prop="source" align="center"></el-table-column>
+                <el-table-column label="分库编号" min-width="50px" prop="subwareId" align="center"></el-table-column>
 
                 <el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
                     <template slot-scope="{row,$index}">
@@ -143,10 +104,10 @@ export default {
                 this.queryList = this.list
                 this.listLoading = false
             })
-            this.handleFilter()
+            this.handleFilter(false)
         },
         // 查询
-        handleFilter() {
+        handleFilter(show) {
             this.listLoading = true;
             if (this.list) {
                 this.queryList = this.list.filter((pro) => {
@@ -166,7 +127,7 @@ export default {
                 this.queryList = []
             }
             this.total = this.queryList.length
-            if (this.total === 0) {
+            if (this.total === 0 && show) {
                 this.$message({
                     type: 'error',
                     message: '没有满足条件的数据',
