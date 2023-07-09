@@ -7,8 +7,8 @@
           <el-input v-model="listQuery.name" placeholder="商品名称" style="width: 200px; margin-right: 5px"
             class="filter-item" clearable @clear="handleFilter" />
         </el-form-item>
-        <el-form-item label="一级分类ID" :rules="{ type: 'number', message: '类别编号必须是数字' }">
-          <el-input v-model.number="listQuery.firstCategray" placeholder="一级分类ID" style="width: 200px; margin-right: 5px"
+        <el-form-item label="一级分类">
+          <el-input v-model="listQuery.firstName" placeholder="一级分类" style="width: 200px; margin-right: 5px"
             class="filter-item" clearable @clear="handleFilter" />
         </el-form-item>
         <el-form-item>
@@ -67,14 +67,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="newOrder" label="一级分类ID" width="200" align="center">
+      <el-table-column v-if="newOrder" label="一级分类" width="200" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.firstCategray }}</span>
+          <span>{{ row.firstName }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="newOrder" label="二级分类ID" width="200" align="center">
+      <el-table-column v-if="newOrder" label="二级分类" width="200" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.secondCategray }}</span>
+          <span>{{ row.secondName }}</span>
         </template>
       </el-table-column>
 
@@ -134,7 +134,7 @@ export default {
         orderType: undefined,
 
         name: '',
-        firstCategray: '',
+        firstName: '',
       },
 
       opType: undefined,
@@ -204,7 +204,7 @@ export default {
       this.queryList = this.list.filter((product) => {
         // 查询条件 商品名称 一级分类编号
         let query = this.listQuery
-        if (query.firstCategray !== '' && product.firstCategray !== query.firstCategray) {
+        if (query.firstName !== '' && product.firstName !== query.firstName) {
           return false
         }
         if (query.name !== '') {
@@ -318,7 +318,7 @@ export default {
         return {
           productId: this.newOrder ? g.id : g.productId,
           productName: this.newOrder ? g.name : g.productName,
-          productCategary: g.secondCategray,
+          productCategary: g.firstName,
           price: g.price,
           number: this.newOrder ? g.opNumber : g.number,
           refundAble: g.refundAble,
