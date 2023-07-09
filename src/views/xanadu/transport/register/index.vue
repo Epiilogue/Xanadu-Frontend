@@ -12,6 +12,11 @@
       >
         创建商品
       </el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
+                 @click="patchCreate"
+      >
+        爬虫创建
+      </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download"
                  @click="handleDownload"
       >
@@ -104,13 +109,13 @@
             <span>{{ timestampToTime()(row.updateTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="最大库存量" min-width="80px">
+        <el-table-column label="最大库存量" align="center" min-width="80px">
           <template slot-scope="{row}">
             <span>{{ row.maxCount }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="安全库存量" min-width="80px">
+        <el-table-column label="安全库存量" align="center" min-width="80px">
           <template slot-scope="{row}">
             <span>{{ row.safeStock }}</span>
           </template>
@@ -204,7 +209,6 @@
           >
           </el-cascader>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -215,11 +219,81 @@
         </el-button>
       </div>
     </el-dialog>
+
+
+
+    <el-dialog title="爬虫添加" :visible.sync="patchFormVisible" style="width: 100%;padding-left: 5%">
+      <el-form ref="dataForm" :model="temp" label-position="left" label-width="25%" :rules="rules"
+               style="width: 65%; margin-left:150px;"
+      >
+        <el-form-item label="商品种类" prop="category">
+          <el-cascader
+            v-model="category"
+            :options="options"
+            :props="defaultParams"
+            @change="handleChangeCrawler"
+          >
+          </el-cascader>
+        </el-form-item>
+        <el-form-item label="货物名称" prop="name">
+          <el-input v-model="temp.name"/>
+        </el-form-item>
+        <el-form-item label="价格" prop="price">
+          <el-input v-model="temp.price"/>
+        </el-form-item>
+        <el-form-item label="成本" prop="cost">
+          <el-input v-model="temp.cost"/>
+        </el-form-item>
+        <el-form-item label="商品选择" prop="name">
+          <ProductSelect
+            :value="temp.name"
+            :keyword = "keyword"
+            :single="true"
+            @getInfo="getProductInfo"
+          />
+        </el-form-item>
+        <el-form-item label="供应商ID" prop="supplierId">
+          <SupplierSelect
+            :value="temp.supplierId"
+            :single="true"
+            @getInfo="getSupplierId"
+          />
+        </el-form-item>
+        <el-form-item label="是否可退货" prop="refundAble">
+          <el-radio v-model="temp.refundAble" :label="true">是</el-radio>
+          <el-radio v-model="temp.refundAble" :label="false">否</el-radio>
+        </el-form-item>
+        <el-form-item label="是否可换货" prop="changeAble">
+          <el-radio v-model="temp.changeAble" :label="true">是</el-radio>
+          <el-radio v-model="temp.changeAble" :label="false">否</el-radio>
+        </el-form-item>
+        <el-form-item label="安全库存量" prop="safeStock">
+          <el-input v-model="temp.safeStock"/>
+        </el-form-item>
+        <el-form-item label="最大库存量" prop="maxCount">
+          <el-input v-model="temp.maxCount"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="comment">
+          <el-input v-model="temp.comment"/>
+        </el-form-item>
+        <el-form-item label="图片上传" prop="picture">
+          <single-upload v-model="temp.picture"></single-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="createData()">
+          提交
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { createArticle, deleteProduct, fetchList, fetchPv, updateProduct } from '@/api/distribution'
+import { createArticle, deleteProduct, fetchList, updateProduct } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import axios from 'axios'
@@ -228,6 +302,7 @@ import SingleUpload from '@/components/upload/singleUpload.vue'
 import Product from '@/components/detail/product.vue'
 import Supplier from '@/components/detail/supplier.vue'
 import SupplierSelect from '@/components/Pop/Supplier/index.vue'
+import ProductSelect from '@/components/Pop/Product/index.vue'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -244,7 +319,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Supplier, Product, SingleUpload, Pagination, SupplierSelect },
+  components: { ProductSelect, Supplier, Product, SingleUpload, Pagination, SupplierSelect },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -263,6 +338,7 @@ export default {
     return {
       category: [],
       tableKey: 0,
+      patchFormVisible:false,
       list: null,
       queryName:null,
       showList: null,
@@ -327,6 +403,7 @@ export default {
       },
       dialogPvVisible: false,
       pvData: [],
+      tempInfo:null,
       dataObj: {
         policy: '',
         signature: '',
@@ -336,6 +413,7 @@ export default {
         host: ''
         // callback:'',
       },
+      keyword:'',
       filteredData : null,
       downloadLoading: false
     }
@@ -357,12 +435,37 @@ export default {
     timestampToTime() {
       return timestampToTime
     },
-
     handleChange(value) {
       this.temp.firstCategray = value[0]
       this.temp.secondCategray = value[1]
-      console.log(value)
     },
+    //爬虫添加商品
+    patchCreate(){
+      this.resetTemp()
+      this.category = null
+      this.getCategory()
+      this.patchFormVisible = true;
+    },
+    handleChangeCrawler(value){
+      let that = this
+      this.temp.firstCategray = value[0]
+      this.temp.secondCategray = value[1]
+      let id = parseInt(value[1])
+      axios.get(`dbc/categary/get/${id}`)
+        .then(function(res) {
+          that.keyword = res.data
+        }).then(res=>{
+          that.keyword = that.keyword.data.category
+      })
+    },
+    getProductInfo(selections){
+      if(selections.length > 0){
+        this.temp.name = selections[0].Name + ''
+        this.temp.cost = selections[0].Price
+        this.temp.picture = selections[0].ImgURL+''
+      }
+    },
+
     //分页组件修改页面容量
     handleSizeChange(newSize) {
       this.pageSize = newSize
@@ -376,7 +479,6 @@ export default {
       const that = this
       axios.get('dbc/categary/listAll')
         .then(function(res) {
-          console.log(res.data)
           that.options = res.data.data
         })
     },
@@ -458,6 +560,7 @@ export default {
     handleCreate() {
       this.resetTemp()
       this.getCategory()
+      this.category = null
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -468,15 +571,19 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         this.temp.deleted = false
         if (valid) {
-          createArticle(this.temp).then(() => {
+          createArticle(this.temp).then((res) => {
             this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          }).then(
+            this.patchFormVisible = false
+            if(res.code === 200){
+              this.$notify({
+                title: 'Success',
+                message: 'Created Successfully',
+                type: 'success',
+                duration: 2000
+              })
+            }
+            }
+           ).then(
             () => {
               this.getList()
             }
@@ -538,14 +645,7 @@ export default {
           }
         }
       )
-
       this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
     },
     handleDownload() {
       this.downloadLoading = true
@@ -573,6 +673,7 @@ export default {
     }
   }
 }
+
 </script>
 <style>
 .avatar-uploader .el-upload {
