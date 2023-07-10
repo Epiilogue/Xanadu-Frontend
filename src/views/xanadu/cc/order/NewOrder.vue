@@ -52,12 +52,12 @@
               <span>{{ row.productId }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品名称" width="100" align="center">
+          <el-table-column label="商品名称" min-width="600" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品种类编号" min-width="100" align="center">
+          <el-table-column label="商品种类" width="100" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productCategary }}</span>
             </template>
