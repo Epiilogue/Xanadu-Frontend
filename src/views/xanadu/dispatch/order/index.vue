@@ -1,6 +1,15 @@
 <template>
     <div class="app-container">
         <div v-if="!dialogFormVisible">
+            <!-- 提示当前订单操作 -->
+            <div class="alert">
+                <p v-if="opType !== ''">正在进行的订单操作是</p>
+                <p v-else>正在查看所有订单</p>
+                <el-select v-model="opType" class="select" placeholder="选择订单操作" @change="handleOpChange(opType, true)"
+                    clearable @clear="handleOpChange(opType)">
+                    <el-option v-for="item in opTypeOption" :key="item" :label="item" :value="item" />
+                </el-select>
+            </div>
             <div class="filter-container">
                 <el-form :inline="true" style="margin: 0px;">
                     <el-form-item label="要求到货日期">
@@ -9,12 +18,20 @@
                             end-placeholder="结束日期" clearable>
                         </el-date-picker>
                     </el-form-item>
-                    <el-form-item label="订单类型"><el-select v-model="listQuery.orderType" placeholder="订单类型"
-                            style="width: 200px; margin-right: 5px" class="filter-item">
+                    <el-form-item label="订单类型">
+                        <el-select v-model="listQuery.orderType" placeholder="订单类型" style="width: 200px; margin-right: 5px"
+                            class="filter-item" clearable @clear="this.handleFilter">
                             <el-option v-for="item in orderTypeOption" :key="item" :label="item" :value="item" />
-                        </el-select></el-form-item>
-                    <el-form-item><el-button class="filter-item" type="primary" icon="el-icon-search"
-                            @click="() => this.getList()">
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="订单状态">
+                        <el-select v-model="listQuery.status" placeholder="订单状态" style="width: 200px; margin-right: 5px"
+                            class="filter-item" clearable @clear="this.handleFilter">
+                            <el-option v-for="item in orderStatusOption" :key="item" :label="item" :value="item" />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(true)">
                             查询
                         </el-button>
                     </el-form-item>
@@ -39,8 +56,7 @@
                 <!-- 按钮 -->
                 <el-table-column label="操作" align="center" min-width="200" class-name="small-padding fixed-width">
                     <template slot-scope="{ row, $index }">
-                        <el-button type="primary" @click="handleInfo(row)">调度</el-button>
-                        <el-button type="primary" @click="handleCheck(row)">缺货检查</el-button>
+                        <el-button type="primary" plain @click="handleOperateOrder(row)">订单操作</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -69,12 +85,14 @@ export default {
     data() {
         return {
             list: [],
+            opList: [],//订单操作列表
             queryList: [], //查询后的列表
             total: 0,
             listQuery: {
                 page: 1,
                 limit: 20,
                 orderType: "",
+                status: '',
             },
             tableColumns: undefined,
             // 分页
@@ -82,6 +100,7 @@ export default {
             pageSize: 5,//默认每页显示5条
 
             orderTypeOption: ["全部", "新订", "退订", "退货", "换货"],
+            orderStatusOption: ["缺货", "可分配", "已分配", "已调度"],
             deadlineRange: [],  // 日期
             temp: { // 订单详情
                 id: undefined,
@@ -102,56 +121,60 @@ export default {
             },
             listLoading: false,
             dialogFormVisible: false,
+
+            opType: '',
+            opTypeOption: ['订单调度', '缺货检查'],
         }
     },
     created() {
         this.getList()
     },
     methods: {
-        // 分页加载订单列表
+        // 加载订单列表
         getList() {
             this.listLoading = true;
-            //将起止日期添加到请求参数中
-            if (this.deadlineRange && this.deadlineRange.length > 0) {
-                console.log(this.deadlineRange)
-                let query = this.addDateRange(this.listQuery, this.deadlineRange);
-                query.beginTime = query.params.beginTime
-                query.endTime = query.params.endTime
-                query.params = undefined
-            } else {
-                this.listQuery.beginTime = ''
-                this.listQuery.endTime = ''
-            }
-            if (this.listQuery.orderType === '全部') {
-                this.listQuery.orderType = ''
-            }
             // 请求
             fetchList().then((response) => {
-                this.list = response.data;
-                this.total = response.data.length;
-                this.queryList = this.list
+                let list = response.data
+                // 状态为：缺货/可分配/已分配/已调度 的订单
+                if (list) {
+                    list = list.filter((order) => {
+                        if (this.orderStatusOption.includes(order.status)) return true
+                        return false
+                    })
+                }
+                this.list = list
+                // 获取当前操作的订单列表
+                this.handleOpChange(this.opType)
                 this.listLoading = false;
             }).catch(this.listLoading = false)
         },
 
         // 查询
-        handleFilter() {
+        handleFilter(show) {
             this.listLoading = true;
+            // 对当前正在操作的订单列表进行查询
             this.queryList = this.opList.filter((order) => {
-                // 查询条件
+                // 查询条件:要求到货日期 订单类型 订单状态
                 let query = this.listQuery
-                // 要求到货日期 订单类型
                 let range = this.deadlineRange
                 if (range !== null && (new Date(order.deadline) < new Date(range[0]) || new Date(order.deadline) > new Date(range[1]))) {
                     return false
                 }
-                if (query.orderType !== '' && order.orderType !== query.orderType) {
+                if (query.orderType !== '' && query.orderType !== '全部' && order.orderType !== query.orderType) {
+                    return false
+                }
+                if (query.status !== '' && order.status !== query.status) {
                     return false
                 }
                 return true
             });
+            // 数据总条数
+            this.total = this.queryList.length
             this.listLoading = false;
-            if (this.queryList.length === 0) {
+            // 查询提示
+            if (!show) return
+            if (this.total === 0) {
                 this.$message({
                     type: 'error',
                     message: '没有符合条件的订单',
@@ -166,7 +189,59 @@ export default {
             }
         },
 
-        // 订单详情 v-if
+        // 加载对应操作的订单列表
+        handleOpChange(newVal) {
+            this.listLoading = true;
+            switch (newVal) {
+                case '订单调度':
+                    this.opList = this.list.filter(order => order.status === "可分配")
+                    this.orderStatusOption=[ "可分配"]
+                    break
+                case '缺货检查':
+                    this.opList = this.list.filter(order => order.status === "缺货")
+                    this.orderStatusOption=["缺货"]
+                    break
+                default:
+                    this.opList = this.list
+                    this.orderStatusOption=["缺货", "可分配", "已分配", "已调度"]
+                    break
+            }
+            // 查询
+            this.handleFilter(false)
+            // 提示
+            if (this.total === 0 && newVal != '') {
+                this.$message({
+                    type: 'error',
+                    message: '没有需要操作的订单',
+                    durarion: 1000,
+                });
+            }
+        },
+
+        // 订单操作
+        handleOperateOrder(row) {
+            if (this.opType === '') {
+                this.$message({
+                    type: 'error',
+                    message: '请先选择要进行的操作',
+                    durarion: 1000,
+                });
+                return
+            }
+            // 执行对应的订单操作
+            switch (this.opType) {
+                case '订单调度':
+                    this.handleInfo(row)
+                    break
+                case '缺货检查':
+                    this.handleCheck(row)
+                    break
+                default:
+                    break
+            }
+        },
+
+        // 订单调度 v-if
         handleInfo(row) {
             row.orderId = row.id;
             getOrder(row).then((res) => {
@@ -180,7 +255,7 @@ export default {
             });
         },
 
-        // 检查订单状态
+        // 缺货检查
         handleCheck(row) {
             checkAllArrival(row.id).then((res) => {
                 this.$message({
@@ -206,7 +281,7 @@ export default {
             })
         },
 
-        // 关闭订单详情页
+        // 关闭订单调度页
         close() {
             this.temp = [];
             this.dialogFormVisible = false;
@@ -215,3 +290,25 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.alert {
+    display: flex;
+    padding: 10px 16px;
+    background-color: #ecf8ff;
+    border-radius: 4px;
+    border-left: 5px solid #50bfff;
+    margin-bottom: 20px;
+}
+
+.alert p {
+    font-size: 14px;
+    color: #5e6d82;
+    line-height: 1.5em;
+}
+
+.select {
+    margin-left: 10px;
+    margin-top: 6.5px;
+}
+</style>

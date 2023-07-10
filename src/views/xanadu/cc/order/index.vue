@@ -20,10 +20,11 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="订单类型"><el-select v-model="listQuery.orderType" placeholder="订单类型"
-              style="width: 200px; margin-right: 5px" class="filter-item" clearable>
+              style="width: 200px; margin-right: 5px" class="filter-item" clearable @clear="handleFilter(false)">
               <el-option v-for="item in orderTypeOption" :key="item" :label="item" :value="item" />
             </el-select></el-form-item>
-          <el-form-item><el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          <el-form-item><el-button v-waves class="filter-item" type="primary" icon="el-icon-search"
+              @click="handleFilter(true)">
               查询
             </el-button>
             <el-button class="filter-item" style="margin-left: 5px" type="primary" icon="el-icon-edit"
@@ -112,7 +113,7 @@ import Customer from '@/components/detail/customer.vue' // secondary package bas
 
 export default {
   name: "OrderList",
-  components: { Order,Customer },
+  components: { Order, Customer },
   directives: { waves },
   data() {
     return {
@@ -186,14 +187,13 @@ export default {
       // 加载列表
       fetchList(this.customerId).then((response) => {
         this.list = response.data;
-        this.handleOpChange(this.opType, false)
-        this.total = response.data.length;
+        this.handleOpChange(this.opType)
         this.listLoading = false;
       })
     },
 
     // 加载对应操作的订单列表
-    handleOpChange(newVal, show) {
+    handleOpChange(newVal) {
       this.listLoading = true;
       // todo:修改下拉框选项
       switch (newVal) {
@@ -209,16 +209,16 @@ export default {
           this.opList = this.list
           break
       }
-      if (this.opList.length === 0 && show) {
+      // 查询结果
+      this.handleFilter(false)
+      // 提示
+      if (this.total === 0 && newVal != '') {
         this.$message({
           type: 'error',
-          message: '没有需要操作的任务单',
+          message: '没有需要操作的订单',
           durarion: 1000,
         });
       }
-      // 查询结果
-      this.queryList = this.opList
-      this.listLoading = false;
     },
 
     // 新订
@@ -257,7 +257,7 @@ export default {
     },
 
     // 查询
-    handleFilter() {
+    handleFilter(show) {
       this.listLoading = true;
       this.queryList = this.opList.filter((order) => {
         // 查询条件
@@ -272,7 +272,9 @@ export default {
         }
         return true
       });
+      this.total = this.queryList.length
       this.listLoading = false;
+      if(!show) return
       if (this.queryList.length === 0) {
         this.$message({
           type: 'error',
