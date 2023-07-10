@@ -127,7 +127,7 @@ export default {
       customerId: undefined,
       // 分页
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示15条
       total: 0,
 
       listQuery: {

@@ -79,7 +79,7 @@ export default {
             tableColumns: undefined,
             // 分页
             currentPage: 1,//默认显示第一页
-            pageSize: 5,//默认每页显示5条
+            pageSize: 15,//默认每页显示5条
 
             orderTypeOption: ["全部", "新订", "退订", "退货", "换货"],
             deadlineRange: [],  // 日期

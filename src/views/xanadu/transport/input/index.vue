@@ -171,14 +171,14 @@ export default {
       singleLackRecord: null,
       queryInfo: '',
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示5条
       totalNum: 100, //总页数
       inputNum:0,
       nowIndex:0,
       inputRan:0,
       listQuery: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 15,
         currentPage: 1
       },
       temp: {

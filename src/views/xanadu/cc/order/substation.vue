@@ -62,7 +62,7 @@ export default {
             total: 0,
             listLoading: true,
             currentPage: 1,//默认显示第一页
-            pageSize: 5,//默认每页显示5条
+            pageSize: 15,//默认每页显示5条
             listQuery: {
                 address: '',
                 name: '',

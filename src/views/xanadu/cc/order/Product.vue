@@ -126,7 +126,7 @@ export default {
       tableKey: 0,
       // 分页
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示5条
 
       // 查询条件
       listQuery: {
