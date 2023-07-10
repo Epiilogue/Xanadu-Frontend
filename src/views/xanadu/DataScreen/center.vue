@@ -7,36 +7,24 @@
         <span class="fs-xl text mx-2">分站配送信息</span>
       </div>
       <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 29px">
-        <dv-scroll-board :config="config" style="width: 7rem;height:3rem" />
+        <dv-scroll-board :config="config" style="width: 7.3rem;height:3rem" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { SubDeliveryInfo } from '../../../api/dataScreen'
 export default {
   name: 'center',
   data(){
     return{
       list:[
-        ['行1列1', '行1列2', '行1列3', '行1列4', '行1列5', '行1列6'],
-        ['行2列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
+        ['行1列1', '行1列2', '行1列3', '行1列4', '行1列5', '行1列6']
       ],
 
       config:{
-        header: ['列1', '列2', '列3'],
+        header: ['已换货', '配送订单', '送货收款', '退货订单', '收款订单', '分库收款'],
         data: [],
         index: true,
         columnWidth: [45],
@@ -45,6 +33,12 @@ export default {
     }
   },
   mounted() {
+    SubDeliveryInfo().then((res)=>{
+      console.log(res.data)
+      for (let i = 0;i < res.data;i++){
+
+      }
+    })
     for (let i = 0;i < this.list.length;i++)
       this.config.data.push(this.list[i])
   }

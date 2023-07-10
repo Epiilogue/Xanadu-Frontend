@@ -60,7 +60,6 @@
       <updateView :inputID="editID"
                   :inputAddress="editaddress"
                   :inputName="editName"
-                  :inputMaster="editMaster"
                   :inputCity="editCity"
                   :inputX="editX"
                   :inputY="editY"
@@ -74,7 +73,7 @@
 import mapview from './mapView.vue'
 import updateView from './updateView'
 
-import { subwareByID,subwareAll ,subwareDetele} from '@/api/ware'
+import { subwareByID,subwareAll ,subwareDetele } from '@/api/ware'
 import Subware from '@/components/detail/subware.vue'
 
 export default {
@@ -188,7 +187,6 @@ export default {
       subwareByID(this.editID).then(res=>{
         this.editaddress = res.data.address
         this.editName = res.data.name
-        this.editMaster = res.data.master
         this.editCity = res.data.city
         this.editX = res.data.x
         this.editY = res.data.y
