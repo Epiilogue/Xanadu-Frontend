@@ -20,14 +20,6 @@
               @keyup.enter.native="refreshList()"
               @submit.native.prevent
             >
-              <el-form-item prop="supplierNo">
-                <el-input
-                  size="small"
-                  v-model="searchForm.supplierNo"
-                  placeholder="商品序号"
-                  clearable
-                ></el-input>
-              </el-form-item>
               <el-form-item prop="supplierName">
                 <el-input
                   size="small"
@@ -192,17 +184,12 @@ export default {
         this.loading = false;
       }).then(
         ()=>{
-          //如果搜索条件有值，就进行过滤
-          if (this.searchForm.supplierNo!=='') {
-            this.dataList = this.dataList.filter((item) => {
-              return item.id===this.searchForm.supplierNo;
-            });
-          }
           if (this.searchForm.supplierName!==' ') {
             this.dataList = this.dataList.filter((item) => {
-              return item.name.indexOf(this.searchForm.supplierName) > -1;
+              return item.Name.indexOf(this.searchForm.supplierName) > -1;
             });
           }
+          this.total = this.dataList.length;
           //按照分页条件分页
           this.dataList = this.dataList.slice(
             (this.pageNo - 1) * this.pageSize,
