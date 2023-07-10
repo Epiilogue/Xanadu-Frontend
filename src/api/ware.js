@@ -177,3 +177,20 @@ export function subList(){
     method: 'get',
   })
 }
+export function printDispatchOut(date, productName){
+  return request({
+    url: '/ware/centerOutput/printInventoryList',
+    method: 'get',
+    params: date, productName
+  })
+}
+
+export function printDistributionList(date, productName, subwareId){
+  return request({
+    url: '/ware/centerOutput/printDistributionList',
+    method: 'get',
+    params: date, productName, subwareId
+  })
+}
+
+

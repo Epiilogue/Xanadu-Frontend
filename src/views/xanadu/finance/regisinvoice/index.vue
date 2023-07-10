@@ -158,13 +158,13 @@ export default {
         startNumber: [{
           required: true,
           validator: this.validateInvoiceNumber,
-          message: '开始号码不能为空',
+          message: '请检查发票号码格式',
           trigger: 'blur'
         }],
         endNumber: [{
           required: true,
           validator: this.validateInvoiceNumber,
-          message: '结束号码不能为空',
+          message: '请检查发票号码格式',
           trigger: 'blur'
         }],
         batch: [{

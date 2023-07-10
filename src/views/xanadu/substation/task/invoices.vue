@@ -1,5 +1,28 @@
 <template>
   <div class="app-container">
+    <!--  发票查询  -->
+    <el-form :model="query" ref="elForm" :rules="queryrules" size="small"  label-width="120px" :inline="true">
+      <el-form-item label="领用人" prop="employee" label-width="80px">
+        <el-col>
+          <el-input v-model="query.employee"  placeholder="输入领用人"
+                     prefix-icon='el-icon-paperclip' width="100%"></el-input>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="发票号码" prop="invoiceNumber" label-width="80px">
+        <el-col>
+          <el-input v-model="query.invoiceNumber"  placeholder="输入发票号码"
+                     prefix-icon='el-icon-paperclip' width="100%"></el-input>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="批次" prop="batch" label-width="80px">
+        <el-col>
+          <el-input v-model="query.batch"  placeholder="输入批次"
+                     prefix-icon='el-icon-paperclip' width="100%"></el-input>
+        </el-col>
+      </el-form-item>
+      <el-button type="primary" size="small" @click="selectList">查  询</el-button>
+      <el-button type="primary" size="small"  style="margin-right: 10px"  @click="getList">重  置</el-button>
+    </el-form>
     <!-- 失效原因对话框 -->
     <el-dialog title="发票作废" :visible.sync="open1" height="300px" width="600px" append-to-body>
       <el-form ref="form" :model="dform"  label-width="80px" >
@@ -90,7 +113,7 @@
         <el-button type="primary" @click="cancel()">取 消</el-button>
       </div>
     </el-dialog>
-  <!--  发票信息  -->
+    <!--  发票信息  -->
     <el-table v-loading="loading" :data="invoiceList">
       <el-table-column label="发票号码" align="center" prop="number" width="200">
         <template slot-scope="scope">
@@ -176,6 +199,11 @@ export default {
         printTime: "暂无信息",
         productName: "暂无信息"
       },
+      query:{
+        employee: '',
+        invoiceNumber: '',
+        batch:'0',
+      },
       taskmessage: {},
       open: false,
       open1: false,
@@ -188,6 +216,25 @@ export default {
       // 发票信息
       invoiceList: [],
       dform: {},
+      queryrules: {
+        employee: [{
+          required: true,
+          validator: this.validateInvoiceNumber,
+          message: '领用人不能为空',
+          trigger: 'blur'
+        }],
+        invoiceNumber: [{
+          required: true,
+          validator: this.validateInvoiceNumber,
+          message: '请检查发票号码格式',
+          trigger: 'blur'
+        }],
+        batch: [{
+          required: true,
+          message: '批次不能为空',
+          trigger: 'blur'
+        }],
+      }
     }
   },
   created() {
@@ -196,6 +243,31 @@ export default {
   methods: {
     parseTime() {
       return parseTime
+    },
+    selectList() {
+      const that = this;
+      axios.get("http://localhost:8010/ac/invoices/selectlist",{
+        params: {
+          employee: that.query.employee,
+          invoiceNumber: that.query.invoiceNumber,
+          batch: that.query.batch,
+        }
+      }).then( function(res){
+        //代表请求成功之后处理
+        that.invoiceList = res.data.data;
+        console.log(that.invoiceList);
+        that.$message({
+          message: "查询成功",
+          type: 'success'
+        });
+      }).catch( function (err){
+        //代表请求失败之后处理
+        that.$message({
+          message: "后端请求失败",
+          type: 'error'
+        });
+        console.log (err);
+      });
     },
     getList(){
       this.subId = this.task.subId;

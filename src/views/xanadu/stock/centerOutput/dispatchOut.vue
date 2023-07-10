@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!--   打印内容   -->
+    <!--   出库单打印内容   -->
     <div v-show="false">
       <form method="get" action="#" id="printJS-form-output">
         <div >
@@ -8,7 +8,7 @@
           <table class="product-table">
             <thead>
             <tr>
-              <th>名称</th>
+              <th>商品名称</th>
               <th>单价</th>
               <th>总数</th>
               <th>供货商名称</th>
@@ -17,13 +17,46 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="product in this.printform" :key="product.productId">
-              <td>{{ product.productName }}</td>
-              <td>{{ product.productPrice }}</td>
-              <td>{{ product.totalNum }}</td>
-              <td>{{ product.supplierName }}</td>
-              <td>{{ product.totalPrice }}</td>
-              <td>{{ parseTime()(product.date, '{y}-{m}-{d}') }}</td>
+            <tr v-for="item in this.printform" :key="item.productId">
+              <td>{{ item.productName }}</td>
+              <td>{{ item.productPrice }}</td>
+              <td>{{ item.totalNum }}</td>
+              <td>{{ item.supplierName }}</td>
+              <td>{{ item.totalPrice }}</td>
+              <td>{{ parseTime()(item.date, '{y}-{m}-{d}') }}</td>
+            </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </form>
+    </div>
+    <!--  分发单打印内容  -->
+    <div v-show="false">
+      <form method="get" action="#" id="printJS-form-list">
+        <div >
+          <h3>Xanadu出库单</h3 >
+          <table class="product-table">
+            <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>单价</th>
+              <th>总数</th>
+              <th>供货商名称</th>
+              <th>分库名</th>
+              <th>总价格</th>
+              <th>日期</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in this.printform1" :key="item.productId">
+              <td>{{ item.productName }}</td>
+              <td>{{ item.productPrice }}</td>
+              <td>{{ item.totalNum }}</td>
+              <td>{{ item.supplierName }}</td>
+              <td>{{ item.subwareName }}</td>
+              <td>{{ item.totalPrice }}</td>
+              <td>{{ parseTime()(item.date, '{y}-{m}-{d}') }}</td>
             </tr>
             </tbody>
           </table>
@@ -44,9 +77,14 @@
           <el-input v-model="printData.productName"  placeholder="输入商品名称"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
+        <el-form-item label="仓库id" prop="SubwareId">
+          <el-input v-model="printData.subwareId"  placeholder="输入仓库id"
+                    prefix-icon='el-icon-paperclip' width="120%"></el-input>
+        </el-form-item>
         <el-button type="primary" size="small" @click="printDispatchOut">打印出库单</el-button>
-        <el-button type="primary" size="small" icon="el-icon-refresh-right" style="margin-right: 10px"  @click="reset">刷  新</el-button>
+        <el-button type="primary" size="small" @click="printDistributionList">打印配送单</el-button>
       </el-form>
+
 
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
@@ -103,7 +141,7 @@
 
 <script>
 
-import {cenDispatchOut, cenConfirmOut} from '@/api/ware'
+import {cenDispatchOut, cenConfirmOut, printDispatchOut, printDistributionList} from '@/api/ware'
 import subware from '../../../../components/detail/subware'
 import product from '../../../../components/detail/product'
 import printJS from "print-js";
@@ -127,6 +165,7 @@ export default {
       printData: {
         data: null,
         productName: '',
+        subwareId: undefined,
       },
       printform: {
         productName: '无',
@@ -135,6 +174,17 @@ export default {
         supplierName: '',
         totalNum: '',
         totalPrice: '',
+        date: '',
+      },
+      printform1: {
+        productName: '无',
+        number: '',
+        productPrice: '',
+        supplierName: '',
+        remark: '无',
+        totalNum: '',
+        totalPrice: '',
+        subwareName: '',
         date: '',
       },
       rules: {
@@ -205,8 +255,44 @@ export default {
         that.print();
       }
     },
+    printDistributionList(){
+      // printDistributionList(this.printData.data, this.printData.productName, this.printData.subwareId).then(res=>{
+      //   this.printform1 = res.data.data;
+      //   this.print1();
+      // })
+      if(this.printData.data === null || this.printData.subwareId === undefined){
+        this.$message({
+          message:'请选择日期或仓库id',
+          type:'warning'
+        })
+      }
+      else{
+        console.log(this.printData.subwareId)
+        const that = this;
+        axios.get("http://localhost:8015/ware/centerOutput/printDistributionList",{
+          params: {
+            date: that.printData.data.toLocaleString(),
+            productName: that.printData.productName,
+            subwareId: that.printData.subwareId,
+          }
+        }).then( function(res){
+          //代表请求成功之后处理
+          that.printform1 = res.data.data;
+        }).catch( function (err){
+          //代表请求失败之后处理
+          that.$message({
+            message: "后端请求失败",
+            type: 'error'
+          });
+        });
+        that.print1();
+      }
+    },
     print(){
       printJS('printJS-form-output','html')
+    },
+    print1(){
+      printJS('printJS-form-list','html')
     },
     //时间戳转换
     getLocalTime(nS) {
