@@ -55,13 +55,13 @@
             </el-table>
 
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="1"
-                :page-sizes="[1, 2, 5, 7]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="total">
+                :page-sizes="[10,15,20]" :page-size="15" layout="total, sizes, prev, pager, next, jumper" :total="total">
             </el-pagination>
 
         </el-card>
     </div>
 </template>
-  
+
 <script>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
@@ -82,7 +82,7 @@ export default {
             total: 0,
             listLoading: true,
             currentPage: 1,//默认显示第一页
-            pageSize: 5,//默认每页显示5条
+            pageSize: 15,//默认每页显示5条
             listQuery: {
                 productName: '',
                 taskId: '',
@@ -189,4 +189,3 @@ export default {
     }
 }
 </script>
-  

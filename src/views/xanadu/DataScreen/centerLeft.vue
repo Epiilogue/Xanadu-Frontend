@@ -4,7 +4,7 @@
       <div class="d-flex pt-2 pl-2">
         <span style="color:#5cd9e8">
         </span>
-        <span class="fs-xl text mx-2">订购排行榜</span>
+        <span class="fs-xl text mx-2">订购排行榜TOP5</span>
       </div>
       <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 20px">
         <dv-scroll-ranking-board :config="config" style="width: 6rem;height:3rem" />
@@ -14,48 +14,34 @@
 </template>
 
 <script>
+import {listTop} from '../../../api/dataScreen'
+
 export default {
   name: 'centerLeft',
   data() {
     return{
-      list:[
-        {
-          name: "李嘉伟",
-          value: 89
-        },
-        {
-          name: "徐高松",
-          value: 4
-        },
-        {
-          name: "邢凯",
-          value: 100
-        },
-        {
-          name: "阿伟罗",
-          value: 7
-        },
-        {
-          name: "李志鹏",
-          value: 66
-        },
-        {
-          name: "李志鹅",
-          value: 77
-        },
-        {
-          name: "刘益先",
-          value: 56
-        }
-      ],
+      line: {
+        name:'',
+        value:''
+      },
+      list:[],
       config:{
         data:[]
       }
     }
   },
-  mounted() {
-    for (let i = 0;i < this.list.length;i++)
-      this.config.data.push(this.list[i])
+  created() {
+    listTop(5).then((res)=>{
+      for (let i = 0;i < res.data.length;i++){
+        this.line = { name:'', value:'' }
+        this.line.name = res.data[i].productName
+        this.line.value = res.data[i].number
+        this.list.push(this.line)
+      }
+      this.config = {
+        data:this.list
+      }
+    })
   }
 }
 </script>

@@ -128,8 +128,8 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="1"
-        :page-sizes="[1, 2, 5, 7]"
-        :page-size="5"
+        :page-sizes="[10,15,20]"
+        :page-size="15"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
       >
@@ -258,11 +258,11 @@ export default {
       },
       date:'',
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示5条
       totalNum: 100, //总页数
       listQuery: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 15,
         currentPage: 1
       },
       //importanceOptions: [false, true],

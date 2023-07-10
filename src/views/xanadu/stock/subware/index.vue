@@ -31,7 +31,6 @@
         <el-table-column label="仓库城市地址" align="center" width="100" prop="city" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库经度" align="center" width="100" prop="x" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库纬度" align="center" width="100" prop="y" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库管理员" align="center" width="50" prop="master" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-edit" @click="editStock(scope.row)" >编辑</el-button>
@@ -60,7 +59,6 @@
       <updateView :inputID="editID"
                   :inputAddress="editaddress"
                   :inputName="editName"
-                  :inputMaster="editMaster"
                   :inputCity="editCity"
                   :inputX="editX"
                   :inputY="editY"
@@ -74,7 +72,7 @@
 import mapview from './mapView.vue'
 import updateView from './updateView'
 
-import { subwareByID,subwareAll ,subwareDetele} from '@/api/ware'
+import { subwareByID,subwareAll ,subwareDetele } from '@/api/ware'
 import Subware from '@/components/detail/subware.vue'
 
 export default {
@@ -188,7 +186,6 @@ export default {
       subwareByID(this.editID).then(res=>{
         this.editaddress = res.data.address
         this.editName = res.data.name
-        this.editMaster = res.data.master
         this.editCity = res.data.city
         this.editX = res.data.x
         this.editY = res.data.y

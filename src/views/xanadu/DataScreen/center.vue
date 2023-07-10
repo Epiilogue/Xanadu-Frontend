@@ -7,46 +7,42 @@
         <span class="fs-xl text mx-2">分站配送信息</span>
       </div>
       <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 29px">
-        <dv-scroll-board :config="config" style="width: 7rem;height:3rem" />
+        <dv-scroll-board ref="scrollBoard" :config="config" style="width: 7.2rem;height:3rem" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { SubDeliveryInfo } from '../../../api/dataScreen'
 export default {
   name: 'center',
   data(){
     return{
-      list:[
-        ['行1列1', '行1列2', '行1列3', '行1列4', '行1列5', '行1列6'],
-        ['行2列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-        ['行3列1', '行2列2', '行2列3', '行1列4', '行1列5', '行1列6'],
-      ],
-
+      line:[],
+      list:[],
       config:{
-        header: ['列1', '列2', '列3'],
+        header: ['分库ID', 'delivered', 'deliveryAmount', 'paymentDelivered', 'totalOrders',''],
         data: [],
         index: true,
-        columnWidth: [45],
+        columnWidth:[50],
         align: ['center']
       }
     }
   },
-  mounted() {
-    for (let i = 0;i < this.list.length;i++)
-      this.config.data.push(this.list[i])
+  created() {
+    SubDeliveryInfo().then((res)=>{
+      for (let i = 0;i < res.data.length;i++){
+        this.line = []
+        this.line.push(res.data[i].subId)
+        this.line.push(res.data[i].delivered)
+        this.line.push(res.data[i].deliveryAmount)
+        this.line.push(res.data[i].paymentDelivered)
+        this.line.push(res.data[i].totalOrders)
+        this.config.data.push(this.line)
+      }
+      this.$refs['scrollBoard'].updateRows(this.config.data)
+    })
   }
 }
 

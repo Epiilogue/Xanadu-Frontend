@@ -17,6 +17,13 @@ export function fetchLackRecordList(isCheck) {
     //params: query,
   })
 }
+//查看购货单
+export function fetchPurchaseRecordList(query) {
+  return request({
+    url: '/dbc/purchaseRecord/list',
+    method: 'get',
+  })
+}
 //生成采购单
 export function generatePurchaseRecord(data){
   return request({
@@ -30,6 +37,25 @@ export function getRefundList(){
   return request({
     url: '/dbc/refund/list',
     method:'get',
+  })
+}
+
+//购货确认
+export function confirmPurchase(id,number){
+  return request({
+    url: '/dbc/purchaseRecord/confirmPurchase',
+    method: 'put',
+    params:{
+      id:id,
+      number:number
+    }
+  })
+}
+
+export function deletePurchase(id){
+  return request({
+    url: `/dbc/purchaseRecord/delete/${id}`,
+    method: 'get',
   })
 }
 

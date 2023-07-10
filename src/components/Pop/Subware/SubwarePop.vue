@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="商品批量选择"
+      title="分库选择"
       width="1000px"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -20,11 +20,19 @@
               @keyup.enter.native="refreshList()"
               @submit.native.prevent
             >
+              <el-form-item prop="id">
+                <el-input
+                  size="small"
+                  v-model="searchForm.subwareNo"
+                  placeholder="分库编号"
+                  clearable
+                ></el-input>
+              </el-form-item>
               <el-form-item prop="supplierName">
                 <el-input
                   size="small"
-                  v-model="searchForm.supplierName"
-                  placeholder="商品名称"
+                  v-model="searchForm.subwareName"
+                  placeholder="分库名称"
                   clearable
                 ></el-input>
               </el-form-item>
@@ -62,39 +70,39 @@
               >
               </el-table-column>
               <el-table-column
-                type="index"
+                prop="id"
                 header-align="center"
                 align="left"
                 sortable="custom"
                 min-width="90"
-                label="商品序号"
+                label="分库编号"
               >
               </el-table-column>
               <el-table-column
-                prop="Name"
+                prop="name"
                 header-align="center"
                 align="left"
                 sortable="custom"
                 min-width="90"
-                label="商品名称"
+                label="分库名称"
               >
               </el-table-column>
               <el-table-column
-                prop="ImgURL"
+                prop="address"
                 header-align="center"
                 align="left"
                 sortable="custom"
                 min-width="110"
-                label="图片路径"
+                label="地址"
               >
               </el-table-column>
               <el-table-column
-                prop="Price"
+                prop="city"
                 header-align="center"
                 align="center"
                 sortable="custom"
                 min-width="110"
-                label="价格"
+                label="城市"
               >
               </el-table-column>
             </el-table>
@@ -130,16 +138,14 @@
   </div>
 </template>
 <script>
-import { getAllProduct } from '@/api/dbc-product'
-import { keyword } from 'chalk'
+import { subwareAll} from '@/api/ware'
 
 export default {
-  name:"ProductPop",
   data() {
     return {
       searchForm: {
-        supplierNo: '',
-        supplierName: ''
+        subwareNo: '',
+        subwareName: ''
       },
       dataListAllSelections: [], // 所有选中的数据包含跨页数据
       idKey: "id", // 标识列表数据中每一行的唯一键的名称(需要按自己的数据改一下)
@@ -153,7 +159,6 @@ export default {
     };
   },
   props: {
-    keyword:'',
     selectData: {
       type: Array,
       default: () => {
@@ -177,19 +182,23 @@ export default {
     // 获取后台数据，如果searchForm中有值，拿到全部数据后做个过滤，然后按照分页参数分页
     refreshList() {
       this.loading = true;
-      console.log(this.keyword)
-      getAllProduct(this.keyword).then((res) => {
+      subwareAll().then((res) => {
         this.dataList = res.data;
         this.total = res.data.length;
         this.loading = false;
       }).then(
         ()=>{
-          if (this.searchForm.supplierName!==' ') {
+          //如果搜索条件有值，就进行过滤
+          if (this.searchForm.subwareNo!=='') {
             this.dataList = this.dataList.filter((item) => {
-              return item.Name.indexOf(this.searchForm.supplierName) > -1;
+              return item.id==this.searchForm.subwareNo;
             });
           }
-          this.total = this.dataList.length;
+          if (this.searchForm.subwareName!==' ') {
+            this.dataList = this.dataList.filter((item) => {
+              return item.name.indexOf(this.searchForm.subwareName) > -1;
+            });
+          }
           //按照分页条件分页
           this.dataList = this.dataList.slice(
             (this.pageNo - 1) * this.pageSize,
@@ -219,7 +228,6 @@ export default {
     },
     // 选中数据
     handleSelectionChange(selection, row) {
-      console.log(row)
       if (this.single && selection.length > 1) {
         this.$refs.supplierTable.clearSelection();
         this.$refs.supplierTable.toggleRowSelection(row);

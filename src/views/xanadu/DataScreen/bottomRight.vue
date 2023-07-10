@@ -6,17 +6,68 @@
 
 <script>
 import china from '../../../common/china'
-
+import { listAllStations } from '../../../api/dataScreen'
 export default {
   name: 'bottomRight',
   data() {
     return{
       wareData:[],
-      lineData:[]
+      lineData:[],
+      cen: {
+        name:'',
+        value:[]
+      },
+      subs :{
+        name:'',
+        value:[]
+      },
+      lines:{
+        fromName: '',
+        toName: '',
+        coords: [
+          [],
+          [],
+          [],
+        ]
+      },
     }
   },
   mounted() {
-    this.getEchartData2()
+    listAllStations().then((res)=>{
+      this.cen.name = res.center.name
+      this.cen.value = [res.center.x,res.center.y]
+      this.wareData.push(this.cen)
+      var list = res.sub
+      for (let i = 0;i < list.length;i++){
+        //点
+        this.subs={
+          name:'',
+          value:[]
+        }
+        this.subs.name = list[i].name;
+        this.subs.value = [list[i].x,list[i].y]
+        this.wareData.push(this.subs)
+        //线
+        this.lines= {
+          fromName: '',
+          toName: '',
+          coords: [
+            [],
+            [],
+            [],
+          ]
+        }
+        this.lines.fromName = this.subs.name
+        this.lines.toName = this.cen.name
+        this.lines.coords = [
+          this.subs.value,
+          this.cen.value,
+          this.subs.value
+        ]
+        this.lineData.push(this.lines)
+      }
+      this.getEchartData2()
+    })
   },
   methods:{
     getEchartData2() {
@@ -107,8 +158,8 @@ export default {
             zlevel: 2,
             symbolSize: 10,
             rippleEffect: { //坐标点动画
-              period: 3,
-              scale: 5,
+              period: 2,
+              scale: 3,
               brushType: 'fill'
             },
             label: {
@@ -117,7 +168,7 @@ export default {
                 position: 'right',
                 formatter: '{b}',
                 color: '#b3e2f2',
-                fontSize: 8
+                fontSize: 10
               }
             },
             data: this.wareData,
@@ -125,7 +176,7 @@ export default {
               normal: {
                 show: true,
                 color: 'green',
-                shadowBlur: 5,
+                shadowBlur: 4,
                 shadowColor: '#fff'
               },
               emphasis: {
@@ -165,26 +216,6 @@ export default {
   },
   watch: {},
   created() {
-    let list = [
-      {
-        name: "北京",
-        value: [116.24, 39.55, 100]
-      },
-      {
-        name: "深圳",
-        value: [114.271522, 22.753644]
-      },
-      {
-        name: "重庆",
-        value: [106.54, 29.59]
-      },
-      {
-        name: "浙江",
-        value: [120.19, 30.26]
-      },
-    ]
-    for (let i = 0;i < list.length;i++)
-      this.wareData.push(list[i])
     let list1 = [
       {
         fromName: "深圳",
@@ -214,8 +245,6 @@ export default {
         ]
       }
     ]
-    for (let i = 0;i < list1.length;i++)
-      this.lineData.push(list1[i])
   }
 }
 </script>

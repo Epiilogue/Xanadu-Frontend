@@ -5,16 +5,19 @@
 </template>
 
 <script>
-
+import { MonthlyOrders } from '../../../api/dataScreen'
 export default {
   name:'bottomLeft',
   data() {
     return{
       lineData:[],
+      re:[],
+      ex:[],
+      ne:[]
     }
   },
   mounted() {
-    this.getEchartData1()
+
   },
   methods: {
     getEchartData1() {
@@ -63,34 +66,34 @@ export default {
 
   },
   created() {
-    let list =  [
-       {
-         name: '阿伟罗软蛋',
-         type: 'line',
-         stack: 'Total',
-         data: [120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230]
-       },
-       {
-         name: '阿伟徐傻蛋',
-         type: 'line',
-         stack: 'Total',
-         data: [220, 182, 191, 234, 290, 330, 310,220, 182, 191, 234, 290, 330]
-       },
-       {
-         name: '阿伟李硬蛋',
-         type: 'line',
-         stack: 'Total',
-         data: [150, 232, 201, 154, 190, 330, 410,150, 232, 201, 154, 190, 330]
-       },
-       {
-         name: '李志鹏滚蛋',
-         type: 'line',
-         stack: 'Total',
-         data: [320, 332, 301, 334, 390, 330, 320,320, 332, 301, 334, 390, 330]
-       }
-     ]
-    for (let i = 0;i < list.length;i++)
-      this.lineData.push(list[i])
+    MonthlyOrders().then((res)=>{
+      for (let i = 1;i < 13;i++){
+        this.re.push(res.data.退货[i])
+        this.ex.push(res.data.换货[i])
+        this.ne.push(res.data.新订[i])
+      }
+      this.lineData = [
+        {
+          name:'退货',
+          type:'line',
+          stack:'Total',
+          data:this.ex
+        },
+        {
+          name:'换货',
+          type:'line',
+          stack:'Total',
+          data:this.re
+        },
+        {
+          name:'新订',
+          type:'line',
+          stack:'Total',
+          data:this.ne
+        },
+      ]
+      this.getEchartData1()
+    })
   }
 }
 </script>

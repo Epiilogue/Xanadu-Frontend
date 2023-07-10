@@ -97,8 +97,9 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="1"
-      :page-sizes="[1, 2, 5, 7]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="total">
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+      :current-page="1" :page-sizes="[10,15,20]" :page-size="15" layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
     </el-pagination>
   </div>
 </template>
@@ -126,7 +127,7 @@ export default {
       tableKey: 0,
       // 分页
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示5条
 
       // 查询条件
       listQuery: {

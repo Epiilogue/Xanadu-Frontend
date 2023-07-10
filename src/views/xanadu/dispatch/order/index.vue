@@ -62,7 +62,7 @@
             </el-table>
 
             <el-pagination @size-change="newSize => pageSize = newSize" @current-change="newPage => currentPage = newPage"
-                :current-page="1" :page-sizes="[1, 2, 5, 7]" :page-size="5" layout="total, sizes, prev, pager, next, jumper"
+                :current-page="1" :page-sizes="[10,15,20]" :page-size="15" layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
             </el-pagination>
         </div>
@@ -97,7 +97,7 @@ export default {
             tableColumns: undefined,
             // 分页
             currentPage: 1,//默认显示第一页
-            pageSize: 5,//默认每页显示5条
+            pageSize: 15,//默认每页显示5条
 
             orderTypeOption: ["全部", "新订", "退订", "退货", "换货"],
             orderStatusOption: ["缺货", "可分配", "已分配", "已调度"],

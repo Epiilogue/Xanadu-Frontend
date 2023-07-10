@@ -145,7 +145,7 @@
         background
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
-        :page-sizes="[1, 2, 5, 7]"
+        :page-sizes="[10,15,20]"
         :current-page="currentPage"
         :page-size="pageSize"
         :total="filteredData.length"
@@ -221,7 +221,6 @@
     </el-dialog>
 
 
-
     <el-dialog title="爬虫添加" :visible.sync="patchFormVisible" style="width: 100%;padding-left: 5%">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="25%" :rules="rules"
                style="width: 65%; margin-left:150px;"
@@ -247,7 +246,7 @@
         <el-form-item label="商品选择" prop="name">
           <ProductSelect
             :value="temp.name"
-            :keyword = "keyword"
+            :keyword="keyword"
             :single="true"
             @getInfo="getProductInfo"
           />
@@ -303,6 +302,7 @@ import Product from '@/components/detail/product.vue'
 import Supplier from '@/components/detail/supplier.vue'
 import SupplierSelect from '@/components/Pop/Supplier/index.vue'
 import ProductSelect from '@/components/Pop/Product/index.vue'
+import { ceninfo } from '@/api/ware'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -338,9 +338,9 @@ export default {
     return {
       category: [],
       tableKey: 0,
-      patchFormVisible:false,
+      patchFormVisible: false,
       list: null,
-      queryName:null,
+      queryName: null,
       showList: null,
       total: 0,
       listLoading: true,
@@ -352,11 +352,11 @@ export default {
         children: 'children'
       },
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示5条
       totalNum: 100, //总页数
       listQuery: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 15,
         currentPage: 1
       },
       //importanceOptions: [false, true],
@@ -382,6 +382,10 @@ export default {
         deleted: false
         //status: 'published'
       },
+      center: {
+        warnNumber: undefined,
+        maxNumber: undefined
+      },
       rules: {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
         cost: [{ required: true, message: '请输入成本', trigger: 'blur' }],
@@ -403,7 +407,7 @@ export default {
       },
       dialogPvVisible: false,
       pvData: [],
-      tempInfo:null,
+      tempInfo: null,
       dataObj: {
         policy: '',
         signature: '',
@@ -413,40 +417,47 @@ export default {
         host: ''
         // callback:'',
       },
-      keyword:'',
-      filteredData : null,
+      keyword: '',
+      filteredData: null,
       downloadLoading: false
     }
   },
   created() {
     this.getList()
+    this.getCenterInfo()
   },
   computed: {
     tableKey() {
-      return 'table_' + Date.now(); // 用于刷新表格的 key
+      return 'table_' + Date.now() // 用于刷新表格的 key
     },
     pagedData() {
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-      const endIndex = startIndex + this.pageSize;
-      return this.filteredData.slice(startIndex, endIndex);
-    },
+      const startIndex = (this.currentPage - 1) * this.pageSize
+      const endIndex = startIndex + this.pageSize
+      return this.filteredData.slice(startIndex, endIndex)
+    }
   },
   methods: {
     timestampToTime() {
       return timestampToTime
+    },
+    getCenterInfo() {
+      ceninfo().then(res => {
+        this.center.maxNumber = res.data.maxNumber
+        this.center.warnNumber = res.data.warnNumber
+      })
     },
     handleChange(value) {
       this.temp.firstCategray = value[0]
       this.temp.secondCategray = value[1]
     },
     //爬虫添加商品
-    patchCreate(){
+    patchCreate() {
       this.resetTemp()
       this.category = null
       this.getCategory()
-      this.patchFormVisible = true;
+      this.patchFormVisible = true
     },
-    handleChangeCrawler(value){
+    handleChangeCrawler(value) {
       let that = this
       this.temp.firstCategray = value[0]
       this.temp.secondCategray = value[1]
@@ -454,15 +465,15 @@ export default {
       axios.get(`dbc/categary/get/${id}`)
         .then(function(res) {
           that.keyword = res.data
-        }).then(res=>{
-          that.keyword = that.keyword.data.category
+        }).then(res => {
+        that.keyword = that.keyword.data.category
       })
     },
-    getProductInfo(selections){
-      if(selections.length > 0){
+    getProductInfo(selections) {
+      if (selections.length > 0) {
         this.temp.name = selections[0].Name + ''
         this.temp.cost = selections[0].Price
-        this.temp.picture = selections[0].ImgURL+''
+        this.temp.picture = selections[0].ImgURL + ''
       }
     },
 
@@ -484,18 +495,18 @@ export default {
     },
     //todo 查询方法
     getShowList() {
-      const searchText = this.queryName.toLowerCase().trim();
+      const searchText = this.queryName.toLowerCase().trim()
       if (searchText) {
         this.filteredData = this.list.filter(
           item =>
             item.name.toLowerCase().includes(searchText) ||
             item.comment.toLowerCase().includes(searchText)
-        );
+        )
       } else {
-        this.filteredData = this.list; // 没有搜索关键字时，显示全部数据
+        this.filteredData = this.list // 没有搜索关键字时，显示全部数据
       }
-      this.currentPage = 1; // 重置当前页数
-      this.tableKey = 'table_' + Date.now(); // 刷新表格
+      this.currentPage = 1 // 重置当前页数
+      this.tableKey = 'table_' + Date.now() // 刷新表格
     },
     getSupplierId(selections) {
       if (selections.length > 0) {
@@ -546,7 +557,7 @@ export default {
         name: '',
         price: '',
         cost: '',
-        upplierId: '',
+        supplierId: '',
         firstCategray: '',
         secondCategray: '',
         refundAble: false,
@@ -554,7 +565,9 @@ export default {
         comment: '',
         createTime: new Date(),
         updateTime: new Date(),
-        picture: ''
+        picture: '',
+        maxCount: this.center.maxNumber,
+        safeStock: this.center.warnNumber,
       }
     },
     handleCreate() {
@@ -570,20 +583,21 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         this.temp.deleted = false
+
         if (valid) {
           createArticle(this.temp).then((res) => {
-            this.dialogFormVisible = false
-            this.patchFormVisible = false
-            if(res.code === 200){
-              this.$notify({
-                title: 'Success',
-                message: 'Created Successfully',
-                type: 'success',
-                duration: 2000
-              })
+              this.dialogFormVisible = false
+              this.patchFormVisible = false
+              if (res.code === 200) {
+                this.$notify({
+                  title: 'Success',
+                  message: 'Created Successfully',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
             }
-            }
-           ).then(
+          ).then(
             () => {
               this.getList()
             }
@@ -650,8 +664,8 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
-        const filterVal = ['id', 'name', 'price', 'cost', 'upplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
+        const tHeader = ['id', 'name', 'price', 'cost', 'supplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
+        const filterVal = ['id', 'name', 'price', 'cost', 'supplierId', 'firstCategray', 'secondCategray', 'refundAble', 'changeAble', 'comment', 'createTime', 'updateTime', 'picture']
         const data = this.formatJson(filterVal)
         console.log(data)
         excel.export_json_to_excel({
