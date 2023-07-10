@@ -10,8 +10,8 @@ export function listTop(number) {
     method: 'get',
     baseURL: 'http://localhost:8019',
     params: {
-      startTime: '2020-10-10',
-      endTime: '2023-10-10',
+      startTime: '1997-10-10',
+      endTime: '2030-10-10',
       number:number
     }
   })
@@ -29,7 +29,7 @@ export function SubDeliveryInfo(){
 //各分库出库量
 export function PickOutList(){
   return request({
-    url:'/ware/subOutput/list/'+'领货出库',
+    url:'/ware/subOutput/analysis',
     method:'get'
   })
 }
@@ -45,8 +45,7 @@ export function MonthlyOrders(){
 //仓库分布
 export function listAllStations(){
   return request({
-    url: '/listAllStations',
+    url: '/ware/centerware/listAllStations',
     method: 'get',
-    baseURL: 'http://localhost:8019/sub/substation',
   })
 }
