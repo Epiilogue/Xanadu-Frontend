@@ -62,22 +62,6 @@ export function subwareDetele(id) {
     method: 'get'
   })
 }
-
-export function centerware(id) {
-  return request({
-    url: '/ware/centerware/info',
-    method: 'get',
-  })
-}
-
-export function centerwareupdate(data) {
-  return request({
-    url: '/ware/centerware/edit',
-    method: 'post',
-    data
-  })
-}
-
 // 中心仓库 库存量
 export function ceninfo() {
   return request({
