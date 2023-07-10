@@ -35,10 +35,15 @@
 
       <el-table :key="tableKey" :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit
         highlight-current-row style="width: 100%" v-loading="listLoading">
-        <!-- 点击查看订单详情 -->
+        <!-- 点击查看详情 -->
         <el-table-column label="订单编号" prop="id" align="center" width="100">
           <template slot-scope="{ row }">
             <Order :id="row.id" :orderType="row.orderType"></Order>
+          </template>
+        </el-table-column>
+        <el-table-column label="客户编号" prop="customerId" align="center" width="100">
+          <template slot-scope="{row}">
+            <customer :id="row.customerId"></customer>
           </template>
         </el-table-column>
         <!-- 一般表格列 -->
@@ -101,10 +106,11 @@ import waves from "@/directive/waves"; // waves directive
 
 import { getColumn } from '@/components/detail/module/orderColumn'
 import Order from '@/components/detail/order.vue'
+import Customer from '@/components/detail/customer.vue'
 
 export default {
   name: "OrderList",
-  components: { Order },
+  components: { Order,Customer },
   directives: { waves },
   data() {
     return {

@@ -107,10 +107,11 @@
           </el-input>
         </el-form-item>
         <el-form-item label="要求到货日期">
-          <el-date-picker v-model="form.deadline" type="date" placeholder="Pick a date" style="width: 100%" />
+          <el-date-picker v-model="form.deadline" :picker-options="deadlinePickerOptions" type="date" placeholder="Pick a date" style="width: 100%" />
         </el-form-item>
         <el-form-item label="预计送货日期">
-          <el-date-picker v-model="form.deliveryTime" type="date" placeholder="Pick a date" style="width: 100%" />
+          <el-date-picker v-model="form.deliveryTime" :picker-options="delieverPickerOptions" type="date"
+            placeholder="Pick a date" style="width: 100%" />
         </el-form-item>
         <el-form-item label="付款方式">
           <el-select v-model="form.newType">
@@ -136,15 +137,16 @@
     <Order v-if="this.dialogFormVisible" ref="order" :id="this.form.id" :orderType="this.form.orderType"></Order>
 
     <el-dialog title="选择分站" :visible.sync="subDialogFormVisible" style="padding-left: 5%" width="70%">
-      <substation v-if="subDialogFormVisible" switchTitle="设为订单分站" :searchAble="true" :id="-1" ref="substation" width="50%"></substation>
+      <substation v-if="subDialogFormVisible" switchTitle="设为订单分站" :searchAble="true" :id="-1" ref="substation"
+        width="50%"></substation>
       <div slot="footer" class="dialog-footer">
-          <el-button @click="subDialogFormVisible = false">
-            取消
-          </el-button>
-          <el-button type="primary" @click="setSub">
-            提交
-          </el-button>
-        </div>
+        <el-button @click="subDialogFormVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="setSub">
+          提交
+        </el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -154,7 +156,7 @@ import { createNewOrder } from "@/api/cc-order";
 import Order from '@/components/detail/order.vue'
 import substation from '@/views/xanadu/cc/order/substation'
 export default {
-  components: { Order,substation },
+  components: { Order, substation },
   data() {
     return {
       // 新订单表单
@@ -202,8 +204,23 @@ export default {
       ],
       ifShow: true,
       dialogFormVisible: false,
-      subDialogFormVisible:false,
-      substationId:{},
+      subDialogFormVisible: false,
+      substationId: {},
+      // 到货和送货日期校验
+      delieverPickerOptions: {
+        disabledDate:(time) => { // 此处改为箭头函数
+          if(this.form.deadline)
+            return time.getTime() < this.form.deadline;
+          return false
+        }
+      },
+      deadlinePickerOptions: {
+        disabledDate:(time) => { // 此处改为箭头函数
+          if(this.form.deliveryTime)
+            return time.getTime() > this.form.deliveryTime;
+          return false
+        }
+      }
     };
   },
   methods: {
@@ -250,16 +267,16 @@ export default {
       this.$router.push({ path: "/cc/product", query: { opType: "新订" } });
     },
     // 选择订单分站
-    selectSub(){
-      this.subDialogFormVisible=true
+    selectSub() {
+      this.subDialogFormVisible = true
     },
     // 设置订单分站
-    setSub(){
-      let subId=this.$refs.substation.getSubId()
-      if(subId){
-        this.form.substationId=subId
-        this.subDialogFormVisible=false
-      }else{
+    setSub() {
+      let subId = this.$refs.substation.getSubId()
+      if (subId) {
+        this.form.substationId = subId
+        this.subDialogFormVisible = false
+      } else {
         this.$message({
           message: "请选择要分配订单的分站",
           type: "error",

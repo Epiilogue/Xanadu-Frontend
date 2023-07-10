@@ -30,14 +30,14 @@ export default {
 
       formFields: [
         { label: '分库编号', prop: 'subwareId',editAble:false},
-        { label: '任务单编号', prop: 'taskOrderId',editAble:false },
+        { label: '任务单编号', prop: 'taskId',editAble:false },
         { label: '商品编号', prop: 'productId',editAble:false },
         { label: '商品名称', prop: 'productName',editAble:false },
         { label: '商品分类', prop: 'productCategory',editAble:false },
-        { label: '调拨单状态', prop: 'transferStatus',editAble:false },
+        { label: '调拨单状态', prop: 'status',editAble:false },
         { label: '分站编号', prop: 'substationId',editAble:true },
-        { label: '商品数量', prop: 'productQuantity',editAble:true },
-        { label: '计划出库时间', prop: 'plannedOutboundTime',editAble:true }
+        { label: '商品数量', prop: 'productNum',editAble:true },
+        { label: '计划出库时间', prop: 'planTime',editAble:true }
       ],
       temp: {} // Initialize an empty object to hold the form data
     };
@@ -48,6 +48,8 @@ export default {
       this.dialogFormVisible = true
       getDispatch(id).then(res => {
         this.temp = res.data
+        // 日期格式转换
+        this.temp.planTime = this.$moment(new Date(this.temp.planTime)).format("YYYY-MM-DD")
       })
     }
   }

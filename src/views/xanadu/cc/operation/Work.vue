@@ -6,6 +6,9 @@
             <el-table-column label="操作员编号" prop="userId" align="center" width="100">
             </el-table-column>
             <el-table-column label="商品编号" prop="productId" width="100" align="center">
+                <template slot-scope="{row}">
+                    <product :id="row.id"></product>
+                </template>
             </el-table-column>
             <el-table-column label="商品类型" prop="productType" width="100" align="center">
             </el-table-column>
@@ -53,9 +56,12 @@
 
 <script>
 
+import product from '@/components/detail/product'
+
 export default {
     name: 'WorkList',
-    props: ['list','total'],
+    props: ['list', 'total'],
+    components: { product },
     data() {
         return {
             // 工作量分页
@@ -66,7 +72,7 @@ export default {
         }
     },
     methods: {
-        
+
 
         //分页
         handleSizeChange(newSize) {

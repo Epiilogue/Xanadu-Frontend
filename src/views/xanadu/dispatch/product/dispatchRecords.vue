@@ -33,55 +33,37 @@
 
             <el-table-column label="分库编号" prop="subwareId" min-width="50px" align="center">
                 <template slot-scope="{row}">
-                    <span class="link-type">{{ row.subwareId }}</span>
-                </template>
-            </el-table-column>
-
-            <el-table-column label="任务单编号" prop="taskId" min-width="50px" align="center">
-                <template slot-scope="{row}">
-                    <span class="link-type">{{ row.taskId }}</span>
+                    <subware :id="row.subwareId"></subware>
                 </template>
             </el-table-column>
 
             <el-table-column label="商品编号" prop="productId" min-width="50px" align="center">
                 <template slot-scope="{row}">
-                    <span class="link-type">{{ row.productId }}</span>
+                    <product :id="row.productId"></product>
                 </template>
             </el-table-column>
 
-            <el-table-column label="商品名称" min-width="50px" prop="productName" align="center">
-                <template slot-scope="{row}">
-                    <span class="link-type">{{ row.productName }}</span>
-                </template>
-            </el-table-column>
-
-            <el-table-column label="商品种类" min-width="50px" prop="productCategory" align="center">
-                <template slot-scope="{row}">
-                    <span class="link-type">{{ row.productCategory }}</span>
-                </template>
-            </el-table-column>
-
-            <el-table-column label="调拨单状态" min-width="50px" prop="status" align="center">
-                <template slot-scope="{row}">
-                    <span class="link-type">{{ row.status }}</span>
-                </template>
+            <el-table-column label="任务单编号" prop="taskId" min-width="50px" align="center">
             </el-table-column>
 
             <el-table-column label="分站编号" min-width="50px" prop="substationId" align="center">
-                <template slot-scope="{row}">
-                    <span class="link-type">{{ row.substationId }}</span>
-                </template>
+            </el-table-column>
+
+            <el-table-column label="商品名称" min-width="50px" prop="productName" align="center">
+            </el-table-column>
+
+            <el-table-column label="商品种类" min-width="50px" prop="productCategory" align="center">
+            </el-table-column>
+
+            <el-table-column label="调拨单状态" min-width="50px" prop="status" align="center">
             </el-table-column>
 
             <el-table-column label="商品数量" min-width="50px" prop="productNum" align="center">
-                <template slot-scope="{row}">
-                    <span class="link-type">{{ row.productNum }}</span>
-                </template>
             </el-table-column>
 
             <el-table-column label="计划出库时间" min-width="100px" prop="planTime" align="center">
                 <template slot-scope="{row}">
-                    <span class="link-type">{{ $moment(new Date(row.planTime)).format("YYYY-MM-DD HH:mm:ss") }}</span>
+                    <span>{{ $moment(new Date(row.planTime)).format("YYYY-MM-DD HH:mm:ss") }}</span>
                 </template>
             </el-table-column>
 
@@ -149,11 +131,13 @@
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import dispatch from '@/components/detail/dispatch.vue'
+import subware from '@/components/detail/subware.vue'
+import product from '@/components/detail/product.vue'
 import { getDispatchList, editDispatch, deleteDispatch } from '@/api/dpc-dispatch'
 
 export default {
     name: 'dispatchRecords',
-    components: { Pagination, dispatch },
+    components: { Pagination, dispatch,subware,product },
     directives: { waves },
     data() {
         return {

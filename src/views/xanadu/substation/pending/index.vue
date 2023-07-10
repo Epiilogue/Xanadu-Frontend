@@ -27,12 +27,21 @@
                 highlight-current-row style="width: 100%;">
                 <el-table-column label="ID" prop="id" align="center" width="80"></el-table-column>
                 <el-table-column label="任务编号" prop="taskId" min-width="50px" align="center"></el-table-column>
-                <el-table-column label="商品编号" prop="productId" min-width="50px" align="center"></el-table-column>
+                <el-table-column label="分库编号" min-width="50px" prop="subwareId" align="center">
+                    <template slot-scope="{row}">
+                            <subware :id="row.id"></subware>
+                        </template>
+                </el-table-column>
+                <el-table-column label="商品编号" prop="productId" min-width="50px" align="center">
+                    <template slot-scope="{row}">
+                            <product :id="row.id"></product>
+                        </template>
+                </el-table-column>
                 <el-table-column label="商品名称" prop="productName" min-width="50px" align="center"></el-table-column>
                 <el-table-column label="商品单价" min-width="50px" prop="productPrice" align="center"></el-table-column>
                 <el-table-column label="待处理数量" min-width="50px" prop="dealNumber" align="center"></el-table-column>
                 <el-table-column label="来源" min-width="50px" prop="source" align="center"></el-table-column>
-                <el-table-column label="分库编号" min-width="50px" prop="subwareId" align="center"></el-table-column>
+                
 
                 <el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
                     <template slot-scope="{row,$index}">
@@ -57,9 +66,11 @@
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import { fetchList, refund, restore, deleteRecord } from '@/api/sub-pending'
+import subware from '@/components/detail/subware'
+import product from '@/components/detail/product'
 
 export default {
-    components: { Pagination },
+    components: { Pagination,subware,product },
     directives: { waves },
     data() {
         return {

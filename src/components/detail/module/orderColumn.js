@@ -13,7 +13,7 @@ let tableColumns = [
     {
         prop: "customerId",
         label: "客户编号",
-        show: true
+        show: false
     },
     {
         prop: "orderType",

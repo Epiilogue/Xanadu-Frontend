@@ -23,8 +23,8 @@
       <el-table-column type="selection" width="120" align="center" fixed reserve-selection>
       </el-table-column>
       <el-table-column v-if="newOrder" label="ID" prop="id" align="center" width="100">
-        <template slot-scope="{ row }">
-          <span>{{ row.id }}</span>
+        <template slot-scope="{row}">
+          <product :id="row.id"></product>
         </template>
       </el-table-column>
       <el-table-column v-if="newOrder" label="商品名称" width="100" align="center">
@@ -39,8 +39,8 @@
       </el-table-column>
 
       <el-table-column v-if="!newOrder" label="ID" prop="id" align="center" width="100">
-        <template slot-scope="{ row }">
-          <span>{{ row.productId }}</span>
+        <template slot-scope="{row}">
+          <product :id="row.productId"></product>
         </template>
       </el-table-column>
       <el-table-column v-if="!newOrder" label="商品名称" width="100" align="center">
@@ -97,9 +97,8 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-      :current-page="1" :page-sizes="[1, 2, 5, 7]" :page-size="5" layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="1"
+      :page-sizes="[1, 2, 5, 7]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="total">
     </el-pagination>
   </div>
 </template>
@@ -110,10 +109,11 @@ import { getProductList, getOrder } from "@/api/cc-order";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import product from '@/components/detail/product'
 
 export default {
   name: "ProductList",
-  components: { Pagination },
+  components: { Pagination,product },
   directives: { waves },
   data() {
     return {
@@ -208,7 +208,7 @@ export default {
           return false
         }
         if (query.name !== '') {
-          if((this.newOrder && product.name.indexOf(query.name) === -1) || product.productName.indexOf(query.name)===-1) return false
+          if ((this.newOrder && product.name.indexOf(query.name) === -1) || product.productName.indexOf(query.name) === -1) return false
         }
         return true
       });
@@ -220,7 +220,7 @@ export default {
           durarion: 1000,
         });
       } else {
-        this.total=this.queryList.length
+        this.total = this.queryList.length
         this.$message({
           type: 'success',
           message: '查询成功',
@@ -230,11 +230,11 @@ export default {
       this.getPageList()
     },
     // 分页
-    handleSizeChange(newSize){
+    handleSizeChange(newSize) {
       this.pageSize = newSize
       this.getPageList()
     },
-    handleCurrentChange(newPage){
+    handleCurrentChange(newPage) {
       this.currentPage = newPage
       this.getPageList()
     },
@@ -242,7 +242,7 @@ export default {
     getPageList() {
       // 当前页已选商品回显
       let count = 0;
-      let page=this.queryList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+      let page = this.queryList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
       this.selectedProduct.filter((selectPro, index, arr) => {
         // 当前页全部回显
         if (count == this.pageSize) {
