@@ -39,6 +39,22 @@ export function subwareEdit(data) {
     data
   })
 }
+export function centerware(id) {
+  return request({
+    url: 'info',
+    method: 'get',
+    baseURL: 'http://localhost:8015/ware/centerware'
+  })
+}
+
+export function centerwareupdate(data) {
+  return request({
+    url: '/edit',
+    method: 'post',
+    baseURL: 'http://localhost:8015/ware/centerware',
+    data
+  })
+}
 
 export function subwareDetele(id) {
   return request({
@@ -46,22 +62,6 @@ export function subwareDetele(id) {
     method: 'get'
   })
 }
-
-export function centerware(id) {
-  return request({
-    url: '/ware/centerware/info',
-    method: 'get',
-  })
-}
-
-export function centerwareupdate(data) {
-  return request({
-    url: '/ware/centerware/edit',
-    method: 'post',
-    data
-  })
-}
-
 // 中心仓库 库存量
 export function ceninfo() {
   return request({

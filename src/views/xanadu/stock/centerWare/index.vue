@@ -51,7 +51,7 @@
 /* eslint-disable */
 import loadBMap from '@/utils/loadBMap.js'
 //import { BMap } from 'vue-baidu-map'
-import { centerware, centerwareupdate, subwareEdit } from '@/api/ware'
+import { centerware, centerwareupdate } from '@/api/ware'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
