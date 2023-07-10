@@ -31,7 +31,6 @@
         <el-table-column label="仓库城市地址" align="center" width="100" prop="city" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库经度" align="center" width="100" prop="x" show-overflow-tooltip></el-table-column>
         <el-table-column label="仓库纬度" align="center" width="100" prop="y" show-overflow-tooltip></el-table-column>
-        <el-table-column label="仓库管理员" align="center" width="50" prop="master" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-edit" @click="editStock(scope.row)" >编辑</el-button>

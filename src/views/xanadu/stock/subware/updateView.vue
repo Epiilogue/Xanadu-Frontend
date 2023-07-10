@@ -28,8 +28,8 @@
         <el-form-item label="仓库管理员"></el-form-item>
         <div>
           <el-checkbox-group v-model="alluser" @change="handleSelectUser">
-            <el-checkbox v-for="u in user" :label="u" >库管员id：{{u.userId}}，库管员名称：{{u.userName}}</el-checkbox>
-            <el-checkbox v-for="u in checkedUsers" :label="u" >库管员id：{{u.userId}}，库管员名称：{{u.userName}}</el-checkbox>
+            <el-checkbox v-for="u in user" :label="u" >库管员id：{{u.userId}}，库管员名称：{{u.nickName}}</el-checkbox>
+            <el-checkbox v-for="u in checkedUsers" :label="u" >库管员id：{{u.userId}}，库管员名称：{{u.nickName}}</el-checkbox>
           </el-checkbox-group>
         </div>
       </el-form>
@@ -115,8 +115,10 @@ export default {
       this.checkedUsers = this.checkedUsers[0]
       this.alluser.push(res.data)
       this.alluser = this.alluser[0]
+      for (let i = 0;i < this.checkedUsers.length;i++){
+        this.subware.managerIds.push(this.checkedUsers[i].userId)
+      }
     })
-
   },
   methods: {
     handleSelectUser(){
@@ -128,8 +130,8 @@ export default {
     //修改仓库
     addStock(){
       this.subware.address = this.form.address ===''?this.subware.address:this.form.address
-      this.subware.x = this.form.addrPoint.lat === 0?this.subware.x:this.form.addrPoint.lat
-      this.subware.y = this.form.addrPoint.lng === 0?this.subware.y:this.form.addrPoint.lng
+      this.subware.x = this.form.addrPoint.lng === 0?this.subware.x:this.form.addrPoint.lng
+      this.subware.y = this.form.addrPoint.lat === 0?this.subware.y:this.form.addrPoint.lat
       this.subware.city = this.form.city === ''?this.subware.city:this.form.city
       if (!this.subware.name){
         this.$message.error('请输入仓库名称')
