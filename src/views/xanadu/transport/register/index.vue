@@ -145,7 +145,7 @@
         background
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
-        :page-sizes="[1, 2, 5, 7]"
+        :page-sizes="[10,15,20]"
         :current-page="currentPage"
         :page-size="pageSize"
         :total="filteredData.length"

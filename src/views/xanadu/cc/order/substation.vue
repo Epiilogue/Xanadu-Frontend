@@ -36,12 +36,12 @@
         </el-table>
 
         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="1"
-            :page-sizes="[1, 2, 5, 7]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="total">
+            :page-sizes="[10,15,20]" :page-size="15" layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
     </div>
 </template>
-  
+
 <script>
 import waves from '@/directive/waves' // waves directive
 import {fetchAllSubStation} from '@/api/sub'
@@ -163,4 +163,3 @@ export default {
     }
 }
 </script>
-  
