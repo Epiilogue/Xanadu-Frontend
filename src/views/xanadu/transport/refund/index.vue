@@ -45,25 +45,25 @@
 
         <el-table-column label="商品ID" prop="productId" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.productId}}</span>
+            <span >{{ row.productId}}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="供应商ID" prop="supplierId" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.supplierId }}</span>
+            <span>{{ row.supplierId }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="商品名称" prop="productName" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.productName }}</span>
+            <span >{{ row.productName }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="商品价格" prop="productPrice" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.productPrice }}</span>
+            <span>{{ row.productPrice }}</span>
           </template>
         </el-table-column>
 

@@ -202,7 +202,7 @@
         </div>
       </el-dialog> -->
   </div>
-</div></template>
+</template>
 
 <script>
 import { createSup, updateSup } from "@/api/dbc-supplier";

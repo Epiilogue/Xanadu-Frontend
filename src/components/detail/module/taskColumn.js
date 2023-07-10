@@ -89,7 +89,7 @@ let tableColumns = [
 // 要隐藏的列
 const all = ['courierId', 'deadline','createTime', 'receiptId']
 const assign = ['courierId', 'deadline','createTime', 'receiptId', 'taskStatus']
-const assigned = ['receiptId']
+const assigned = ['receiptId','deadline','createTime']
 // 设置表格列的显示与隐藏
 /**
  * 可分配的任务，商品列表存在products里

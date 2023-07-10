@@ -7,3 +7,10 @@ export function getProduct(id) {
       method: 'get',
     })
   }
+
+export function getAllProduct(keyword) {
+  return request({
+    url: `/dbc/product/crawler/${keyword}`,
+    method: 'get',
+  })
+}
