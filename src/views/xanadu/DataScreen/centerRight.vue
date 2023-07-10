@@ -12,7 +12,11 @@ export default {
   name: 'centerRight',
   data() {
     return{
-      pieData:[]
+      pieData:[],
+      pie:{
+        name:'',
+        value:''
+      }
     }
   },
   mounted() {
@@ -68,13 +72,15 @@ export default {
   },
   created() {
     PickOutList().then((res)=>{
-      for (let i = 0;i < res.data.length;i++){
-        this.pieData.push(
-          {
-            name:'仓库id:'+res.data[i].subwareId+' 商品id:'+res.data[i].productId,
-            value:res.data[i].actualNum
-          }
-        )
+      let map = res.data
+      for (let name in map){
+        this.pie = {
+          name:'',
+            value:''
+        }
+        this.pie.name = name
+        this.pie.value = map[name]
+        this.pieData.push(this.pie)
       }
       this.getEchartData()
     })

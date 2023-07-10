@@ -20,19 +20,28 @@ export default {
   name: 'centerLeft',
   data() {
     return{
+      line: {
+        name:'',
+        value:''
+      },
       list:[],
       config:{
         data:[]
       }
     }
   },
-  mounted() {
-    /* TODO*/
-    // listTop(5).then((res)=>{
-    //   console.log(res)
-    // })
-    for (let i = 0;i < this.list.length;i++)
-      this.config.data.push(this.list[i])
+  created() {
+    listTop(5).then((res)=>{
+      for (let i = 0;i < res.data.length;i++){
+        this.line = { name:'', value:'' }
+        this.line.name = res.data[i].productName
+        this.line.value = res.data[i].number
+        this.list.push(this.line)
+      }
+      this.config = {
+        data:this.list
+      }
+    })
   }
 }
 </script>

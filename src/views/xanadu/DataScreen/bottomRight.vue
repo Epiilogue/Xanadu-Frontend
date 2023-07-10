@@ -17,7 +17,19 @@ export default {
         name:'',
         value:[]
       },
-      sub:[]
+      subs :{
+        name:'',
+        value:[]
+      },
+      lines:{
+        fromName: '',
+        toName: '',
+        coords: [
+          [],
+          [],
+          [],
+        ]
+      },
     }
   },
   mounted() {
@@ -25,6 +37,35 @@ export default {
       this.cen.name = res.center.name
       this.cen.value = [res.center.x,res.center.y]
       this.wareData.push(this.cen)
+      var list = res.sub
+      for (let i = 0;i < list.length;i++){
+        //点
+        this.subs={
+          name:'',
+          value:[]
+        }
+        this.subs.name = list[i].name;
+        this.subs.value = [list[i].x,list[i].y]
+        this.wareData.push(this.subs)
+        //线
+        this.lines= {
+          fromName: '',
+          toName: '',
+          coords: [
+            [],
+            [],
+            [],
+          ]
+        }
+        this.lines.fromName = this.subs.name
+        this.lines.toName = this.cen.name
+        this.lines.coords = [
+          this.subs.value,
+          this.cen.value,
+          this.subs.value
+        ]
+        this.lineData.push(this.lines)
+      }
       this.getEchartData2()
     })
   },
@@ -117,8 +158,8 @@ export default {
             zlevel: 2,
             symbolSize: 10,
             rippleEffect: { //坐标点动画
-              period: 3,
-              scale: 5,
+              period: 2,
+              scale: 3,
               brushType: 'fill'
             },
             label: {
@@ -135,7 +176,7 @@ export default {
               normal: {
                 show: true,
                 color: 'green',
-                shadowBlur: 5,
+                shadowBlur: 4,
                 shadowColor: '#fff'
               },
               emphasis: {
@@ -175,9 +216,6 @@ export default {
   },
   watch: {},
   created() {
-
-
-
     let list1 = [
       {
         fromName: "深圳",
@@ -207,8 +245,6 @@ export default {
         ]
       }
     ]
-    // for (let i = 0; list1.length;i++)
-    //   this.lineData.push(list1[i])
   }
 }
 </script>

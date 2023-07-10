@@ -7,7 +7,7 @@
         <span class="fs-xl text mx-2">分站配送信息</span>
       </div>
       <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 29px">
-        <dv-scroll-board :config="config" style="width: 7.3rem;height:3rem" />
+        <dv-scroll-board ref="scrollBoard" :config="config" style="width: 7.2rem;height:3rem" />
       </div>
     </div>
   </div>
@@ -19,28 +19,30 @@ export default {
   name: 'center',
   data(){
     return{
-      list:[
-        ['行1列1', '行1列2', '行1列3', '行1列4', '行1列5', '行1列6']
-      ],
-
+      line:[],
+      list:[],
       config:{
-        header: ['已换货', '配送订单', '送货收款', '退货订单', '收款订单', '分库收款'],
+        header: ['分库ID', 'delivered', 'deliveryAmount', 'paymentDelivered', 'totalOrders',''],
         data: [],
         index: true,
-        columnWidth: [45],
+        columnWidth:[50],
         align: ['center']
       }
     }
   },
-  mounted() {
+  created() {
     SubDeliveryInfo().then((res)=>{
-      console.log(res.data)
-      for (let i = 0;i < res.data;i++){
-
+      for (let i = 0;i < res.data.length;i++){
+        this.line = []
+        this.line.push(res.data[i].subId)
+        this.line.push(res.data[i].delivered)
+        this.line.push(res.data[i].deliveryAmount)
+        this.line.push(res.data[i].paymentDelivered)
+        this.line.push(res.data[i].totalOrders)
+        this.config.data.push(this.line)
       }
+      this.$refs['scrollBoard'].updateRows(this.config.data)
     })
-    for (let i = 0;i < this.list.length;i++)
-      this.config.data.push(this.list[i])
   }
 }
 
