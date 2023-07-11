@@ -1,5 +1,8 @@
 import request from '@/utils/request'
 import axios from 'axios'
+import Vue from 'vue'
+import cookies from 'vue-cookies'
+Vue.prototype.$cookies = cookies;
 
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
