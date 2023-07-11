@@ -141,6 +141,16 @@
                             <Task :id="row.id" :task="row" v-if="refreshed"></Task>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="customerId" label="客户编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <customer :id="row.customerId" :task="row" v-if="refreshed"></customer>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="orderId" label="订单编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <order :id="row.orderId" v-if="refreshed"></order>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>
@@ -206,7 +216,7 @@
         </div>
         <!-- 回执录入 -->
         <div v-else>
-            <Receipt @close="submited(success)" :payment="this.task && this.task.taskType === '收款'"></Receipt>
+            <Receipt @close="submited" :payment="this.task && this.task.taskType === '收款'"></Receipt>
         </div>
 
     </div>
@@ -218,6 +228,8 @@ import Pagination from '@/components/Pagination'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
 import Task from '@/components/detail/task.vue'
+import customer from '@/components/detail/customer.vue'
+import order from '@/components/detail/order.vue'
 import UserTable from './userTable'
 import Invoices from "@/views/xanadu/substation/task/invoices.vue";
 import Invoice from "@/views/xanadu/substation/task/invoice.vue";
@@ -229,7 +241,7 @@ Vue.use(print)
 
 
 export default {
-    components: {Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
+    components: {Invoices, Pagination, Receipt, UserTable, Task ,Invoice,customer,order},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {

@@ -12,7 +12,7 @@ export function fetchList(customerId) {
 // 获取订单信息
 export function getOrder(query) {
   return request({
-    url: `/cc/order/detail`+`/${query.orderId}`+`/${query.orderType}`,
+    url: `/cc/order/detail/${query.orderId}`+(query.orderType?`/${query.orderType}`:''),
     method: 'get',
     // params: query.customerId
   })

@@ -44,6 +44,16 @@
                             <Task :id="row.id" :task="row" v-if="refreshed"></Task>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="customerId" label="客户编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <customer :id="row.customerId" :task="row" v-if="refreshed"></customer>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="orderId" label="订单编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <order :id="row.orderId" v-if="refreshed"></order>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>
@@ -79,9 +89,11 @@ import { getTaskList } from '@/api/dpc-dispatch'
 import Pagination from '@/components/Pagination'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
 import Task from '@/components/detail/task.vue'
+import customer from '@/components/detail/customer.vue'
+import order from '@/components/detail/order.vue'
 
 export default {
-    components: { Pagination,Task },
+    components: { Pagination,Task,customer,order },
     created() {
         this.handleOpChange(this.opType, false);
     },
