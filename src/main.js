@@ -52,7 +52,7 @@ import stockout from '@/components/detail/stockout.vue'
 import subware from '@/components/detail/subware.vue'
 import supplier from '@/components/detail/supplier.vue'
 import task from '@/components/detail/task.vue'
-
+import user from '@/components/detail/user.vue'
 
 import dataV from '@jiaminghi/data-view';
 Vue.use(dataV);
@@ -96,7 +96,7 @@ Vue.component('stockout',stockout)
 Vue.component('subware',subware)
 Vue.component('supplier',supplier)
 Vue.component('task',task)
-
+Vue.component('user',user)
 
 Vue.use(directive)
 Vue.use(plugins)

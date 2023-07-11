@@ -6,11 +6,6 @@ let tableColumns = [
         show: false
     },
     {
-        prop: "userId",
-        label: "操作员编号",
-        show: true
-    },
-    {
         prop: "customerId",
         label: "客户编号",
         show: false

@@ -49,6 +49,12 @@
           </template>
         </el-table-column>
 
+        <el-table-column label="操作员编号" prop="id" align="center" width="100">
+          <template slot-scope="{ row }">
+            <user :id="row.userId"></user>
+          </template>
+        </el-table-column>
+
         <!-- 一般表格列 -->
         <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label" v-if="column.show"
           min-width="120" align="center">
