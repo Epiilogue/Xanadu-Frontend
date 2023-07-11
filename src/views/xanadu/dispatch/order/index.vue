@@ -5,7 +5,7 @@
             <div class="alert">
                 <p v-if="opType !== ''">正在进行的订单操作是</p>
                 <p v-else>正在查看所有订单</p>
-                <el-select v-model="opType" class="select" placeholder="选择订单操作" @change="handleOpChange(opType, true)"
+                <el-select v-model="opType" class="select" placeholder="选择订单操作" @change="handleOpChange(opType)"
                     clearable @clear="handleOpChange(opType)">
                     <el-option v-for="item in opTypeOption" :key="item" :label="item" :value="item" />
                 </el-select>
@@ -139,7 +139,7 @@ export default {
                 // 状态为：缺货/可分配/已分配/已调度 的订单
                 if (list) {
                     list = list.filter((order) => {
-                        if (this.orderStatusOption.includes(order.status)) return true
+                        if (["缺货", "可分配", "已分配", "已调度"].includes(order.status)) return true
                         return false
                     })
                 }

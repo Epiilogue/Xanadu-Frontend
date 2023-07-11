@@ -215,7 +215,7 @@ export default {
                     if (query.subwareId !== '' && record.subwareId !== Number(query.subwareId)) {
                         return false
                     }
-                    if (query.transferStatus !== '' && record.status !== query.status) {
+                    if (query.status !== '' && record.status !== query.status) {
                         return false
                     }
                     return true
