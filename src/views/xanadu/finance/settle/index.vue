@@ -147,9 +147,9 @@
     <el-dialog :visible.sync="open1" width="1080px" append-to-body>
       <el-table v-loading="loading" :data="this.alreadyform"
                 border >
-        <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
@@ -182,10 +182,12 @@
 <script>
 
 import axios from 'axios'
+import supplier from "@/components/detail/supplier.vue";
 
 
 export default {
-  name: "RegisInvoice",
+  name: "settle",
+  components: {supplier},
   dicts: ['sys_settle_normal'],
   props: [],
   data: function () {

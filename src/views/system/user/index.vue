@@ -541,8 +541,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
-      this.form.remark = this.form.role[0];
-      console.log(this.form.remark);
+      this.form.remark = this.form.role[0];;
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.userId != undefined) {
