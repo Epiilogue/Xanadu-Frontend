@@ -34,8 +34,8 @@ export default {
         { label: '安全库存量', prop: 'safeStock' },
         { label: '最大库存量', prop: 'maxCount' },
         { label: '备注', prop: 'comment' },
-        { label: '商品大类', prop: 'firstName' },
-        { label: '商品小类', prop: 'secondName' }
+        { label: '商品大类', prop: 'firstCategray' },
+        { label: '商品小类', prop: 'secondCategray' }
       ],
       dialogFormVisible: false,
       temp: {}
@@ -47,6 +47,9 @@ export default {
       getOneProduct(id).then(res => {
         console.log(res.data)
         this.temp = res.data
+        // 退换货格式转换
+        this.temp.refundAble=this.temp.refundAble?'可退货':'不可退货'
+        this.temp.changeAble=this.temp.changeAble?'可换货':'不可换货'
       })
     }
   }

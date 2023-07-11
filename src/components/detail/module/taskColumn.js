@@ -1,16 +1,6 @@
 //表格列
 let tableColumns = [
     {
-        prop: "id",
-        label: "任务单编号",
-        show: false
-    },
-    {
-        prop: "customerId",
-        label: "客户编号",
-        show: true
-    },
-    {
         prop: "receiverName",
         label: "收件人姓名",
         show: true
@@ -23,16 +13,6 @@ let tableColumns = [
     {
         prop: "deliveryAddress",
         label: "送货地址",
-        show: true
-    },
-    {
-        prop: "orderId",
-        label: "订单编号",
-        show: true
-    },
-    {
-        prop: "subId",
-        label: "分站编号",
         show: true
     },
     {
@@ -89,7 +69,7 @@ let tableColumns = [
 // 要隐藏的列
 const all = ['courierId', 'deadline','createTime', 'receiptId']
 const assign = ['courierId', 'deadline','createTime', 'receiptId', 'taskStatus']
-const assigned = ['receiptId']
+const assigned = ['receiptId','deadline','createTime']
 // 设置表格列的显示与隐藏
 /**
  * 可分配的任务，商品列表存在products里

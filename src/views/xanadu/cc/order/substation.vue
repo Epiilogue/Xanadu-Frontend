@@ -23,7 +23,11 @@
             <el-table-column label="名称" prop="name" min-width="80px" align="center"></el-table-column>
             <el-table-column label="地址" prop="address" min-width="50px" align="center"></el-table-column>
             <el-table-column label="电话" prop="phone" min-width="50px" align="center"></el-table-column>
-            <el-table-column label="分库Id" min-width="50px" prop="subwareId" align="center"></el-table-column>
+            <el-table-column label="分库Id" min-width="50px" prop="subwareId" align="center">
+              <template slot-scope="{row}">
+                <subware :id="row.subwareId"></subware>
+              </template>
+            </el-table-column>
 
             <!-- 选中对应分站 -->
             <el-table-column :label=switchTitle min-width="100" align="center">
@@ -45,9 +49,11 @@
 <script>
 import waves from '@/directive/waves' // waves directive
 import {fetchAllSubStation} from '@/api/sub'
+import Subware from "@/components/detail/subware.vue";
 
 export default {
     name: 'substation',
+  components: {Subware},
     props: ['switchTitle','searchAble','id'],
     directives: { waves },
     data() {

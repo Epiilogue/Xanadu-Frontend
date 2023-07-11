@@ -9,7 +9,11 @@
         <el-table-column label="记录ID" align="center" prop="id" width="80" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作员ID" align="center" prop="operatorId" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库ID" align="center" prop="outputId" width="70" show-overflow-tooltip></el-table-column>
-        <el-table-column label="任务ID" align="center" prop="taskId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="任务ID" align="center" prop="taskId" width="70" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <task :id="row.taskId"></task>
+          </template>
+        </el-table-column>
         <el-table-column label="商品ID" align="center" prop="productId" width="70" show-overflow-tooltip>
           <template slot-scope="{row}">
             <product :id="row.productId"></product>

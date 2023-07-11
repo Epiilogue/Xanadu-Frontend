@@ -74,5 +74,15 @@ export function getTaskList() {
 }
 
 
+// 任务单列表
+export function getTaskById(id) {
+  return request({
+    url: `/dpc/task/getTask/${id}`,
+    method: 'get',
+  })
+}
+
+
+
 
 

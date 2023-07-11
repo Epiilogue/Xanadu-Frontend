@@ -68,7 +68,7 @@
               <div style="word-spacing: 10px;">商品名称</div>
               <div style="color: white">-----------------</div>
               <div style="word-spacing: 10px;">数量-------</div>
-              <div style="word-spacing: 10px;">单价</div>
+              <div style="word-spacing: 10px;">单价----</div>
             </h1>
             <table class="receipt-table">
               <thead>
@@ -81,6 +81,7 @@
               </tr>
               </tbody>
             </table>
+            <h1>------------------------------------------------</h1>
           </div>
         </form>
       </div>
@@ -101,27 +102,27 @@
                         <el-form-item class="form-item" label="要求完成日期">
                             <el-date-picker v-model="listQuery.deadlineRange" type="daterange" align="right"
                                 style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" unlink-panels range-separator="-"
-                                start-placeholder="开始日期" end-placeholder="结束日期">
+                                start-placeholder="开始日期" end-placeholder="结束日期" clearable>
                             </el-date-picker>
                         </el-form-item>
                         <el-form-item class="form-item" label="任务类型">
                             <el-select v-model="listQuery.taskType" placeholder="任务类型"
-                                style="width: 200px; margin-right: 5px" class="filter-item" clearable>
+                                style="width: 200px; margin-right: 5px" class="filter-item" clearable @clear="handleFilter(false)">
                                 <el-option v-for="item in taskTypeOption" :key="item" :label="item" :value="item" />
                             </el-select>
                         </el-form-item>
                         <el-form-item class="form-item" label="任务状态">
                             <el-select v-model="listQuery.taskStatus" placeholder="任务状态"
-                                style="width: 200px; margin-right: 5px" class="filter-item" clearable>
+                                style="width: 200px; margin-right: 5px" class="filter-item" clearable @clear="handleFilter(false)">
                                 <el-option v-for="item in taskStatusOption" :key="item" :label="item" :value="item" />
                             </el-select>
                         </el-form-item>
                         <el-form-item class="form-item" label="快递员编号" v-if="this.opType !== '' && this.opType !== '分配任务'">
                             <el-input v-model="listQuery.courierId" placeholder="快递员编号"
-                                style="width: 200px; margin-right: 5px" class="filter-item" />
+                                style="width: 200px; margin-right: 5px" class="filter-item" @clear="handleFilter(false)"/>
                         </el-form-item>
                         <el-form-item class="form-item">
-                            <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+                            <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(true)">
                                 查询
                             </el-button>
                             <el-button class="filter-item" type="primary" icon="el-icon-document-add"
@@ -136,10 +137,20 @@
                 <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%"
                     v-loading="listLoading">
                     <!-- 点击编号查看详情 -->
-                    <el-table-column prop="id" label="任务单编号" min-width="130" align="center">
+                    <el-table-column prop="id" label="任务单ID" min-width="130" align="center">
                         <template slot-scope="{row}">
                             <Task :id="row.id" :task="row" v-if="refreshed"></Task>
                         </template>
+                    </el-table-column>
+                    <el-table-column prop="id" label="客户ID" min-width="130" align="center">
+                      <template slot-scope="{row}">
+                           <Customer :id="row.customerId" :task="row" v-if="refreshed"></Customer>
+                      </template>
+                     </el-table-column>
+                    <el-table-column prop="id" label="分站ID" min-width="130" align="center">
+                      <template slot-scope="{row}">
+                           <Substation :id="row.subId" :task="row" v-if="refreshed"></Substation>
+                      </template>
                     </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
@@ -225,11 +236,13 @@ import axios from "axios";
 import printJS from "print-js";
 import Vue from 'vue'
 import {parseTime} from "@/utils/ruoyi";
-Vue.use(print)
+import Customer from "@/components/detail/dispatch.vue";
+import Substation from "@/components/detail/substation.vue";
+
 
 
 export default {
-    components: {Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
+    components: {Substation, Customer, Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
@@ -243,7 +256,7 @@ export default {
             return
         } else {
             this.subId = Number(this.$cache.session.get('subProcessing'))
-            this.handleOpChange(this.opType, false);
+            this.handleOpChange(this.opType);
         }
     },
     data() {
@@ -335,9 +348,10 @@ export default {
             this.$nextTick(()=>{
                 this.refreshed=true
             })
+
         },
         //查询
-        handleFilter() {
+        handleFilter(show) {
             this.listLoading = true;
             this.queryList = this.opList.filter((task) => {
                 // 查询条件
@@ -362,6 +376,7 @@ export default {
             // 分页
             this.getPageList()
             this.listLoading = false;
+            if(!show) return
             if (this.queryList.length === 0) {
                 this.$message({
                     type: 'error',
@@ -377,7 +392,7 @@ export default {
             }
         },
         // 获取当前操作类型对应的任务单列表
-        async handleOpChange(newVal, show) {
+        async handleOpChange(newVal) {
             this.listLoading = true;
             // 修改下拉框选项
             let option = getOption(newVal)
@@ -434,18 +449,19 @@ export default {
                     this.opList = this.list
                     break
             }
-            if (this.opList.length === 0 && show) {
+            // 查询结果
+            this.handleFilter(false)
+            // 分页
+            this.getPageList()
+            this.listLoading = false;
+            // 提示
+            if (this.total === 0 && newVal != '') {
                 this.$message({
                     type: 'error',
                     message: '没有需要操作的任务单',
                     durarion: 1000,
                 });
             }
-            // 查询结果
-            this.queryList = this.opList
-            // 分页
-            this.getPageList()
-            this.listLoading = false;
         },
 
         // 任务单操作
@@ -502,7 +518,7 @@ export default {
             } else {
                 assign(this.subId, courierId[0], this.task).then(res => {
                     //更新表格数据
-                    this.handleOpChange(this.opType, false)
+                    this.handleOpChange(this.opType)
                     this.close()
                     this.$message({
                         type: 'success',
@@ -621,7 +637,10 @@ export default {
               console.log(that.printform);
             }).catch( function (err){
               //代表请求失败之后处理
-              alert ('进入catch')
+              that.$message({
+                message: "后端请求失败",
+                type: 'error'
+              });
               console.log (err);
             });
           }
@@ -634,7 +653,10 @@ export default {
               console.log(that.printform);
             }).catch( function (err){
               //代表请求失败之后处理
-              alert ('进入catch')
+              that.$message({
+                message: "后端请求失败",
+                type: 'error'
+              });
               console.log (err);
             });
             that.print();

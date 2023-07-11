@@ -64,6 +64,14 @@ export default {
         handleAssign(){
             // 获取多选框选中的id列表
             let ids=this.$refs.userTable.getIds()
+            if(!ids || ids.length<1){
+                this.$message({
+                    type: 'error',
+                    message: '请至少选中一条记录',
+                    durarion: 1000,
+                });
+                return
+            }
             // 判断是管理员还是快递员
             let fun=new Function()
             switch (this.activeName) {
@@ -117,6 +125,7 @@ export default {
                     message: '请至少选中一条记录',
                     durarion: 1000,
                 });
+                return
             }
             // 判断是管理员还是快递员
             let fun=new Function()

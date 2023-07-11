@@ -15,6 +15,9 @@
 
     <el-table :key="tableKey" :data="list" border fit highlight-current-row style="width: 100%" v-loading="listLoading">
       <el-table-column label="ID" prop="id" align="center" width="100">
+        <template slot-scope="{row}">
+          <supplier :id="row.id"></supplier>
+        </template>
       </el-table-column>
       <el-table-column label="供应商名称" prop="name" width="200" align="center">
       </el-table-column>
@@ -81,10 +84,11 @@ import { getSupList, querySupList, deleteSup } from "@/api/dbc-supplier";
 import editSupplier from "./editSupplier.vue";
 import waves from "@/directive/waves"; // waves directive
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import supplier from '@/components/detail/supplier'
 
 export default {
   name: "SupplierList",
-  components: { Pagination, editSupplier },
+  components: { Pagination, editSupplier,supplier },
   directives: { waves },
   data() {
     return {

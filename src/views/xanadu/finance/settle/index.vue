@@ -12,11 +12,11 @@
             <el-date-picker type="date" placeholder="选择日期" v-model="form.endTime" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="供应商id" prop="supplierId" label-width="80px">
+        <el-form-item label="供应商ID" prop="supplierId" label-width="80px">
           <el-input v-model="form.supplierId"  placeholder="输入供应商id"
                     prefix-icon='el-icon-paperclip' width="120%"></el-input>
         </el-form-item>
-      <el-form-item label="商品id" prop="productId">
+      <el-form-item label="商品ID" prop="productId">
         <el-input v-model="form.productId"  placeholder="输入商品id"
                   prefix-icon='el-icon-paperclip' width="120%"></el-input>
       </el-form-item>
@@ -26,7 +26,7 @@
     </el-form>
 
 
-    <!--  查询之前显示  -->
+    <!--  查询之前显示提示  -->
     <div v-if="open3">
       <el-result title="提示" subTitle="请先输入查询条件" >
         <template slot="extra">
@@ -40,9 +40,9 @@
       <el-table :data="refundList" ref="refundTableRefs"
                 border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
@@ -102,9 +102,9 @@
     <el-dialog :visible.sync="open" width="780px" append-to-body>
       <el-table v-loading="loading" :data="this.selectList"
                 border >
-        <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
@@ -147,9 +147,9 @@
     <el-dialog :visible.sync="open1" width="1080px" append-to-body>
       <el-table v-loading="loading" :data="this.alreadyform"
                 border >
-        <el-table-column label="供应商id" align="center" prop="supplierId" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_settle_normal" :value="scope.row.supplierId"/>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" class-name="small-padding fixed-width">
@@ -182,10 +182,12 @@
 <script>
 
 import axios from 'axios'
+import supplier from "@/components/detail/supplier.vue";
 
 
 export default {
-  name: "RegisInvoice",
+  name: "settle",
+  components: {supplier},
   dicts: ['sys_settle_normal'],
   props: [],
   data: function () {

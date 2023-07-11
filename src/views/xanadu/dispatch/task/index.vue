@@ -44,6 +44,12 @@
                             <Task :id="row.id" :task="row" v-if="refreshed"></Task>
                         </template>
                     </el-table-column>
+
+                  <el-table-column prop="id" label="订单编号" min-width="130" align="center">
+                    <template slot-scope="{row}">
+                      <order :id="row.orderId"/>
+                    </template>
+                  </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>

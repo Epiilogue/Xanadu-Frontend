@@ -16,21 +16,21 @@ import { download } from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
-import { getDicts } from "@/api/system/dict/data";
-import { getConfigKey } from "@/api/system/config";
-import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
+import { getDicts } from '@/api/system/dict/data'
+import { getConfigKey } from '@/api/system/config'
+import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/ruoyi'
 // 分页组件
-import Pagination from "@/components/Pagination";
+import Pagination from '@/components/Pagination'
 // 自定义表格工具组件
-import RightToolbar from "@/components/RightToolbar"
+import RightToolbar from '@/components/RightToolbar'
 // 富文本组件
-import Editor from "@/components/Editor"
+import Editor from '@/components/Editor'
 // 文件上传组件
-import FileUpload from "@/components/FileUpload"
+import FileUpload from '@/components/FileUpload'
 // 图片上传组件
-import ImageUpload from "@/components/ImageUpload"
+import ImageUpload from '@/components/ImageUpload'
 // 图片预览组件
-import ImagePreview from "@/components/ImagePreview"
+import ImagePreview from '@/components/ImagePreview'
 // 字典标签组件
 import DictTag from '@/components/DictTag'
 // 头部标签组件
@@ -40,16 +40,32 @@ import DictData from '@/components/DictData'
 
 import { BaiduMap } from 'vue-baidu-map'
 
-import dataV from '@jiaminghi/data-view';
-Vue.use(dataV);
+//导入 dispatch orderType product status stockout subware supplier task 组件
+import customer from '@/components/detail/customer.vue'
+import order from '@/components/detail/order.vue'
+import dispatch from '@/components/detail/dispatch.vue'
+import orderType from '@/components/detail/orderType.vue'
+import product from '@/components/detail/product.vue'
+import status from '@/components/detail/status.vue'
+import stockout from '@/components/detail/stockout.vue'
+import subware from '@/components/detail/subware.vue'
+import supplier from '@/components/detail/supplier.vue'
+import task from '@/components/detail/task.vue'
+import user from '@/components/detail/user.vue'
+import substation from '@/components/detail/substation.vue'
+import taskvo from '@/components/detail/taskvo.vue'
+import dataV from '@jiaminghi/data-view'
 
 //引入echart
 import * as echarts from 'echarts'
+import Axios from 'axios'
+import moment from 'moment'
+
+Vue.use(dataV)
+
 Vue.prototype.$echarts = echarts
 
-
-
-Vue.use(BaiduMap,{ak:'zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM'})
+Vue.use(BaiduMap, { ak: 'zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM' })
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -70,20 +86,31 @@ Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 
+//自定义组件挂载
+Vue.component('customer', customer)
+Vue.component('order', order)
+Vue.component('dispatch', dispatch)
+Vue.component('orderType', orderType)
+Vue.component('product', product)
+Vue.component('status', status)
+Vue.component('stockout', stockout)
+Vue.component('subware', subware)
+Vue.component('supplier', supplier)
+Vue.component('task', task)
+Vue.component('user', user)
+Vue.component('substation', substation)
+Vue.component('taskvo', taskvo)
+
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 DictData.install()
 
-import Axios from 'axios'
-
 Vue.prototype.$axios = Axios
 Axios.defaults.baseURL = 'http://localhost:8004'
-Axios.defaults.headers.post['Content-Type'] = 'application/json';
+Axios.defaults.headers.post['Content-Type'] = 'application/json'
 Vue.config.productionTip = false
-import product from '@/components/detail/product.vue'
-import moment from "moment";
-Vue.prototype.$moment = moment; //UTC时间格式转换
+Vue.prototype.$moment = moment //UTC时间格式转换
 
 /**
  * If you don't want to use mock-server

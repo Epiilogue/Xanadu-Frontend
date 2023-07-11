@@ -48,7 +48,11 @@
             <div>
                 <el-table :key="0" :row-key="(row) => row.productId" :data="form.products" border fit highlight-current-row
                     style="width: 100%">
-                    <el-table-column label="商品编号" prop="productId" align="center" width="100"></el-table-column>
+                    <el-table-column label="商品编号" prop="productId" align="center" width="100">
+                      <template slot-scope="{row}">
+                        <product :id="row.productId"></product>
+                      </template>
+                    </el-table-column>
                     <el-table-column label="商品名称" prop="productName" width="100" align="center">
                     </el-table-column>
                     <el-table-column label="单价" prop="price" width="100" align="center">
@@ -160,7 +164,7 @@ export default {
         },
         // 返回
         Return() {
-            // 清除缓存 
+            // 清除缓存
             this.$cache.local.remove("selectedProduct")
             // 回到任务主页
             this.$emit('close', this.success)
@@ -174,7 +178,7 @@ export default {
                 this.form.totalAmount = this.form.products.reduce((sum, p) => sum + p.actualNumber * p.price,
                     0)
                 // 禁用输入框
-                
+
                 this.numDisabled=true
                 // 修改confirm
                 this.confirm = '编辑'

@@ -202,7 +202,7 @@ import axios from 'axios'
 import printJS from "print-js";
 import Vue from 'vue'
 import {parseTime} from "@/utils/ruoyi";
-Vue.use(print)
+
 
 export default {
   name: "RegisInvoice",
