@@ -238,7 +238,7 @@ import Vue from 'vue'
 import {parseTime} from "@/utils/ruoyi";
 import Customer from "@/components/detail/dispatch.vue";
 import Substation from "@/components/detail/substation.vue";
-Vue.use(print)
+
 
 
 export default {
