@@ -4,7 +4,7 @@
       <div class="d-flex pt-2 pl-2">
         <span style="color:#5cd9e8">
         </span>
-        <span class="fs-xl text mx-2">分站配送信息</span>
+        <span class="fs-xl text mx-2" style="font-weight: bolder;font-size: x-large">分站配送信息</span>
       </div>
       <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 29px">
         <dv-scroll-board ref="scrollBoard" :config="config" style="width: 7.2rem;height:3rem" />

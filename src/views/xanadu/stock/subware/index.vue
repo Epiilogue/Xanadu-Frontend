@@ -1,21 +1,7 @@
 <template>
   <div>
-    <el-card style="height: 80px">
-      <el-form :inline="true" >
-        <el-form-item label="仓库ID:">
-          <el-input type="text" placeholder="请输入你要搜索的仓库ID" v-model="stockID" clearable @clear="reset"></el-input>
-        </el-form-item>
-        <el-form-item style="margin-left: 10px">
-          <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
-          <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
-
     <el-card style="margin: 10px 0">
       <el-button type="primary" size="default" @click="dialogFormVisible = true">添加仓库</el-button>
-      <el-button type="primary" size="default" icon="el-icon-refresh-right" @click="refreshform">刷  新</el-button>
-
       <!--出入库查询-->
       <el-switch v-model="inout" active-text="出库查询" inactive-text="入库查询" style="margin-left: 1000px"></el-switch>
 
@@ -40,7 +26,6 @@
             <el-button type="primary" v-show="inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto2(scope.row)">退货出库</el-button>
             <el-button type="primary" v-show="!inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto3(scope.row)">调拨入库</el-button>
             <el-button type="primary" v-show="!inout" size="default" icon="el-icon-printer" style="background-color: orange; border: orange" @click="goto4(scope.row)">入库记录</el-button>
-
           </template>
         </el-table-column>
       </el-table>
@@ -98,7 +83,7 @@ export default {
       dialogFormVisible: false,
       dialogFormVisible1:false,
       inout: true,
-
+      subwareId:''
     }
   },
   watch:{
@@ -149,37 +134,18 @@ export default {
         query:{stockId:row.id}
       }))
     },
-
-    //搜索
-    search() {
-      if (this.stockID === ''){
-        this.$message.error('请输入仓库ID')
-      } else {
-        var flag = true
-        var numReg = /^[0-9]+$/
-        var numTe = new RegExp(numReg)
-        flag = numTe.test(this.stockID)
-        if (!flag){
-          this.$message({
-            type: 'error',
-            message: '输入信息不合法'
-          });
-        } else {
-          subwareByID(this.stockID).then(res=>{
-            var list=[]
-            list.push(res.data)
-            this.tableData=list
-          })
-        }
-      }
-    },
     //重置
     reset() {
       this.stockID=""
+      this.tableData = []
       subwareAll().then(res=>{
-        this.tableData = res.data;
+        for (let i = 0;i < res.data.length;i++){
+          if (res.data[i].id == this.subwareId)
+            this.tableData.push(res.data[i])
+        }
       })
     },
+
     //编辑仓库
     editStock(row) {
       this.editID = row.id
@@ -228,12 +194,6 @@ export default {
     handleCurrentChange(newPage) {
       this.currentPage = newPage
     },
-    //刷新表单
-    refreshform(){
-      subwareAll().then(res=>{
-        this.tableData = res.data;
-      })
-    },
     showMapView(data){
       this.dialogFormVisible = data
     },
@@ -242,8 +202,12 @@ export default {
     }
   },
   mounted() {
+    this.subwareId = this.$cache.session.get('subwareProcessing')
     subwareAll().then(res=>{
-      this.tableData = res.data;
+      for (let i = 0;i < res.data.length;i++){
+        if (res.data[i].id == this.subwareId)
+          this.tableData.push(res.data[i])
+      }
     })
   }
 }
