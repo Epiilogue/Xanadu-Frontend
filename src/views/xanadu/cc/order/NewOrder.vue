@@ -106,12 +106,13 @@
             <el-button slot="append" icon="el-icon-search" @click="selectSub"></el-button>
           </el-input>
         </el-form-item>
-        <el-form-item label="要求到货日期">
-          <el-date-picker v-model="form.deadline" :picker-options="deadlinePickerOptions" type="date" placeholder="Pick a date" style="width: 100%" />
-        </el-form-item>
         <el-form-item label="预计送货日期">
           <el-date-picker v-model="form.deliveryTime" :picker-options="delieverPickerOptions" type="date"
-            placeholder="Pick a date" style="width: 100%" />
+                          placeholder="Pick a date" style="width: 100%" />
+        </el-form-item>
+
+        <el-form-item label="要求到货日期">
+          <el-date-picker v-model="form.deadline" :picker-options="deadlinePickerOptions" type="date" placeholder="Pick a date" style="width: 100%" />
         </el-form-item>
         <el-form-item label="付款方式">
           <el-select v-model="form.newType">
@@ -210,14 +211,14 @@ export default {
       delieverPickerOptions: {
         disabledDate:(time) => { // 此处改为箭头函数
           if(this.form.deadline)
-            return time.getTime() < this.form.deadline;
+            return time.getTime() > this.form.deadline;
           return false
         }
       },
       deadlinePickerOptions: {
         disabledDate:(time) => { // 此处改为箭头函数
           if(this.form.deliveryTime)
-            return time.getTime() > this.form.deliveryTime;
+            return time.getTime() < this.form.deliveryTime;
           return false
         }
       }

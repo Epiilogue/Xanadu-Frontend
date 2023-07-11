@@ -235,3 +235,11 @@ export function printDistributionList(date, productName, subwareId){
 }
 
 
+
+
+export function fetchSubware(userId){
+  return request({
+    url:'/ware/subware/infoByUser/'+userId,
+    method:'get'
+  })
+}

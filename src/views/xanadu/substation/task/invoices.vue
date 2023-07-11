@@ -184,7 +184,7 @@ import axios from "axios";
 import {parseTime} from "@/utils/ruoyi";
 import printJS from "print-js";
 import Vue from 'vue'
-Vue.use(print)
+
 
 export default {
   name: "Invoices",

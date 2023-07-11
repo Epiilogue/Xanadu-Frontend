@@ -48,7 +48,7 @@
                 class="react-left mr-4"
                 style="width: 6.25rem; background-color: #0f1325; text-align: right;">
                 <span class="react-after"></span>
-                <span class="text" style="margin-right: 125px;font-size: small">版本号:3.5.1</span>
+                <span class="text" style="margin-right: 125px;font-size: small">版本号:3.5.2</span>
                 <span class="text"> 当前时间:{{ times }}</span>
               </div>
             </div>
