@@ -16,11 +16,6 @@ let tableColumns = [
         show: false
     },
     {
-        prop: "orderType",
-        label: "订单类型",
-        show: true
-    },
-    {
         prop: "numbers",
         label: "商品数量",
         show: true
@@ -28,11 +23,6 @@ let tableColumns = [
     {
         prop: "totalAmount",
         label: "商品总价",
-        show: true
-    },
-    {
-        prop: "status",
-        label: "订单状态",
         show: true
     },
     {

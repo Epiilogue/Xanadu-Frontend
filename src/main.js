@@ -40,6 +40,20 @@ import DictData from '@/components/DictData'
 
 import { BaiduMap } from 'vue-baidu-map'
 
+//导入 dispatch orderType product status stockout subware supplier task 组件
+
+import customer from '@/components/detail/customer.vue'
+import order from '@/components/detail/order.vue'
+import dispatch from '@/components/detail/dispatch.vue'
+import orderType from '@/components/detail/orderType.vue'
+import product from '@/components/detail/product.vue'
+import status from '@/components/detail/status.vue'
+import stockout from '@/components/detail/stockout.vue'
+import subware from '@/components/detail/subware.vue'
+import supplier from '@/components/detail/supplier.vue'
+import task from '@/components/detail/task.vue'
+
+
 import dataV from '@jiaminghi/data-view';
 Vue.use(dataV);
 
@@ -70,6 +84,20 @@ Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 
+
+//自定义组件挂载
+Vue.component('customer',customer)
+Vue.component('order',order)
+Vue.component('dispatch',dispatch)
+Vue.component('orderType',orderType)
+Vue.component('product',product)
+Vue.component('status',status)
+Vue.component('stockout',stockout)
+Vue.component('subware',subware)
+Vue.component('supplier',supplier)
+Vue.component('task',task)
+
+
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
@@ -81,7 +109,6 @@ Vue.prototype.$axios = Axios
 Axios.defaults.baseURL = 'http://localhost:8004'
 Axios.defaults.headers.post['Content-Type'] = 'application/json';
 Vue.config.productionTip = false
-import product from '@/components/detail/product.vue'
 import moment from "moment";
 Vue.prototype.$moment = moment; //UTC时间格式转换
 
