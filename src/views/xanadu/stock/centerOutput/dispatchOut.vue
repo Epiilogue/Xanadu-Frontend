@@ -5,6 +5,7 @@
       <form method="get" action="#" id="printJS-form-output">
         <div>
           <h3>Xanadu出库单</h3>
+          <h3>打印时间：{{parseTime()(this.printdata,'{y}-{m}-{d}-{h}:{m}:{s}')}}</h3>
           <table class="product-table">
             <thead>
             <tr>
@@ -13,7 +14,7 @@
               <th>总数</th>
               <th>供货商名称</th>
               <th>总价格</th>
-              <th>日期</th>
+              <th>预计出库日期</th>
             </tr>
             </thead>
             <tbody>
@@ -27,7 +28,6 @@
             </tr>
             </tbody>
           </table>
-
         </div>
       </form>
     </div>
@@ -35,7 +35,8 @@
     <div v-show="false">
       <form method="get" action="#" id="printJS-form-list">
         <div>
-          <h3>Xanadu出库单</h3>
+          <h3>Xanadu分发单</h3>
+          <h3>打印时间：{{parseTime()(this.printform1.printdata,'{y}-{m}-{d}-{h}:{m}:{s}')}}</h3>
           <table class="product-table">
             <thead>
             <tr>
@@ -45,7 +46,7 @@
               <th>供货商名称</th>
               <th>分库名</th>
               <th>总价格</th>
-              <th>日期</th>
+              <th>分发日期</th>
             </tr>
             </thead>
             <tbody>
@@ -60,7 +61,12 @@
             </tr>
             </tbody>
           </table>
-
+          <div style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
+            <h1>总金额：</h1>
+            <p>分发员签字：</p>
+            <p>签收人签字：</p>
+            <p>Xanadu公司盖章：</p>
+          </div>
         </div>
       </form>
     </div>
@@ -170,6 +176,7 @@ export default {
   components: { subware, product },
   data() {
     return {
+      printdata:'',
       tableData: [],
       currentPage: 1,
       pagesize: 10,
@@ -183,7 +190,7 @@ export default {
         subwareId: undefined
       },
       printform: {
-        productName: '无',
+        productName: '',
         productPrice: '',
         number: '',
         supplierName: '',
@@ -192,7 +199,7 @@ export default {
         date: ''
       },
       printform1: {
-        productName: '无',
+        productName: '',
         number: '',
         productPrice: '',
         supplierName: '',
@@ -257,11 +264,10 @@ export default {
         }).then(function(res) {
           //代表请求成功之后处理
           that.printform = res.data.data
-          console.log(that.printform)
+          that.printdata = new Date();
           setTimeout(function() {
             that.print()
           }, 1000)
-          that.print()
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({
@@ -295,6 +301,7 @@ export default {
         }).then(function(res) {
           //代表请求成功之后处理
           that.printform1 = res.data.data
+          that.printdata = new Date();
           setTimeout(function() {
             that.print1()
           }, 1000)

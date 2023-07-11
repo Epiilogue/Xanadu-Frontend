@@ -627,40 +627,23 @@ export default {
 
         // Todo:打印签收单
         printSign() {
-          if(this.printform.substation.name === '暂无信息'){
-            this.$message.success('发票信息加载中');
-            const id =this.task.id;
-            const that = this;
-            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
-              //代表请求成功之后处理
-              that.printform = res.data.data;
-              console.log(that.printform);
-            }).catch( function (err){
-              //代表请求失败之后处理
-              that.$message({
-                message: "后端请求失败",
-                type: 'error'
-              });
-              console.log (err);
+          const id =this.task.id;
+          const that = this;
+          axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+            //代表请求成功之后处理
+            that.printform = res.data.data;
+            setTimeout(function() {
+              that.print()
+            }, 1000)
+            console.log(that.printform);
+          }).catch( function (err){
+            //代表请求失败之后处理
+            that.$message({
+              message: "后端请求失败",
+              type: 'error'
             });
-          }
-          else{
-            const id =this.task.id;
-            const that = this;
-            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
-              //代表请求成功之后处理
-              that.printform = res.data.data;
-              console.log(that.printform);
-            }).catch( function (err){
-              //代表请求失败之后处理
-              that.$message({
-                message: "后端请求失败",
-                type: 'error'
-              });
-              console.log (err);
-            });
-            that.print();
-          }
+            console.log (err);
+          });
         },
         print(){
           printJS('printJS-form-task','html')
