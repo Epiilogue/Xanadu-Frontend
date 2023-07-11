@@ -2,6 +2,7 @@ import { login, logout, getInfo, refreshToken, loginByEmail } from '@/api/login'
 import { getToken, setToken, setExpiresIn, removeToken } from '@/utils/auth'
 import Vue from 'vue'
 import { fetchSubStation } from '@/api/sub'
+import { fetchSubware } from '@/api/ware'
 
 const user = {
   state: {
@@ -95,6 +96,11 @@ const user = {
           if(auth.hasRole("SUBSTATION_MANAGER") && !auth.hasRole("COURIER")){
             fetchSubStation(user.userId).then(res=>{
               cache.session.set('subProcessing', res.id)
+            })
+          }
+          if(auth.hasRole("WAREHOUSE_MANAGER")){
+            fetchSubware(user.userId).then(res=>{
+              cache.session.set('subwareProcessing', res.data.id)
             })
           }
           resolve(res)

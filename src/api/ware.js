@@ -1,6 +1,8 @@
 import request from '@/utils/request'
 import axios from 'axios'
-
+import cookies from 'vue-cookies'
+import Vue from 'vue'
+Vue.prototype.$cookies = cookies;
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   baseURL: 'http://localhost:8015',
@@ -215,6 +217,14 @@ export function userList(){
 export function orgList(subwareId){
   return request({
     url:'/ware/subware/getSubwareManager/'+subwareId,
+    method:'get'
+  })
+}
+
+
+export function fetchSubware(userId){
+  return request({
+    url:'/ware/subware/infoByUser/'+userId,
     method:'get'
   })
 }
