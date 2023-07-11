@@ -52,12 +52,12 @@
               <span>{{ row.productId }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品名称" width="100" align="center">
+          <el-table-column label="商品名称" min-width="600" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品种类编号" min-width="100" align="center">
+          <el-table-column label="商品种类" width="100" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productCategary }}</span>
             </template>
@@ -216,6 +216,11 @@ export default {
         }
         this.$refs["form"].validate((valid) => {
           if (valid) {
+            //要求到货日期要在预计送货日期之后
+            if (this.form.deadline < this.form.deliveryTime) {
+              this.$modal.alertWarning("要求到货日期要在预计送货日期之后");
+              return;
+            }
             // 商品数量不为0
             if (this.form.numbers !== 0) {
               // 请求服务

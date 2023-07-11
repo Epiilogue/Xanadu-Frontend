@@ -9,13 +9,19 @@ import * as http from 'http'
   timeout: 10000
 }) */
 //获取所有缺货记录
-export function fetchLackRecordList(query) {
+export function fetchLackRecordList(isCheck) {
   return request({
-    url: '/getAllLackRecord',
+    url: `/dbc/lackRecord/getAllLackRecord/${isCheck}`,
     method: 'get',
     //params: { pageNum, pageSize },
     //params: query,
-    baseURL: 'http://localhost:8004/dbc/lackRecord'
+  })
+}
+//查看购货单
+export function fetchPurchaseRecordList(query) {
+  return request({
+    url: '/dbc/purchaseRecord/list',
+    method: 'get',
   })
 }
 //生成采购单
@@ -34,6 +40,25 @@ export function getRefundList(){
   })
 }
 
+//购货确认
+export function confirmPurchase(id,number){
+  return request({
+    url: '/dbc/purchaseRecord/confirmPurchase',
+    method: 'put',
+    params:{
+      id:id,
+      number:number
+    }
+  })
+}
+
+export function deletePurchase(id){
+  return request({
+    url: `/dbc/purchaseRecord/delete/${id}`,
+    method: 'get',
+  })
+}
+
 //
 /* export function getRefundList(){
   return request({
@@ -45,7 +70,7 @@ export function getRefundList(){
 
 export function LackRecordInspect(id,isCheck){
   return request({
-    url: `/dbc/lackRecord/getLackRecord/${id}/${true}`,
+    url: `/dbc/lackRecord/getLackRecord/${id}/${isCheck}`,
     method: 'get',
   })
 }

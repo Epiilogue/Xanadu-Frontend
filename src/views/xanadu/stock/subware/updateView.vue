@@ -25,9 +25,13 @@
         <el-form-item label="仓库名称">
           <el-input v-model="subware.name" autocomplete="off">{{this.subware.name}}</el-input>
         </el-form-item>
-        <el-form-item label="仓库管理员">
-          <el-input v-model="subware.master" autocomplete="off">{{this.subware.master}}</el-input>
-        </el-form-item>
+        <el-form-item label="仓库管理员"></el-form-item>
+        <div>
+          <el-checkbox-group v-model="alluser" @change="handleSelectUser">
+            <el-checkbox v-for="u in user" :label="u" >库管员id：{{u.userId}}，库管员名称：{{u.nickName}}</el-checkbox>
+            <el-checkbox v-for="u in checkedUsers" :label="u" >库管员id：{{u.userId}}，库管员名称：{{u.nickName}}</el-checkbox>
+          </el-checkbox-group>
+        </div>
       </el-form>
       <el-form-item class="sumbit">
         <el-button type="primary" @click="addStock">提交</el-button>
@@ -40,7 +44,7 @@
 /* eslint-disable */
 import loadBMap from '@/utils/loadBMap.js'
 
-import { subwareEdit} from '@/api/ware'
+import { subwareEdit , userList, orgList} from '@/api/ware'
 
 import axios from 'axios'
 import subware from './index'
@@ -58,7 +62,6 @@ export default {
     inputID:Number,
     inputAddress:String,
     inputName:String,
-    inputMaster:Number,
     inputCity:String,
     inputX:Number,
     inputY:Number
@@ -74,6 +77,9 @@ export default {
           lat: 0
         }
       },
+      checkedUsers:[],
+      user:[],
+      alluser:[],
       map: '', // 地图实例
       mk: '', // Marker实例
       locationPoint: null,
@@ -83,7 +89,7 @@ export default {
         address:'',
         x:'',
         y:'',
-        master:'',
+        managerIds:[],
         city:''
       }
     }
@@ -91,26 +97,46 @@ export default {
   async mounted() {
     this.subware.id = this.inputID
     this.subware.name = this.inputName
-    this.subware.master = this.inputMaster
+    this.subware.master =
     this.subware.address = this.inputAddress
     this.subware.city = this.inputCity
     this.subware.x = this.inputX
     this.subware.y = this.inputY
     await loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
     this.initMap()
+
+    userList().then((res)=>{
+      this.user.push(res.data)
+      this.user = this.user[0]
+    })
+
+    orgList(this.subware.id).then((res)=>{
+      this.checkedUsers.push(res.data)
+      this.checkedUsers = this.checkedUsers[0]
+      this.alluser.push(res.data)
+      this.alluser = this.alluser[0]
+      for (let i = 0;i < this.checkedUsers.length;i++){
+        this.subware.managerIds.push(this.checkedUsers[i].userId)
+      }
+    })
   },
   methods: {
+    handleSelectUser(){
+      this.subware.managerIds = []
+      for (let i = 0;i < this.alluser.length;i++){
+        this.subware.managerIds.push(this.alluser[i].userId)
+      }
+    },
     //修改仓库
     addStock(){
       this.subware.address = this.form.address ===''?this.subware.address:this.form.address
-      this.subware.x = this.form.addrPoint.lat === 0?this.subware.x:this.form.addrPoint.lat
-      this.subware.y = this.form.addrPoint.lng === 0?this.subware.y:this.form.addrPoint.lng
+      this.subware.x = this.form.addrPoint.lng === 0?this.subware.x:this.form.addrPoint.lng
+      this.subware.y = this.form.addrPoint.lat === 0?this.subware.y:this.form.addrPoint.lat
       this.subware.city = this.form.city === ''?this.subware.city:this.form.city
-      console.log(this.subware)
       if (!this.subware.name){
         this.$message.error('请输入仓库名称')
-      } else if (!this.subware.master){
-        this.$message.error('请输入仓库管理员')
+      } else if (this.subware.managerIds.length === 0){
+        this.$message.error('请选择仓库管理员')
       } else if (!this.subware.address){
         this.$message.error('请输入仓库地址')
       } else {

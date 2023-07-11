@@ -78,8 +78,8 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="1"
-        :page-sizes="[1, 2, 5, 7]"
-        :page-size="5"
+        :page-sizes="[10,15,20]"
+        :page-size="15"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
       >
@@ -211,11 +211,11 @@ export default {
       singleLackRecord: null,
       queryInfo: '',
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示5条
       totalNum: 100, //总页数
       listQuery: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 15,
         currentPage: 1
       },
       temp: {
@@ -283,7 +283,7 @@ export default {
       this.list = []
       this.listLoading = false
       if (flag === 2) {
-        fetchLackRecordList().then(response => {
+        fetchLackRecordList(this.isCheck=== '1').then(response => {
           if (that.isCheck === '') {
             let res = response.data
             console.log(res)
@@ -314,7 +314,7 @@ export default {
             type: 'warning'
           })
         } else {
-          LackRecordInspect(parseInt(this.queryInfo), true).then(response => {
+          LackRecordInspect(parseInt(this.queryInfo), this.isCheck=== '1').then(response => {
             if (this.isCheck === '1') {
               this.list.push(response.data)
             } else {

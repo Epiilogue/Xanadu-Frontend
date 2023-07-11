@@ -139,6 +139,7 @@ export default {
     },
 
     showDialog(data, flag) {
+      this.form.name=''
       this.dialogName = flag
       this.dialogFormVisible = true
       this.currentNode = data

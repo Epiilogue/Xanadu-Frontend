@@ -5,10 +5,10 @@
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item class="form-item" label="地址">
-            <el-input v-model="listQuery.address" placeholder="分站地址" style="width: 200px; margin-right: 5px" />
+            <el-input v-model="listQuery.address" placeholder="分站地址" style="width: 200px; margin-right: 5px"/>
           </el-form-item>
           <el-form-item class="form-item" label="名称">
-            <el-input v-model="listQuery.name" placeholder="分站名称" style="width: 200px; margin-right: 5px" />
+            <el-input v-model="listQuery.name" placeholder="分站名称" style="width: 200px; margin-right: 5px"/>
           </el-form-item>
           <el-form-item class="form-item">
             <el-button type="primary" icon="el-icon-search" @click="handleFilter">
@@ -23,44 +23,41 @@
     </div>
     <el-card>
       <el-table :key="tableKey" v-loading="listLoading"
-        :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit highlight-current-row
-        style="width: 100%;">
+                :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit
+                highlight-current-row
+                style="width: 100%;"
+      >
         <el-table-column label="ID" prop="id" align="center" width="80">
           <template slot-scope="{row}">
-            <span>{{ row.id }}</span>
+            <span class="link-type" @click="handleUpdate(row)">{{ row.id }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="名称" prop="name" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+            {{ row.name }}
           </template>
         </el-table-column>
 
         <el-table-column label="地址" prop="address" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.address }}</span>
+            {{ row.address }}
           </template>
         </el-table-column>
 
         <el-table-column label="电话" prop="phone" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.phone }}</span>
+            {{ row.phone }}
           </template>
         </el-table-column>
 
+        <!--TODO:组件添加        -->
         <el-table-column label="分库Id" min-width="50px" prop="subwareId" align="center">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.subwareId }}</span>
+            {{ row.subwareId }}
           </template>
         </el-table-column>
 
-        <!-- todo:ID列表展示
-        <el-table-column label="管理人ID" min-width="50px" prop="userId" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.userId }}</span>
-          </template>
-        </el-table-column> -->
 
         <!-- 设置当前操作的分站 -->
         <el-table-column label="管理分站事务" min-width="100" align="center">
@@ -84,29 +81,32 @@
       </el-table>
 
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="1"
-        :page-sizes="[1, 2, 5, 7]" :page-size="5" layout="total, sizes, prev, pager, next, jumper" :total="total">
+                     :page-sizes="[10,15,20]" :page-size="15" layout="total, sizes, prev, pager, next, jumper"
+                     :total="total"
+      >
       </el-pagination>
 
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style="width: 100%;padding-left: 5%">
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="25%" :rules="rules"
-        style="width: 65%; margin-left:150px;">
+               style="width: 65%; margin-left:150px;"
+      >
         <el-form-item label="分站名称" prop="name">
-          <el-input v-model="temp.name" />
+          <el-input v-model="temp.name"/>
         </el-form-item>
         <el-form-item label="地址" prop="address">
-          <el-input v-model="temp.address" />
+          <el-input v-model="temp.address"/>
         </el-form-item>
         <el-form-item label="电话" prop="phone">
-          <el-input v-model="temp.phone" />
+          <el-input v-model="temp.phone"/>
         </el-form-item>
         <el-form-item label="分库ID" prop="subwareId">
-          <el-input v-model="temp.subwareId" :disabled="dialogStatus !== 'create'" />
+          <SubwareSelect
+            :value="temp.subwareId"
+            :single="true"
+            @getInfo="getSubware"
+          />
         </el-form-item>
-
-        <!-- <el-form-item label="管理人ID" prop="UserId">
-          <el-input v-model="temp.userId" />
-        </el-form-item> -->
 
 
       </el-form>
@@ -126,10 +126,11 @@
 <script>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
-import { AddSubstation, deleteSubstation, fetchAllSubStation, updateSubstation, getSubstationUserList } from '@/api/sub'
+import { AddSubstation, deleteSubstation, fetchAllSubStation, updateSubstation } from '@/api/sub'
+import SubwareSelect from '@/components/Pop/Subware/index.vue'
 
 export default {
-  components: { Pagination },
+  components: { Pagination, SubwareSelect },
   directives: { waves },
   data() {
     return {
@@ -139,20 +140,20 @@ export default {
 
       tableKey: 0,
       list: [],
-      queryList:[],
+      queryList: [],
       total: 0,
       listLoading: true,
       currentPage: 1,//默认显示第一页
-      pageSize: 5,//默认每页显示5条
+      pageSize: 15,//默认每页显示5条
       listQuery: {
         address: '',
-        name: '',
+        name: ''
       },
       rules: {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
         phone: [{ required: true, message: '请选择电话', trigger: 'blur' }],
         address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
-        subwareId: [{ required: true, message: '请输入分库Id', trigger: 'blur' }],
+        subwareId: [{ required: true, message: '请输入分库Id', trigger: 'blur' }]
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -167,8 +168,8 @@ export default {
         address: '',
         subwareId: '',
         userId: '',
-        phone: '',
-      },
+        phone: ''
+      }
     }
   },
   created() {
@@ -186,7 +187,12 @@ export default {
     }
   },
   methods: {
-
+    getSubware(selections) {
+      if (selections.length > 0) {
+        this.temp.subwareId = selections[0].id + ''
+        this.temp.address = selections[0].address
+      }
+    },
     //分页组件修改页面容量
     handleSizeChange(newSize) {
       this.pageSize = newSize
@@ -217,21 +223,21 @@ export default {
       })
     },
     handleFilter() {
-      this.listLoading = true;
+      this.listLoading = true
       this.queryList = this.list.filter((sub) => {
         // 查询条件
         let query = this.listQuery
         // 名称 地址
-        if (query.name !== '' && sub.name.indexOf(query.name)===-1) {
+        if (query.name !== '' && sub.name.indexOf(query.name) === -1) {
           return false
         }
-        if (query.address !== '' && sub.address.indexOf(query.address)===-1) {
+        if (query.address !== '' && sub.address.indexOf(query.address) === -1) {
           return false
         }
         return true
-      });
+      })
       this.total = this.queryList.length
-      this.listLoading = false;
+      this.listLoading = false
     },
     resetTemp() {
       this.temp = {
@@ -241,7 +247,7 @@ export default {
         address: '',
         subwareId: '',
         userId: '',
-        phone: '',
+        phone: ''
       }
     },
     handleCreate() {
@@ -258,7 +264,6 @@ export default {
         if (valid) {
           AddSubstation(this.temp).then(() => {
             this.temp.id = this.total
-            this.list.push(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -266,8 +271,9 @@ export default {
               type: 'success',
               duration: 2000
             })
-          })
-          this.getList()
+          }).then(
+            () => this.getList()
+          )
         } else {
           alert('!!!')
         }
@@ -275,6 +281,7 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      this.temp.subwareId = row.subwareId + ''
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -302,19 +309,19 @@ export default {
     handleDelete(row, index) {
       console.log(row)
       deleteSubstation(row.id).then((res) => {
-        if (res.code === 200) {
-          this.total--
-          this.$notify({
-            title: 'Success',
-            message: 'Delete Successfully',
-            type: 'success',
-            duration: 2000
-          })
-          this.list.splice(index, 1)
+          if (res.code === 200) {
+            this.total--
+            this.$notify({
+              title: 'Success',
+              message: 'Delete Successfully',
+              type: 'success',
+              duration: 2000
+            })
+            this.list.splice(index, 1)
+          }
         }
-      }
       )
-    },
+    }
   }
 }
 </script>

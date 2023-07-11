@@ -5,9 +5,8 @@
     >
       <el-button slot="append" :disabled="btnDisabled" @click="showUserSelect" icon="el-icon-search"></el-button>
     </el-input>
-    <!-- 供应商列表 -->
-    <SupplierPop
-      ref="SupplierSelect"
+    <SubwarePop
+      ref="SubwareSelect"
       @doSubmit="selectionsToInput"
       :selectData="selectData"
       :single="single"
@@ -15,8 +14,8 @@
   </div>
 </template>
 <script>
-import SupplierPop from './SupplierPop'
-import { getSupplier } from '@/api/dbc-supplier'
+import SubwarePop from './SubwarePop'
+import { subwareByID } from '@/api/ware'
 
 export default {
   data() {
@@ -48,7 +47,7 @@ export default {
     }
   },
   components: {
-    SupplierPop
+    SubwarePop
   },
   watch: {
     value: {
@@ -56,7 +55,7 @@ export default {
         this.selectData = []
         if (newVal) {
           newVal.split(',').forEach((id) => { // 回显拿数据
-            getSupplier(id).then((res) => {
+            subwareByID(id).then((res) => {
               this.selectData.push(res.data)
             })
           })
@@ -81,7 +80,7 @@ export default {
     },
     // 显示列表
     showUserSelect() {
-      this.$refs.SupplierSelect.init()
+      this.$refs.SubwareSelect.init()
     }
   }
 }

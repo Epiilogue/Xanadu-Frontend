@@ -1,29 +1,32 @@
 <template>
   <div>
-    <el-input placeholder="请选择" :size="size" :disabled="inpDisabled" style="line-hight:40px" v-model="id"
+    <el-input :size="size" :disabled="inpDisabled" style="line-hight:40px" v-model="id"
               class="input-with-select"
     >
       <el-button slot="append" :disabled="btnDisabled" @click="showUserSelect" icon="el-icon-search"></el-button>
     </el-input>
     <!-- 供应商列表 -->
-    <SupplierPop
-      ref="SupplierSelect"
+    <ProductPop
+      ref="ProductSelect"
       @doSubmit="selectionsToInput"
+      :keyword="keyword"
       :selectData="selectData"
       :single="single"
     />
   </div>
 </template>
 <script>
-import SupplierPop from './SupplierPop'
 import { getSupplier } from '@/api/dbc-supplier'
+import ProductPop from '@/components/Pop/Product/ProductPop.vue'
 
 export default {
+  name:"ProductSelect",
   data() {
     return {
+      tempInfo:'',
       selectData: [],
       SupplierService: null,
-      id: ''
+      id: '',
     }
   },
   props: {
@@ -31,6 +34,7 @@ export default {
       type: String,
       default: 'small'
     },
+    keyword:'',
     value: {
       default: ''
     },
@@ -44,22 +48,20 @@ export default {
     },
     single: {  // 是否启用单选
       type: Boolean,
-      default: true
+      default: false
     }
   },
   components: {
-    SupplierPop
+    ProductPop,
   },
   watch: {
     value: {
       handler(newVal) {
         this.selectData = []
         if (newVal) {
-          newVal.split(',').forEach((id) => { // 回显拿数据
-            getSupplier(id).then((res) => {
-              this.selectData.push(res.data)
-            })
-          })
+          console.log(this.keyword)
+          console.log(newVal)
+          this.selectData.push(newVal)
         }
       },
       immediate: true,
@@ -67,12 +69,14 @@ export default {
     },
     selectData: {
       handler(newVal) {
-        this.id = newVal.map(Supplier => Supplier.id).join(',')
+        console.log(newVal)
+        this.tempInfo = newVal
       },
       immediate: true,
       deep: false
     }
   },
+
   methods: {
     // 设置选中
     selectionsToInput(selections) {
@@ -80,8 +84,8 @@ export default {
       this.$emit('getInfo', this.selectData)
     },
     // 显示列表
-    showUserSelect() {
-      this.$refs.SupplierSelect.init()
+    showUserSelect(value) {
+      this.$refs.ProductSelect.init()
     }
   }
 }
