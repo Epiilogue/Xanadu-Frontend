@@ -79,7 +79,7 @@ export default {
       // 查询参数
       queryParams: {
         userName: undefined,
-        phonenumber: undefined,
+        phoneNumber: undefined,
         status: undefined,
         deptId: undefined
       },
