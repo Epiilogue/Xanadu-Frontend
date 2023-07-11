@@ -137,17 +137,17 @@
                 <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%"
                     v-loading="listLoading">
                     <!-- 点击编号查看详情 -->
-                    <el-table-column prop="id" label="任务单编号" min-width="130" align="center">
+                    <el-table-column prop="id" label="任务单ID" min-width="130" align="center">
                         <template slot-scope="{row}">
                             <Task :id="row.id" :task="row" v-if="refreshed"></Task>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="id" label="客户编号" min-width="130" align="center">
+                    <el-table-column prop="id" label="客户ID" min-width="130" align="center">
                       <template slot-scope="{row}">
                            <Customer :id="row.customerId" :task="row" v-if="refreshed"></Customer>
                       </template>
                      </el-table-column>
-                    <el-table-column prop="id" label="分站编号" min-width="130" align="center">
+                    <el-table-column prop="id" label="分站ID" min-width="130" align="center">
                       <template slot-scope="{row}">
                            <Substation :id="row.subId" :task="row" v-if="refreshed"></Substation>
                       </template>
