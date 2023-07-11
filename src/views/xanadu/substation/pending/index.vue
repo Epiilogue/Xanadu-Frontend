@@ -41,7 +41,7 @@
                 <el-table-column label="商品单价" min-width="50px" prop="productPrice" align="center"></el-table-column>
                 <el-table-column label="待处理数量" min-width="50px" prop="dealNumber" align="center"></el-table-column>
                 <el-table-column label="来源" min-width="50px" prop="source" align="center"></el-table-column>
-                
+
 
                 <el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
                     <template slot-scope="{row,$index}">

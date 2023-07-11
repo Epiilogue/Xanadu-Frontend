@@ -12,7 +12,11 @@
       <el-table v-show="!this.type" ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center"  prop="id" show-overflow-tooltip></el-table-column>
-        <el-table-column label="任务ID" align="center"  prop="taskId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="任务ID" align="center"  prop="taskId" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <task :id="row.taskId"></task>
+          </template>
+        </el-table-column>
         <el-table-column label="商品ID" align="center"  prop="productId" show-overflow-tooltip>
           <template slot-scope="{row}">
             <product :id="row.productId"></product>
