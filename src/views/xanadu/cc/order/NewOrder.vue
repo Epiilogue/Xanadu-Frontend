@@ -210,14 +210,14 @@ export default {
       delieverPickerOptions: {
         disabledDate:(time) => { // 此处改为箭头函数
           if(this.form.deadline)
-            return time.getTime() < this.form.deadline;
+            return time.getTime() > this.form.deadline;
           return false
         }
       },
       deadlinePickerOptions: {
         disabledDate:(time) => { // 此处改为箭头函数
           if(this.form.deliveryTime)
-            return time.getTime() > this.form.deliveryTime;
+            return time.getTime() < this.form.deliveryTime;
           return false
         }
       }

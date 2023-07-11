@@ -169,7 +169,7 @@ export default {
                 fun = refund
             else if (opType === '重新入库') fun = restore
             // 弹框选数量
-            this.$prompt('请输入' + opType + '的商品数量', '提示', {
+            this.$prompt('请输入商品数量', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 inputPattern: /^([1-9][0-9]*)$/,
