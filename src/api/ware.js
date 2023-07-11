@@ -1,8 +1,6 @@
 import request from '@/utils/request'
 import axios from 'axios'
-import cookies from 'vue-cookies'
-import Vue from 'vue'
-Vue.prototype.$cookies = cookies;
+
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   baseURL: 'http://localhost:8015',
