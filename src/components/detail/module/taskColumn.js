@@ -16,11 +16,6 @@ let tableColumns = [
         show: true
     },
     {
-        prop: "orderId",
-        label: "订单编号",
-        show: true
-    },
-    {
         prop: "numbers",
         label: "商品总数",
         show: true
