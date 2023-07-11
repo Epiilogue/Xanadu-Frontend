@@ -1,9 +1,26 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name" placeholder="Name" style="width: 200px;" class="filter-item"
-                @keyup.enter.native="handleFilter"
+      <el-input v-model="listQuery.orderId" placeholder="订单号" style="width: 200px;" class="filter-item"
       />
+      <el-select v-model="listQuery.status" clearable placeholder="请选择" style="width: 200px;" class="filter-item">
+        <el-option
+          key="已提交" label="已提交" value="已提交"
+        >
+        </el-option>
+        <el-option
+          key="未提交" label="未提交" value="未提交"
+        >
+        </el-option>
+        <el-option
+          key="已采购" label="已采购" value="已采购"
+        >
+        </el-option>
+        <el-option
+          key="已到货" label="已到货" value="已到货"
+        >
+        </el-option>
+      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
@@ -78,9 +95,6 @@
             <el-button size="medium" type="danger" @click="handleCommit(row.id)">
               提交
             </el-button>
-            <!--            <el-button @click="handleArrival(row.id)">
-                          到货
-                        </el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -125,8 +139,6 @@
         <el-button type="primary" @click="dialogPvVisible = false">提交</el-button>
       </span>
     </el-dialog>
-
-
   </div>
 </template>
 
@@ -198,7 +210,9 @@ export default {
       listQuery: {
         pageNum: 1,
         pageSize: 15,
-        currentPage: 1
+        currentPage: 1,
+        orderId: '',
+        status: ''
       },
       //importanceOptions: [false, true],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -297,7 +311,25 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
-      this.getList()
+      fetchStockOut().then((res) => {
+        this.list = res.data
+        this.total = res.data.length
+        this.loading = false
+      }).then(
+        () => {
+          //根据listQuery的订单id以及status进行过滤
+          if (this.listQuery.orderId !== '') {
+            this.list = this.list.filter(item => {
+              return item.orderId == this.listQuery.orderId
+            })
+          }
+          if (this.listQuery.status !== '') {
+            this.list = this.list.filter(item => {
+              return item.status === this.listQuery.status
+            })
+          }
+        }
+      )
     },
     handleModifyStatus(row, status) {
       this.$message({
