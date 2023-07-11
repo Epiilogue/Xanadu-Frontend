@@ -142,6 +142,16 @@
                             <Task :id="row.id" :task="row" v-if="refreshed"></Task>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="id" label="客户编号" min-width="130" align="center">
+                      <template slot-scope="{row}">
+                           <Customer :id="row.customerId" :task="row" v-if="refreshed"></Customer>
+                      </template>
+                     </el-table-column>
+                    <el-table-column prop="id" label="分站编号" min-width="130" align="center">
+                      <template slot-scope="{row}">
+                           <Substation :id="row.subId" :task="row" v-if="refreshed"></Substation>
+                      </template>
+                    </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>
@@ -226,11 +236,13 @@ import axios from "axios";
 import printJS from "print-js";
 import Vue from 'vue'
 import {parseTime} from "@/utils/ruoyi";
+import Customer from "@/components/detail/dispatch.vue";
+import Substation from "@/components/detail/substation.vue";
 Vue.use(print)
 
 
 export default {
-    components: {Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
+    components: {Substation, Customer, Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
