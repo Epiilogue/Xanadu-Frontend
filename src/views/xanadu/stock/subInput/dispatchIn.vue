@@ -9,7 +9,11 @@
         <el-table-column label="记录ID" align="center" prop="id" width="80" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作员ID" align="center" prop="operatorId" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库ID" align="center" prop="outputId" width="70" show-overflow-tooltip></el-table-column>
-        <el-table-column label="任务ID" align="center" prop="taskId" width="70" show-overflow-tooltip></el-table-column>
+        <el-table-column label="任务ID" align="center" prop="taskId" width="70" show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <task :id="row.taskId"></task>
+          </template>
+        </el-table-column>
         <el-table-column label="商品ID" align="center" prop="productId" width="70" show-overflow-tooltip>
           <template slot-scope="{row}">
             <product :id="row.productId"></product>
@@ -29,7 +33,7 @@
         <el-table-column label="商品名称" align="center" prop="productName" width="100" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column label="预计出库时间" align="center" prop="requireTime" width="100" show-overflow-tooltip></el-table-column>
+        <el-table-column label="预计入库时间" align="center" prop="requireTime" width="100" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center" width="140" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag type="danger" v-show="scope.row.status === '已出库'">中心仓库已出库</el-tag>
@@ -99,10 +103,10 @@ export default {
     confirmOut(id){
       subConfirmDispatchIn(id).then(res=>{
         console.log(res)
-        if (res.msg === '确认退货出库成功'){
+        if (res.msg === '确认调拨入库成功'){
           this.dialogFormVisible = false
           this.$message({
-            message:'出库成功',
+            message:'入库成功',
             type:'success'
           })
         }

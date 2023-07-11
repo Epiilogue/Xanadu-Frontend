@@ -25,7 +25,7 @@
       <el-table-column label="用户编号" align="center" key="userId" prop="userId" />
       <el-table-column label="用户名称" align="center" key="userName" prop="userName" :show-overflow-tooltip="true" />
       <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" :show-overflow-tooltip="true" />
-      <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" :show-overflow-tooltip="true" />
+      <el-table-column label="职务" align="center" key="remark" prop="remark" :show-overflow-tooltip="true" />
       <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" width="120" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">
@@ -40,7 +40,7 @@
       @pagination="getPageList" />
   </div>
 </template>
-  
+
 <script>
 
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -94,7 +94,7 @@ export default {
         { key: 0, label: `用户编号`, visible: true },
         { key: 1, label: `用户名称`, visible: true },
         { key: 2, label: `用户昵称`, visible: true },
-        { key: 3, label: `部门`, visible: true },
+        { key: 3, label: `职务`, visible: true },
         { key: 4, label: `手机号码`, visible: true },
         { key: 6, label: `创建时间`, visible: true }
       ],

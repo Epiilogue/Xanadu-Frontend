@@ -51,7 +51,11 @@
             <div>
                 <el-table :key="0" :row-key="(row) => row.productId" :data="form.products" border fit highlight-current-row
                     style="width: 100%">
-                    <el-table-column label="商品编号" prop="productId" align="center" width="100"></el-table-column>
+                    <el-table-column label="商品编号" prop="productId" align="center" width="100">
+                      <template slot-scope="{row}">
+                        <product :id="row.productId"></product>
+                      </template>
+                    </el-table-column>
                     <el-table-column label="商品名称" prop="productName" width="100" align="center">
                     </el-table-column>
                     <el-table-column label="单价" prop="price" width="100" align="center">

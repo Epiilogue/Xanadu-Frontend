@@ -1,9 +1,26 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name" placeholder="Name" style="width: 200px;" class="filter-item"
-                @keyup.enter.native="handleFilter"
+      <el-input v-model="listQuery.orderId" placeholder="订单号" style="width: 200px;" class="filter-item"
       />
+      <el-select v-model="listQuery.status" clearable placeholder="请选择" style="width: 200px;" class="filter-item">
+        <el-option
+          key="已提交" label="已提交" value="已提交"
+        >
+        </el-option>
+        <el-option
+          key="未提交" label="未提交" value="未提交"
+        >
+        </el-option>
+        <el-option
+          key="已采购" label="已采购" value="已采购"
+        >
+        </el-option>
+        <el-option
+          key="已到货" label="已到货" value="已到货"
+        >
+        </el-option>
+      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
@@ -20,25 +37,26 @@
       >
         <el-table-column
           type="selection"
-          width="55">
+          width="55"
+        >
         </el-table-column>
         <el-table-column label="缺货记录ID" prop="id" align="center" width="90"
         >
           <template slot-scope="{row}">
-          <stock-out :id="row.id"></stock-out>
+            <stock-out :id="row.id"></stock-out>
           </template>
 
         </el-table-column>
 
-        <el-table-column label="缺货订单号" prop="orderId" min-width="80px" align="center">
+        <el-table-column label="缺货订单号" min-width="80px" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.orderId }}</span>
+            <order :id="row.orderId"/>
           </template>
         </el-table-column>
 
-        <el-table-column label="缺货商品号" prop="productId" min-width="50px" align="center">
+        <el-table-column label="缺货商品号" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.productId }}</span>
+            <product :id="row.productId"/>
           </template>
         </el-table-column>
 
@@ -63,7 +81,9 @@
 
         <el-table-column label="缺货状态" min-width="50px" align="center">
           <template slot-scope="{row}">
-            <el-tag :type="row.status ==='未提交'?'warning': row.status==='已提交'?'info':row.status ==='已到货'?'':'success'">{{ row.status }}</el-tag>
+            <el-tag :type="row.status ==='未提交'?'warning': row.status==='已提交'?'info':row.status ==='已到货'?'':'success'">
+              {{ row.status }}
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -75,9 +95,6 @@
             <el-button size="medium" type="danger" @click="handleCommit(row.id)">
               提交
             </el-button>
-<!--            <el-button @click="handleArrival(row.id)">
-              到货
-            </el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -122,18 +139,14 @@
         <el-button type="primary" @click="dialogPvVisible = false">提交</el-button>
       </span>
     </el-dialog>
-
-
   </div>
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateProduct, deleteProduct } from '@/api/distribution'
+import { deleteProduct, fetchPv } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
-import axios from 'axios'
 import { timestampToTime } from '@/utils/ruoyi'
-import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
 import { arrivalStockOut, commitStockOut, fetchStockOut, updateStockOut } from '@/api/customer'
 import { update } from 'script-ext-html-webpack-plugin/lib/elements'
@@ -197,7 +210,9 @@ export default {
       listQuery: {
         pageNum: 1,
         pageSize: 15,
-        currentPage: 1
+        currentPage: 1,
+        orderId: '',
+        status: ''
       },
       //importanceOptions: [false, true],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -209,11 +224,11 @@ export default {
         //deleted: '',
         id: '',
         needNumbers: '',
-        orderId:'',
-        productId:'',
-        status:'',
+        orderId: '',
+        productId: '',
+        status: ''
       },
-      isCheck:'0',
+      isCheck: '0',
       imageUrl: '',
       options: [],
       dialogFormVisible: false,
@@ -243,9 +258,9 @@ export default {
     timestampToTime() {
       return timestampToTime
     },
-    handleArrival(index){
+    handleArrival(index) {
       arrivalStockOut(index).then(response => {
-        if(response.code === 200){
+        if (response.code === 200) {
           this.$message({
             message: '成功到货',
             type: 'success'
@@ -254,8 +269,8 @@ export default {
         }
       })
     },
-    handleCommit(index){
-      commitStockOut(index).then(response =>{
+    handleCommit(index) {
+      commitStockOut(index).then(response => {
         console.log(response)
         this.$message({
           message: '成功提交',
@@ -296,7 +311,25 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
-      this.getList()
+      fetchStockOut().then((res) => {
+        this.list = res.data
+        this.total = res.data.length
+        this.loading = false
+      }).then(
+        () => {
+          //根据listQuery的订单id以及status进行过滤
+          if (this.listQuery.orderId !== '') {
+            this.list = this.list.filter(item => {
+              return item.orderId == this.listQuery.orderId
+            })
+          }
+          if (this.listQuery.status !== '') {
+            this.list = this.list.filter(item => {
+              return item.status === this.listQuery.status
+            })
+          }
+        }
+      )
     },
     handleModifyStatus(row, status) {
       this.$message({
@@ -328,9 +361,9 @@ export default {
       console.log(this.temp)
     },
     updateData() {
-      updateStockOut(this.temp).then(response=>{
+      updateStockOut(this.temp).then(response => {
         console.log(response)
-        if(response.code === 200){
+        if (response.code === 200) {
           this.$notify({
             title: 'Success',
             message: 'Delete Successfully',
@@ -343,16 +376,16 @@ export default {
     },
     handleDelete(row, index) {
       console.log(row)
-      deleteProduct(row.id).then((res)=>{
-        console.log(res)
-        if(res.code === 200){
-          this.$notify({
-            title: 'Success',
-            message: 'Delete Successfully',
-            type: 'success',
-            duration: 2000
-          })
-        }
+      deleteProduct(row.id).then((res) => {
+          console.log(res)
+          if (res.code === 200) {
+            this.$notify({
+              title: 'Success',
+              message: 'Delete Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          }
         }
       )
 
@@ -363,7 +396,7 @@ export default {
         this.pvData = response.data.pvData
         this.dialogPvVisible = true
       })
-    },
+    }
   }
 }
 </script>

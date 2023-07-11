@@ -65,8 +65,8 @@
       <el-divider>商品信息</el-divider>
       <el-table :key="0" :row-key="(row) => row.productId" :data="this.temp.products" border fit style="width: 100%">
         <el-table-column label="商品编号" prop="id" align="center" min-width="100">
-          <template slot-scope="{ row }">
-            <span>{{ row.productId }}</span>
+          <template slot-scope="{row}">
+            <product :id="row.productId"></product>
           </template>
         </el-table-column>
         <el-table-column label="商品名称" min-width="100" align="center">

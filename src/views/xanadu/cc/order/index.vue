@@ -49,9 +49,27 @@
           </template>
         </el-table-column>
 
+        <el-table-column label="操作员编号" prop="id" align="center" width="100">
+          <template slot-scope="{ row }">
+            <user :id="row.userId"></user>
+          </template>
+        </el-table-column>
+
         <!-- 一般表格列 -->
         <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label" v-if="column.show"
           min-width="120" align="center">
+        </el-table-column>
+
+        <el-table-column label="订单类型" min-width="200" align="center">
+          <template slot-scope="{ row }">
+            <orderType :type="row.orderType"></orderType>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="订单状态" min-width="200" align="center">
+          <template slot-scope="{ row }">
+            <Status :status="row.status"></Status>
+          </template>
         </el-table-column>
         <!-- 日期列 -->
         <el-table-column label="创建日期" min-width="200" align="center">
@@ -110,10 +128,10 @@ import waves from "@/directive/waves"; // waves directive
 import { getColumn } from '@/components/detail/module/orderColumn'
 import Order from '@/components/detail/order.vue'
 import Customer from '@/components/detail/customer.vue' // secondary package based on el-pagination
-
+import Status from '@/components/detail/status.vue' // secondary package based on el-pagination
 export default {
   name: "OrderList",
-  components: { Order, Customer },
+  components: { Order,Customer,Status},
   directives: { waves },
   data() {
     return {

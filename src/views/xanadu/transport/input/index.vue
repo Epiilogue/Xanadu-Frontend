@@ -1,5 +1,39 @@
 <template>
   <div class="app-container">
+    <el-header style="text-align: left; font-size: 12px; height: 30px; margin-bottom: 50px">
+      <el-form
+        size="small"
+        :inline="true"
+        ref="searchForm"
+        :model="searchForm"
+        @keyup.enter.native="refreshList()"
+        @submit.native.prevent
+      >
+        <el-form-item prop="productName">
+          <el-input
+            size="small"
+            v-model="productName"
+            placeholder="商品名称"
+            clearable
+          ></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            @click="refreshList()"
+            size="small"
+            icon="el-icon-search"
+          >查询
+          </el-button>
+          <el-button
+            @click="resetSearch()"
+            size="small"
+            icon="el-icon-refresh-right"
+          >重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-header>
     <el-card>
       <el-table
         :key="tableKey"
@@ -162,6 +196,7 @@ export default {
   },
   data() {
     return {
+      productName:'',
       category: [],
       tableKey: 0,
       list: null,
@@ -209,6 +244,20 @@ export default {
     this.getList()
   },
   methods: {
+    // 获取后台数据，如果searchForm中有值，拿到全部数据后做个过滤，然后按照分页参数分页
+    refreshList() {
+      if (this.productName!=='') {
+        this.list = this.list.filter(item => item.productName.indexOf(this.productName) > -1)
+      }else{
+        this.productName=''
+        this.getList()
+      }
+    },
+    resetSearch() {
+      this.productName=''
+      this.getList()
+    },
+
     timestampToTime() {
       return timestampToTime
     },

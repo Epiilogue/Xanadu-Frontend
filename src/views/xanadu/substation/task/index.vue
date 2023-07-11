@@ -68,7 +68,7 @@
               <div style="word-spacing: 10px;">商品名称</div>
               <div style="color: white">-----------------</div>
               <div style="word-spacing: 10px;">数量-------</div>
-              <div style="word-spacing: 10px;">单价</div>
+              <div style="word-spacing: 10px;">单价----</div>
             </h1>
             <table class="receipt-table">
               <thead>
@@ -81,6 +81,7 @@
               </tr>
               </tbody>
             </table>
+            <h1>------------------------------------------------</h1>
           </div>
         </form>
       </div>
@@ -136,20 +137,20 @@
                 <el-table key=0 :data="pageList" border fit highlight-current-row style="width: 100%"
                     v-loading="listLoading">
                     <!-- 点击编号查看详情 -->
-                    <el-table-column prop="id" label="任务单编号" min-width="130" align="center">
+                    <el-table-column prop="id" label="任务单ID" min-width="130" align="center">
                         <template slot-scope="{row}">
                             <Task :id="row.id" :task="row" v-if="refreshed"></Task>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="customerId" label="客户编号" min-width="130" align="center">
-                        <template slot-scope="{row}">
-                            <customer :id="row.customerId" :task="row" v-if="refreshed"></customer>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="orderId" label="订单编号" min-width="130" align="center">
-                        <template slot-scope="{row}">
-                            <order :id="row.orderId" v-if="refreshed"></order>
-                        </template>
+                    <el-table-column prop="id" label="客户ID" min-width="130" align="center">
+                      <template slot-scope="{row}">
+                           <Customer :id="row.customerId" :task="row" v-if="refreshed"></Customer>
+                      </template>
+                     </el-table-column>
+                    <el-table-column prop="id" label="分站ID" min-width="130" align="center">
+                      <template slot-scope="{row}">
+                           <Substation :id="row.subId" :task="row" v-if="refreshed"></Substation>
+                      </template>
                     </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
@@ -237,11 +238,13 @@ import axios from "axios";
 import printJS from "print-js";
 import Vue from 'vue'
 import {parseTime} from "@/utils/ruoyi";
-Vue.use(print)
+import Customer from "@/components/detail/dispatch.vue";
+import Substation from "@/components/detail/substation.vue";
+
 
 
 export default {
-    components: {Invoices, Pagination, Receipt, UserTable, Task ,Invoice,customer,order},
+    components: {Substation, Customer, Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
     created() {
         let sub = this.$cache.session.get('subProcessing')
         if (!sub) {
@@ -636,7 +639,10 @@ export default {
               console.log(that.printform);
             }).catch( function (err){
               //代表请求失败之后处理
-              alert ('进入catch')
+              that.$message({
+                message: "后端请求失败",
+                type: 'error'
+              });
               console.log (err);
             });
           }
@@ -649,7 +655,10 @@ export default {
               console.log(that.printform);
             }).catch( function (err){
               //代表请求失败之后处理
-              alert ('进入catch')
+              that.$message({
+                message: "后端请求失败",
+                type: 'error'
+              });
               console.log (err);
             });
             that.print();

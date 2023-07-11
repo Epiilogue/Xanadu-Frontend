@@ -87,7 +87,7 @@ export default {
     confirmOut(id,outputNum){
       subConfirmOut(id,outputNum).then(res=>{
         console.log(res)
-        if (res.msg === '确认退货出库成功'){
+        if (res.msg === '确认领货出库成功'){
           this.dialogFormVisible = false
           this.$message({
             message:'出库成功',

@@ -84,8 +84,6 @@
                         </el-table-column>
                         <el-table-column label="地址维度" prop="y" min-width="100" align="center">
                         </el-table-column>
-                        <el-table-column label="库管员" prop="master" min-width="100" align="center">
-                        </el-table-column>
                         <el-table-column label="分库城市" prop="city" min-width="100" align="center">
                         </el-table-column>
                         <el-table-column label="操作" min-width="100" align="center">
