@@ -6,6 +6,7 @@
         <div>
           <h3>Xanadu出库单</h3>
           <h3>打印时间：{{parseTime()(this.printdata,'{y}-{m}-{d}-{h}:{m}:{s}')}}</h3>
+          <h1>------------------------------------------------------------------------------------------------</h1>
           <table class="product-table">
             <thead>
             <tr>
@@ -28,6 +29,10 @@
             </tr>
             </tbody>
           </table>
+          <h1>------------------------------------------------------------------------------------------------</h1>
+          <div style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
+            <p>Xanadu公司盖章：</p>
+          </div>
         </div>
       </form>
     </div>
@@ -36,7 +41,8 @@
       <form method="get" action="#" id="printJS-form-list">
         <div>
           <h3>Xanadu分发单</h3>
-          <h3>打印时间：{{parseTime()(this.printform1.printdata,'{y}-{m}-{d}-{h}:{m}:{s}')}}</h3>
+          <h3>打印时间：{{parseTime()(this.printdata,'{y}-{m}-{d}-{h}:{m}:{s}')}}</h3>
+          <h1>------------------------------------------------------------------------------------------------</h1>
           <table class="product-table">
             <thead>
             <tr>
@@ -61,8 +67,9 @@
             </tr>
             </tbody>
           </table>
+          <h1>------------------------------------------------------------------------------------------------</h1>
           <div style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
-            <h1>总金额：</h1>
+            <h1>总金额：{{this.totalaccount}}</h1>
             <p>分发员签字：</p>
             <p>签收人签字：</p>
             <p>Xanadu公司盖章：</p>
@@ -176,7 +183,8 @@ export default {
   components: { subware, product },
   data() {
     return {
-      printdata:'',
+      totalaccount: 0,
+      printdata: '',
       tableData: [],
       currentPage: 1,
       pagesize: 10,
@@ -271,7 +279,7 @@ export default {
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({
-            message: '后端请求失败',
+            message: "没有对应的出库记录",
             type: 'error'
           })
           console.log(err)
@@ -302,13 +310,20 @@ export default {
           //代表请求成功之后处理
           that.printform1 = res.data.data
           that.printdata = new Date();
+          console.log(that.printform1)
+          that.totalaccount = 0;
+          let i = 0;
+          while(i < that.printform1.length){
+            that.totalaccount +=  that.printform1[i].totalPrice;
+            i = i + 1;
+          }
           setTimeout(function() {
             that.print1()
           }, 1000)
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({
-            message: '后端请求失败',
+            message: "没有对应的分发记录",
             type: 'error'
           })
         })
