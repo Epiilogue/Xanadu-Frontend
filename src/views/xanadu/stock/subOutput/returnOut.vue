@@ -21,7 +21,6 @@
         </el-form>
       </div>
 
-      <el-button type="primary" size="default" icon="el-icon-refresh-right" style="margin-right: 10px"  @click="reset">刷  新</el-button>
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" width="80" prop="id" show-overflow-tooltip></el-table-column>
@@ -36,7 +35,7 @@
             <subware :id="row.subwareId"></subware>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center" width="100" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" width="300" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" width="200" prop="outputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center" width="100" show-overflow-tooltip>
           <template slot-scope="scope">

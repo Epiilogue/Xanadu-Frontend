@@ -32,7 +32,7 @@
             <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center"  prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" min-width="300"  prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center"  prop="productPrice" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center"  prop="inputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="入库数量" align="center"  prop="inputNum" show-overflow-tooltip></el-table-column>

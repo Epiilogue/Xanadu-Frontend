@@ -42,7 +42,7 @@
           </template>
         </el-table-column>
         <el-table-column label="供应商名称" align="center" prop="supplierName" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" min-width="300" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="预计出库时间" align="center" prop="requireTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center" show-overflow-tooltip>

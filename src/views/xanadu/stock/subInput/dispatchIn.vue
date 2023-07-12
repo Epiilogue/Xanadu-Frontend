@@ -48,7 +48,7 @@
             <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" width="100" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" prop="productName" width="300" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" width="100" show-overflow-tooltip></el-table-column>
         <el-table-column label="预计入库时间" align="center" prop="requireTime" width="100" show-overflow-tooltip></el-table-column>
