@@ -31,12 +31,6 @@
             <product :id="row.productId"></product>
           </template>
         </el-table-column>
-        <el-table-column label="分站ID" align="center" prop="substationId" show-overflow-tooltip></el-table-column>
-        <el-table-column label="分库ID" align="center" prop="subwareId" show-overflow-tooltip>
-          <template slot-scope="{row}">
-            <subware :id="row.subwareId"></subware>
-          </template>
-        </el-table-column>
         <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
           <template slot-scope="{row}">
             <supplier :id="row.supplierId"></supplier>

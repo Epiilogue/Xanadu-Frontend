@@ -1,6 +1,27 @@
 <template>
   <div>
     <el-card style="margin: 10px 0">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item class="form-item" label="记录状态">
+            <el-select v-model="status" placeholder="记录状态" style="width: 200px; margin-right: 5px" clearable>
+              <el-option label="未出库" value="未出库"/>
+              <el-option label="已出库" value="已出库"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item class="form-item" label="商品名称">
+            <el-input v-model="productName" placeholder="商品名称" style="width: 200px; margin-right: 5px"/>
+          </el-form-item>
+          <el-form-item class="form-item">
+            <el-button type="primary" icon="el-icon-search" @click="handleFilter">
+              查询
+            </el-button>
+          </el-form-item>
+          <el-button type="primary" size="default" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
+        </el-form>
+      </div>
+
+
       <el-button type="primary" size="default" icon="el-icon-refresh-right" style="margin-right: 10px"  @click="reset">刷  新</el-button>
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
@@ -59,6 +80,8 @@ export default {
       dialogFormVisible:false,
       outNum:'',
       outId:'',
+      status: '',
+      productName: ''
     }
   },
   watch:{
@@ -69,6 +92,27 @@ export default {
     }
   },
   methods:{
+    handleFilter() {
+      //先拿到新的数据
+      subInputList(this.type).then(res=>{
+        var list = []
+        list = res.data
+        for (let i = 0;i < list.length;i++){
+          if (list.at(i).subwareId == this.subwareID && !list.at(i).deleted)
+            this.tableData.push(list.at(i))
+        }
+        for (let i = 0;i < this.tableData.length;i++){
+          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+        }
+      }).then(() => {
+        if (this.productName !== '') {
+          this.tableData = this.tableData.filter(item => item.productName.indexOf(this.productName) > -1)
+        }
+        if (this.status !== '') {
+          this.tableData = this.tableData.filter(item => item.status.indexOf(this.status) > -1)
+        }
+      })
+    },
     //toConfirm
     toConfirm(row){
       this.$confirm('此操作将全部商品领取并出库', '提示', {
