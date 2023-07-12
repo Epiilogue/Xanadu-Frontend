@@ -23,7 +23,7 @@
       </el-form>
     </div>
     <el-table :key="tableKey" v-loading="listLoading"
-              :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit
+              :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border
               highlight-current-row
               style="width: 100%;"
     >
@@ -57,7 +57,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="商品名称" min-width="50px" prop="productName" align="center">
+      <el-table-column label="商品名称" min-width="300px" prop="productName" align="center">
       </el-table-column>
 
       <el-table-column label="商品种类" min-width="50px" prop="productCategary" align="center">
@@ -97,24 +97,6 @@
       <el-form ref="dataForm" :model="temp" label-position="left" label-width="25%" :rules="rules"
                style="width: 65%; margin-left:150px;"
       >
-        <!-- <el-form-item label="分库编号" prop="subwareId">
-            <el-input v-model="temp.subwareId" />
-        </el-form-item>
-        <el-form-item label="任务单编号" prop="taskId">
-            <el-input v-model="temp.taskId" />
-        </el-form-item>
-        <el-form-item label="商品编号" prop="productId">
-            <el-input v-model="temp.productId" />
-        </el-form-item>
-        <el-form-item label="商品名称" prop="productName">
-            <el-input v-model="temp.productName" />
-        </el-form-item>
-        <el-form-item label="商品分类" prop="productCategory">
-            <el-input v-model="temp.productCategory" />
-        </el-form-item>
-        <el-form-item label="调拨单状态" prop="status">
-            <el-input v-model="temp.status" />
-        </el-form-item> -->
         <el-form-item label="分站编号" prop="substationId">
           <el-input v-model="temp.substationId"/>
         </el-form-item>

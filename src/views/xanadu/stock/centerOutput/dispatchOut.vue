@@ -261,7 +261,6 @@ export default {
           setTimeout(function() {
             that.print()
           }, 1000)
-          that.print()
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({

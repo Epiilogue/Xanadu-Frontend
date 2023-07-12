@@ -4,8 +4,6 @@
       <el-form
         size="small"
         :inline="true"
-        ref="searchForm"
-        :model="searchForm"
         @keyup.enter.native="refreshList()"
         @submit.native.prevent
       >
@@ -244,7 +242,6 @@ export default {
     this.getList()
   },
   methods: {
-    // 获取后台数据，如果searchForm中有值，拿到全部数据后做个过滤，然后按照分页参数分页
     refreshList() {
       if (this.productName!=='') {
         this.list = this.list.filter(item => item.productName.indexOf(this.productName) > -1)
