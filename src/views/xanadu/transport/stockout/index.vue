@@ -376,7 +376,13 @@ export default {
     //todo 生成进货单后,系统生成缺货单不再显示
     updateData() {
       this.oneAllLackRecord.inputCount = this.inputCount
-      console.log(this.oneAllLackRecord)
+      this.oneAllLackRecord.singleLackRecordVos.forEach(function(item) {
+        if (item.id === -1) {
+          item.createBy = undefined
+          item.id = -1
+          item.orderId = -1
+        }
+      })
       generatePurchaseRecord(this.oneAllLackRecord).then(response => {
         console.log(response)
         if (response.code === 200) {
