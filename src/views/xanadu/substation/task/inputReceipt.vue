@@ -44,7 +44,7 @@
                     }}</el-descriptions-item>
                 </el-descriptions>
                 <el-button @click="confirmPro(confirm === '编辑' ? true : false)" type="primary" ref="confirm"
-                    :disabled="form.state === '已完成' || form.state === '失败'">
+                    :disabled="form.state === '成功' || form.state === '失败'">
                     {{ confirm }}
                 </el-button>
             </div>
@@ -106,8 +106,8 @@ export default {
             },
             rule: {},
             // 回执填写的完成状态
-            stateOption: ['已完成', '失败', '部分完成'],
-            paymentStateOption: ['已完成', '失败'],
+            stateOption: ['成功', '失败', '部分完成'],
+            paymentStateOption: ['成功', '失败'],
             ifShow: false,
             confirm: "确认",
             success: false, //提交成功
@@ -204,7 +204,7 @@ export default {
             refreshNum(newVal) {
                 if (this.payment) return
                 switch (newVal) {
-                    case '已完成':
+                    case '成功':
                         this.form.products.forEach(p => { // 签收/退货数量为下单数量
                             p.actualNumber = p.number
                         });
