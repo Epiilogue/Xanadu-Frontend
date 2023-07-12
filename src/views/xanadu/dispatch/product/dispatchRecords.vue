@@ -184,93 +184,93 @@ export default {
       this.currentPage = newPage
     },
 
-    getList() {
-      this.listLoading = true
-      getDispatchList().then(response => {
-        this.list = response.data
-        this.total = response.data.length
-        this.queryList = this.list
-        this.listLoading = false
-      }).catch(this.listLoading = false)
-    },
-    handleFilter() {
-      this.listLoading = true
-      if (this.list) {
-        this.queryList = this.list.filter((record) => {
-          // 查询条件：名称 任务编号 分库编号 调度单状态
-          let query = this.listQuery
-          if (query.productName !== '' && record.productName.indexOf(query.productName) === -1) {
-            return false
-          }
-          if (query.taskId !== '' && record.taskId !== Number(query.taskId)) {
-            return false
-          }
-          if (query.subwareId !== '' && record.subwareId !== Number(query.subwareId)) {
-            return false
-          }
-          if (query.transferStatus !== '' && record.status !== query.status) {
-            return false
-          }
-          return true
-        })
-      } else {
-        this.queryList = []
-      }
-      this.total = this.queryList.length
-      if (this.total === 0) {
-        this.$message({
-          type: 'error',
-          message: '没有满足条件的数据',
-          durarion: 1000
-        })
-      } else {
-        this.$message({
-          type: 'success',
-          message: '查询成功',
-          durarion: 1000
-        })
-      }
-      this.listLoading = false
-    },
-    //删除
-    handleDelete(row, index) {
-      console.log(row)
-      deleteDispatch(row.id).then((res) => {
-        this.total--
-        this.$message({
-          type: 'success',
-          message: res.msg,
-          durarion: 1000
-        })
-        this.list.splice(index, 1)
-      })
-    },
-    // 编辑
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          editDispatch(tempData).then((res) => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$message({
-              type: 'success',
-              message: res.msg,
-              durarion: 1000
+        getList() {
+            this.listLoading = true
+            getDispatchList().then(response => {
+                this.list = response.data
+                this.total = response.data.length
+                this.queryList = this.list
+                this.listLoading = false
+            }).catch(this.listLoading = false)
+        },
+        handleFilter() {
+            this.listLoading = true;
+            if (this.list) {
+                this.queryList = this.list.filter((record) => {
+                    // 查询条件：名称 任务编号 分库编号 调度单状态
+                    let query = this.listQuery
+                    if (query.productName !== '' && record.productName.indexOf(query.productName) === -1) {
+                        return false
+                    }
+                    if (query.taskId !== '' && record.taskId !== Number(query.taskId)) {
+                        return false
+                    }
+                    if (query.subwareId !== '' && record.subwareId !== Number(query.subwareId)) {
+                        return false
+                    }
+                    if (query.status !== '' && record.status !== query.status) {
+                        return false
+                    }
+                    return true
+                });
+            } else {
+                this.queryList = []
+            }
+            this.total = this.queryList.length
+            if (this.total === 0) {
+                this.$message({
+                    type: 'error',
+                    message: '没有满足条件的数据',
+                    durarion: 1000,
+                });
+            } else {
+                this.$message({
+                    type: 'success',
+                    message: '查询成功',
+                    durarion: 1000,
+                });
+            }
+            this.listLoading = false;
+        },
+        //删除
+        handleDelete(row, index) {
+            console.log(row)
+            deleteDispatch(row.id).then((res) => {
+                this.total--
+                this.$message({
+                    type: 'success',
+                    message: res.msg,
+                    durarion: 1000,
+                });
+                this.list.splice(index, 1)
             })
-          })
-        }
-      })
+        },
+        // 编辑
+        handleUpdate(row) {
+            this.temp = Object.assign({}, row) // copy obj
+            this.dialogStatus = 'update'
+            this.dialogFormVisible = true
+            this.$nextTick(() => {
+                this.$refs['dataForm'].clearValidate()
+            })
+        },
+        updateData() {
+            this.$refs['dataForm'].validate((valid) => {
+                if (valid) {
+                    const tempData = Object.assign({}, this.temp)
+                    editDispatch(tempData).then((res) => {
+                        const index = this.list.findIndex(v => v.id === this.temp.id)
+                        this.list.splice(index, 1, this.temp)
+                        this.dialogFormVisible = false
+                        this.$message({
+                            type: 'success',
+                            message: res.msg,
+                            durarion: 1000,
+                        });
+                    })
+                }
+            })
+        },
     }
-  }
 }
 </script>

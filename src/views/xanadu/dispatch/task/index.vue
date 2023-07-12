@@ -45,11 +45,11 @@
                         </template>
                     </el-table-column>
 
-                  <el-table-column prop="id" label="订单编号" min-width="130" align="center">
-                    <template slot-scope="{row}">
-                      <order :id="row.orderId"/>
-                    </template>
-                  </el-table-column>
+                    <el-table-column prop="orderId" label="订单编号" min-width="130" align="center">
+                        <template slot-scope="{row}">
+                            <order :id="row.orderId" v-if="refreshed"></order>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>
@@ -85,9 +85,10 @@ import { getTaskList } from '@/api/dpc-dispatch'
 import Pagination from '@/components/Pagination'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
 import Task from '@/components/detail/task.vue'
+import order from '@/components/detail/order.vue'
 
 export default {
-    components: { Pagination,Task },
+    components: { Pagination,Task,order },
     created() {
         this.handleOpChange(this.opType, false);
     },

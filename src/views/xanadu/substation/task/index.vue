@@ -217,7 +217,7 @@
         </div>
         <!-- 回执录入 -->
         <div v-else>
-            <Receipt @close="submited(success)" :payment="this.task && this.task.taskType === '收款'"></Receipt>
+            <Receipt @close="submited" :payment="this.task && this.task.taskType === '收款'"></Receipt>
         </div>
 
     </div>
@@ -229,6 +229,8 @@ import Pagination from '@/components/Pagination'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
 import Task from '@/components/detail/task.vue'
+import customer from '@/components/detail/customer.vue'
+import order from '@/components/detail/order.vue'
 import UserTable from './userTable'
 import Invoices from "@/views/xanadu/substation/task/invoices.vue";
 import Invoice from "@/views/xanadu/substation/task/invoice.vue";
