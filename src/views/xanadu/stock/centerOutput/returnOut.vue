@@ -20,7 +20,6 @@
         <el-table-column label="供应商名称" align="center" prop="supplierName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="预计出库时间" align="center" prop="requireTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center"  show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
@@ -118,8 +117,10 @@ export default {
       cenRuturnOut().then(res=>{
         this.tableData = res.data
         for (let i = 0;i < this.tableData.length;i++){
-          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+          if (this.tableData.at(i).outputTime!== null)
+            this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+          if (this.tableData.at(i).requireTime!== null)
+            this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
         }
       })
     },
@@ -128,8 +129,10 @@ export default {
     cenRuturnOut().then(res=>{
       this.tableData = res.data
       for (let i = 0;i < this.tableData.length;i++){
-        this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-        this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        if (this.tableData.at(i).outputTime!== null)
+          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+        if (this.tableData.at(i).requireTime!== null)
+          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
       }
     })
   }

@@ -56,3 +56,26 @@ export function deleteSup(id) {
     method: 'delete',
   })
 }
+
+//查询退货安排
+export function refurnList(supplierId,productId,startTime,endTime){
+  return request({
+    url: '/dbc/refund/searchForReturn',
+    method: 'get',
+    params: {
+      supplierId:supplierId,
+      productId:productId,
+      startTime: startTime,
+      endTime: endTime,
+    }
+  })
+}
+
+//生成退货单
+export function returnOrder(number,data){
+  return request({
+    url:'/dbc/refund/generateReturnOrder/'+number,
+    method:'post',
+    data
+  })
+}
