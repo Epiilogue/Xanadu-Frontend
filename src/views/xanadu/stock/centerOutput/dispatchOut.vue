@@ -5,7 +5,7 @@
       <form method="get" action="#" id="printJS-form-output">
         <div>
           <h3>Xanadu出库单</h3>
-          <h3>打印时间：{{parseTime()(this.printdata,'{y}-{m}-{d}-{h}:{m}:{s}')}}</h3>
+          <h3>打印时间：{{ parseTime()(this.printdata, '{y}-{m}-{d}-{h}:{m}:{s}') }}</h3>
           <h1>------------------------------------------------------------------------------------------------</h1>
           <table class="product-table">
             <thead>
@@ -41,7 +41,7 @@
       <form method="get" action="#" id="printJS-form-list">
         <div>
           <h3>Xanadu分发单</h3>
-          <h3>打印时间：{{parseTime()(this.printdata,'{y}-{m}-{d}-{h}:{m}:{s}')}}</h3>
+          <h3>打印时间：{{ parseTime()(this.printdata, '{y}-{m}-{d}-{h}:{m}:{s}') }}</h3>
           <h1>------------------------------------------------------------------------------------------------</h1>
           <table class="product-table">
             <thead>
@@ -69,7 +69,7 @@
           </table>
           <h1>------------------------------------------------------------------------------------------------</h1>
           <div style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
-            <h1>总金额：{{this.totalaccount}}</h1>
+            <h1>总金额：{{ this.totalaccount }}</h1>
             <p>分发员签字：</p>
             <p>签收人签字：</p>
             <p>Xanadu公司盖章：</p>
@@ -81,6 +81,14 @@
     <el-card style="margin: 10px 0">
 
       <el-form :model="printData" ref="elForm" :rules="rules" size="small" label-width="68px" :inline="true">
+
+        <el-form-item label="商品名称" prop="productId">
+          <el-input v-model="productName" placeholder="输入商品名称"
+                    prefix-icon="el-icon-paperclip" width="120%"
+          ></el-input>
+        </el-form-item>
+        <el-button type="primary" size="small" style="margin-right: 40px" @click="refreshList">搜索</el-button>
+
         <el-form-item label="选择日期" prop="data" label-width="80px">
           <el-col>
             <el-date-picker type="date" placeholder="选择日期" v-model="printData.data" style="width: 100%;"
@@ -192,6 +200,7 @@ export default {
       dialogFormVisible: false,
       outvalue: '',
       outNum: '',
+      productName: '',
       printData: {
         data: null,
         productName: '',
@@ -235,6 +244,19 @@ export default {
     }
   },
   methods: {
+    refreshList() {
+      cenDispatchOut().then(res => {
+        this.tableData = res.data
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        }
+      }).then(() => {
+        if (this.productName !== '') {
+          this.tableData = this.tableData.filter(item => item.productName.indexOf(this.productName) > -1)
+        }
+      })
+    },
     parseTime() {
       return parseTime
     },
@@ -272,14 +294,14 @@ export default {
         }).then(function(res) {
           //代表请求成功之后处理
           that.printform = res.data.data
-          that.printdata = new Date();
+          that.printdata = new Date()
           setTimeout(function() {
             that.print()
           }, 1000)
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({
-            message: "没有对应的出库记录",
+            message: '没有对应的出库记录',
             type: 'error'
           })
           console.log(err)
@@ -309,13 +331,13 @@ export default {
         }).then(function(res) {
           //代表请求成功之后处理
           that.printform1 = res.data.data
-          that.printdata = new Date();
+          that.printdata = new Date()
           console.log(that.printform1)
-          that.totalaccount = 0;
-          let i = 0;
-          while(i < that.printform1.length){
-            that.totalaccount +=  that.printform1[i].totalPrice;
-            i = i + 1;
+          that.totalaccount = 0
+          let i = 0
+          while (i < that.printform1.length) {
+            that.totalaccount += that.printform1[i].totalPrice
+            i = i + 1
           }
           setTimeout(function() {
             that.print1()
@@ -323,7 +345,7 @@ export default {
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({
-            message: "没有对应的分发记录",
+            message: '没有对应的分发记录',
             type: 'error'
           })
         })
