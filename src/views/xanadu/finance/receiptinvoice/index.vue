@@ -81,7 +81,7 @@
     </el-dialog>
 
     <!--发票列表-->
-    <el-table v-loading="loading" :data="invoiceList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="invoiceList.slice((currentPage-1)*pagesize,currentPage*pagesize)" >
       <el-table-column label="序号" align="center" prop="id" width="50" />
       <el-table-column label="开始号码" align="center" prop="startNumber" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -104,8 +104,13 @@
         </template>
       </el-table-column>
       <el-table-column label="领用分站" align="center" prop="substationId" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_regisinvoice_total" :value="scope.row.substationId"/>
+        <template slot-scope="{row}" >
+          <div v-if="row.substationId !== '暂无信息'">
+            <substation :id="row.substationId"></substation>
+          </div>
+          <div v-if="row.substationId === '暂无信息'">
+            <dict-tag :options="dict.type.sys_regisinvoice_substationId" value='暂无信息'/>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="登记状态" align="center" prop="registration" class-name="small-padding fixed-width">
@@ -126,19 +131,14 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                   :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=this.total>
+    </el-pagination>
 
 
     <!--  详细信息  -->
     <el-dialog :visible.sync="opendetails" width="1080px" append-to-body>
-      <el-table v-loading="loading" :data="invoiceList1" @selection-change="handleSelectionChange">
-        <el-table-column label="序号" align="center" prop="id" width="50" />
+      <el-table v-loading="loading" :data="invoiceList1.slice((currentPage1-1)*pagesize1,currentPage1*pagesize1)">
         <el-table-column label="发票号码" align="center" prop="number" width="200">
           <template slot-scope="scope">
             <dict-tag :options="dict.type.sys_regisinvoice_endnumber" :value="scope.row.number"/>
@@ -150,8 +150,13 @@
           </template>
         </el-table-column>
         <el-table-column label="领用分站id" align="center" prop="substationId" width="100">
-          <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_regisinvoice_substationId" :value="scope.row.substationId"/>
+          <template slot-scope="{row}" >
+            <div v-if="row.substationId !== '暂无信息'">
+              <substation :id="row.substationId"></substation>
+            </div>
+            <div v-if="row.substationId === '暂无信息'">
+              <dict-tag :options="dict.type.sys_regisinvoice_substationId" value='暂无信息'/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="领用人" align="center" prop="employee" width="100">
@@ -183,14 +188,9 @@
           </template>
         </el-table-column>
       </el-table>
-
-      <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-      />
+      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange1" @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=this.total1>
+      </el-pagination>
     </el-dialog>
   </div>
 </template>
@@ -227,6 +227,11 @@ export default {
       selection: {
         status: "",
       },
+      currentPage: 1,
+      pagesize: 10,
+
+      currentPage1: 1,
+      pagesize1: 10,
       opendetails: false,
       // 显示搜索条件
       showSearch: true,
@@ -244,6 +249,7 @@ export default {
       multiple: true,
       // 总条数
       total: 0,
+      total1: 0,
       // 单张发票数据
       invoiceList1: [],
       // 发票表格数据
@@ -293,13 +299,14 @@ export default {
     parseTime() {
       return parseTime
     },
-    /** 查询公告列表 */
+
     getList() {
       const that = this
       this.loading = true;
       axios.get("http://localhost:8010/ac/invoice/list").then( function(res){
         //代表请求成功之后处理
         console.log(res);
+        that.total = res.data.data.length;
         that.invoiceList = res.data.data;
         that.loading = false;
       }).catch( function (err){
@@ -320,6 +327,21 @@ export default {
         type: 'success'
       });
     },
+    //分页
+    handleSizeChange(newSize) {
+      this.pagesize = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage
+    },
+    handleSizeChange1(newSize) {
+      this.pagesize1 = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange1(newPage) {
+      this.currentPage1 = newPage
+    },
     getinvoice(row){
       this.opendetails = true;
       const totalid = row.id || this.ids;
@@ -327,6 +349,7 @@ export default {
       axios.get("http://localhost:8010/ac/invoices/getinvoicebytotalid/"+totalid).then( function(res){
         //代表请求成功之后处理
         that.invoiceList1 = res.data.data;
+        that.total1 = res.data.data.length;
         console.log(that.invoiceList1);
       }).catch( function (err){
         //代表请求失败之后处理
@@ -385,12 +408,6 @@ export default {
     },
     print(){
       printJS('printJS-form','html')
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.noticeId)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
     },
     /** 提交按钮 */
     submitForm: function(form) {

@@ -45,7 +45,7 @@
 
 
     <!--  发票列表  -->
-    <el-table v-loading="loading" :data="invoiceList">
+    <el-table v-loading="loading" :data="invoiceList.slice((currentPage-1)*pagesize,currentPage*pagesize)">
       <el-table-column label="序号" align="center" prop="id" width="50" />
       <el-table-column label="开始号码" align="center" prop="startNumber" width="240">
         <template slot-scope="scope">
@@ -94,9 +94,9 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <Pagination v-show="total > 0" :total="total" :page.sync="pageInfo.pageNum" :limit.sync="pageInfo.pageSize"
-                @pagination="getPageList" />
+    <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                   :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=this.total>
+    </el-pagination>
   </div>
 </template>
 
@@ -143,17 +143,14 @@ export default {
         status: "",
       },
       refreshed:true,
-      pageList: [],   //表格数据
-      pageInfo: {
-        pageNum: 1,
-        pageSize: 10,
-      },
       formData: {
         startNumber: '',
         endNumber: '',
         batch: '',
         total: '',
       },
+      currentPage: 1,
+      pagesize: 10,
       rules: {
         startNumber: [{
           required: true,
@@ -289,15 +286,13 @@ export default {
         });
       }
     },
-    getPageList() {
-      this.refreshed = false
-      this.total = this.queryList.length
-      let pageNum = this.pageInfo.pageNum
-      let pageSize = this.pageInfo.pageSize
-      this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
-      this.$nextTick(()=>{
-        this.refreshed=true
-      })
+    //分页
+    handleSizeChange(newSize) {
+      this.pagesize = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage
     },
     /** 提交按钮 */
     submitForm: function() {
