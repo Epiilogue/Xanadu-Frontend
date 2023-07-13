@@ -56,6 +56,7 @@ import substation from '@/components/detail/substation.vue'
 import taskvo from '@/components/detail/taskvo.vue'
 import dataV from '@jiaminghi/data-view'
 import iostatus from '@/components/detail/iostatus'
+import taskType from '@/components/detail/taskType'
 //引入echart
 import * as echarts from 'echarts'
 import Axios from 'axios'
@@ -101,6 +102,7 @@ Vue.component('user', user)
 Vue.component('substation', substation)
 Vue.component('taskvo', taskvo)
 Vue.component('iostatus', iostatus)
+Vue.component('taskType', taskType)
 
 Vue.use(directive)
 Vue.use(plugins)
