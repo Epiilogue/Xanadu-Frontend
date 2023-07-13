@@ -1,9 +1,33 @@
 <template>
   <div>
+
     <!--表格-->
     <el-card style="margin: 10px 0">
-      <el-button type="primary" size="default" icon="el-icon-refresh-right" style="margin-right: 10px"  @click="reset">刷  新</el-button>
-      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item class="form-item" label="记录状态">
+            <el-select v-model="status" placeholder="记录状态" style="width: 200px; margin-right: 5px" clearable>
+              <el-option label="未出库" value="未出库"/>
+              <el-option label="已出库" value="已出库"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item class="form-item" label="商品名称">
+            <el-input v-model="productName" placeholder="商品名称" style="width: 200px; margin-right: 5px"/>
+          </el-form-item>
+          <el-form-item class="form-item">
+            <el-button type="primary" icon="el-icon-search" @click="handleFilter">
+              查询
+            </el-button>
+          </el-form-item>
+          <el-button type="primary" size="default" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
+        </el-form>
+      </div>
+
+
+      <el-table ref="multipleTable" style="margin-top: 10px" border stripe
+                :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      >
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库ID" align="center" prop="outputId" show-overflow-tooltip></el-table-column>
@@ -18,49 +42,75 @@
           </template>
         </el-table-column>
         <el-table-column label="供应商名称" align="center" prop="supplierName" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" min-width="300" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center"  show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
-            <el-tag type="danger"  v-show="scope.row.status === '未出库'">{{ scope.row.status }}</el-tag>
+            <el-tag type="danger" v-show="scope.row.status === '未出库'">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="出库数量" align="center" prop="outputNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="实际出库数量" align="center" prop="actualNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="default" icon="el-icon-printer" @click="open(scope.row)" :disabled="scope.row.status!=='未出库'">出库</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" @click="open(scope.row)"
+                       :disabled="scope.row.status!=='未出库'"
+            >出库
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=tableData.length>
+      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                     :current-page.sync="currentPage"
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next"
+                     :total=tableData.length
+      >
       </el-pagination>
     </el-card>
   </div>
 </template>
 
 <script>
-import { cenRuturnOut, cenConfirmOut} from '@/api/ware'
+import { cenConfirmOut, cenRuturnOut } from '@/api/ware'
 import product from '../../../../components/detail/product'
 import supplier from '../../../../components/detail/supplier'
 
 export default {
   name: 'returnOut',
   components: { product, supplier },
-  data(){
+  data() {
     return {
-      tableData:[],
+      tableData: [],
       currentPage: 1,
       pagesize: 10,
-      outId:'',
-      outNum:''
+      outId: '',
+      outNum: '',
+      status: '',
+      productName: ''
+
     }
   },
-  methods:{
-    open(row){
+  methods: {
+    handleFilter() {
+      //先拿到新的数据
+      cenRuturnOut().then(res => {
+        this.tableData = res.data
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        }
+      }).then(() => {
+        if (this.productName !== '') {
+          this.tableData = this.tableData.filter(item => item.productName.indexOf(this.productName) > -1)
+        }
+        if (this.status !== '') {
+          this.tableData = this.tableData.filter(item => item.status.indexOf(this.status) > -1)
+        }
+      })
+    },
+    open(row) {
       this.$confirm('是否确定将此商品退货出库', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -68,12 +118,12 @@ export default {
       }).then(() => {
         this.outId = row.id
         this.outNum = row.outputNum
-        cenConfirmOut(this.outId,this.outNum).then(res=>{
-          if (res.msg === '操作成功'){
+        cenConfirmOut(this.outId, this.outNum).then(res => {
+          if (res.msg === '操作成功') {
             this.$message({
               type: 'success',
               message: '出库成功!'
-            });
+            })
           }
           this.reset()
         })
@@ -81,27 +131,27 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消出库'
-        });
-      });
+        })
+      })
     },
 
     //时间戳转换
     getLocalTime(nS) {
-      var date = new Date(nS);
-      var Y = date.getFullYear() + '-';
-      var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
-      var D = (date.getDate() < 10 ? '0'+date.getDate() : date.getDate()) + ' ';
-      var h = (date.getHours() < 10 ? '0'+date.getHours() : date.getHours()) + ':';
-      var m = (date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes()) + ':';
-      var s = (date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds());
-      let strDate = Y+M+D+h+m+s;
+      var date = new Date(nS)
+      var Y = date.getFullYear() + '-'
+      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+      var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
+      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
+      var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
+      var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
+      let strDate = Y + M + D + h + m + s
       return strDate
     },
 
     //转型时间戳
-    todate(date){
+    todate(date) {
       var d = new Date(date)
-      d=d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+      d = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds()
       var s = new Date(d).getTime()
       return s
     },
@@ -113,8 +163,8 @@ export default {
     handleCurrentChange(newPage) {
       this.currentPage = newPage
     },
-    reset(){
-      cenRuturnOut().then(res=>{
+    reset() {
+      cenRuturnOut().then(res => {
         this.tableData = res.data
         for (let i = 0;i < this.tableData.length;i++){
           if (this.tableData.at(i).outputTime!== null)
@@ -123,10 +173,10 @@ export default {
             this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
         }
       })
-    },
+    }
   },
   mounted() {
-    cenRuturnOut().then(res=>{
+    cenRuturnOut().then(res => {
       this.tableData = res.data
       for (let i = 0;i < this.tableData.length;i++){
         if (this.tableData.at(i).outputTime!== null)

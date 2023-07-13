@@ -217,7 +217,7 @@
         </div>
         <!-- 回执录入 -->
         <div v-else>
-            <Receipt @close="submited(success)" :payment="this.task && this.task.taskType === '收款'"></Receipt>
+            <Receipt @close="submited" :payment="this.task && this.task.taskType === '收款'"></Receipt>
         </div>
 
     </div>
@@ -229,6 +229,8 @@ import Pagination from '@/components/Pagination'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
 import Task from '@/components/detail/task.vue'
+import customer from '@/components/detail/customer.vue'
+import order from '@/components/detail/order.vue'
 import UserTable from './userTable'
 import Invoices from "@/views/xanadu/substation/task/invoices.vue";
 import Invoice from "@/views/xanadu/substation/task/invoice.vue";
@@ -627,40 +629,23 @@ export default {
 
         // Todo:打印签收单
         printSign() {
-          if(this.printform.substation.name === '暂无信息'){
-            this.$message.success('发票信息加载中');
-            const id =this.task.id;
-            const that = this;
-            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
-              //代表请求成功之后处理
-              that.printform = res.data.data;
-              console.log(that.printform);
-            }).catch( function (err){
-              //代表请求失败之后处理
-              that.$message({
-                message: "后端请求失败",
-                type: 'error'
-              });
-              console.log (err);
+          const id =this.task.id;
+          const that = this;
+          axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+            //代表请求成功之后处理
+            that.printform = res.data.data;
+            setTimeout(function() {
+              that.print()
+            }, 1000)
+            console.log(that.printform);
+          }).catch( function (err){
+            //代表请求失败之后处理
+            that.$message({
+              message: "后端请求失败",
+              type: 'error'
             });
-          }
-          else{
-            const id =this.task.id;
-            const that = this;
-            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
-              //代表请求成功之后处理
-              that.printform = res.data.data;
-              console.log(that.printform);
-            }).catch( function (err){
-              //代表请求失败之后处理
-              that.$message({
-                message: "后端请求失败",
-                type: 'error'
-              });
-              console.log (err);
-            });
-            that.print();
-          }
+            console.log (err);
+          });
         },
         print(){
           printJS('printJS-form-task','html')

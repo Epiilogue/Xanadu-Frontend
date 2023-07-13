@@ -138,33 +138,33 @@ export default {
       listLoading: false,
       dialogFormVisible: false,
 
-      opType: '',
-      opTypeOption: ['订单调度', '缺货检查']
-    }
-  },
-  created() {
-    this.getList()
-  },
-  methods: {
-    // 加载订单列表
-    getList() {
-      this.listLoading = true
-      // 请求
-      fetchList().then((response) => {
-        let list = response.data
-        // 状态为：缺货/可分配/已分配/已调度 的订单
-        if (list) {
-          list = list.filter((order) => {
-            if (this.orderStatusOption.includes(order.status)) return true
-            return false
-          })
+            opType: '',
+            opTypeOption: ['订单调度', '缺货检查'],
         }
-        this.list = list
-        // 获取当前操作的订单列表
-        this.handleOpChange(this.opType)
-        this.listLoading = false
-      }).catch(this.listLoading = false)
     },
+    created() {
+        this.getList()
+    },
+    methods: {
+        // 加载订单列表
+        getList() {
+            this.listLoading = true;
+            // 请求
+            fetchList().then((response) => {
+                let list = response.data
+                // 状态为：缺货/可分配/已分配/已调度 的订单
+                if (list) {
+                    list = list.filter((order) => {
+                        if (["缺货", "可分配", "已分配", "已调度"].includes(order.status)) return true
+                        return false
+                    })
+                }
+                this.list = list
+                // 获取当前操作的订单列表
+                this.handleOpChange(this.opType)
+                this.listLoading = false;
+            }).catch(this.listLoading = false)
+        },
 
     // 查询
     handleFilter(show) {

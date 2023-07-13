@@ -11,10 +11,11 @@ export function fetchList(customerId) {
 
 // 获取订单信息
 export function getOrder(query) {
-    return request({
-      url: `/cc/order/detail`+`/${query.orderId}`+`/${query.orderType}`,
-      method: 'get',
-    })
+  return request({
+    url: `/cc/order/detail/${query.orderId}`+(query.orderType?`/${query.orderType}`:''),
+    method: 'get',
+    // params: query.customerId
+  })
 }
 
 // 获取商品列表
