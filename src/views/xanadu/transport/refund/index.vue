@@ -11,17 +11,19 @@
           <el-input type="text" placeholder="请输入你要搜索的供应商ID" v-model="supplierId" clearable @clear="reset"></el-input>
         </el-form-item>
 
-        <!--时间段搜索-->
-        <el-date-picker
-          v-model="datevalue"
-          type="daterange"
-          :clearable="false"
-          :editable="false"
-          range-separator="至"
-          start-placeholder="创建开始日期"
-          end-placeholder="创建结束日期">
-        </el-date-picker>
-
+        <el-form-item label="进货日期段:">
+          <!--时间段搜索-->
+          <el-date-picker
+            v-model="datevalue"
+            type="daterange"
+            :clearable="false"
+            :editable="false"
+            range-separator="至"
+            start-placeholder="创建开始日期"
+            end-placeholder="创建结束日期"
+          >
+          </el-date-picker>
+        </el-form-item>
 
         <el-form-item style="margin-left: 10px">
           <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
@@ -40,7 +42,9 @@
 
     <!--表格-->
     <el-card style="margin: 10px 0" v-show="this.tableData.length !== 0">
-      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+      <el-table ref="multipleTable" style="margin-top: 10px" border stripe
+                :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      >
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip>
@@ -54,13 +58,17 @@
         <el-table-column label="退货数量" align="center" prop="refundCount" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="default" icon="el-icon-printer" @click="toRefund(scope.row)">生成退货单</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" @click="toRefund(scope.row)">生成退货单
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=tableData.length>
+      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                     :current-page.sync="currentPage"
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next"
+                     :total=tableData.length
+      >
       </el-pagination>
     </el-card>
 
@@ -74,7 +82,9 @@
     </el-dialog>
 
     <el-dialog title="历史退货安排" v-if="dialogFormVisible1" :visible.sync="dialogFormVisible1" center>
-      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="listData.slice((currentPage1-1)*pagesize1,currentPage1*pagesize1)">
+      <el-table ref="multipleTable" style="margin-top: 10px" border stripe
+                :data="listData.slice((currentPage1-1)*pagesize1,currentPage1*pagesize1)"
+      >
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
@@ -86,8 +96,11 @@
         <el-table-column label="退货时间" align="center" prop="refundTime" show-overflow-tooltip></el-table-column>
       </el-table>
 
-      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange1" @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
-                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=listData.length>
+      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange1" @current-change="handleCurrentChange1"
+                     :current-page.sync="currentPage1"
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next"
+                     :total=listData.length
+      >
       </el-pagination>
     </el-dialog>
 
@@ -95,46 +108,47 @@
 </template>
 
 <script>
-import {refurnList, returnOrder, historyList} from '@/api/dbc-supplier'
-import { listData } from '../../../../api/system/dict/data'
+import { historyList, refurnList, returnOrder } from '@/api/dbc-supplier'
+
 export default {
   name: 'index',
   data() {
     return {
-      supplierId:'',
-      goodID:'',
-      datevalue:'',
-      tableData:[],
+      supplierId: '',
+      goodID: '',
+      datevalue: '',
+      tableData: [],
       currentPage: 1,
       currentPage1: 1,
       pagesize: 10,
       pagesize1: 10,
-      dialogFormVisible:false,
-      dialogFormVisible1:false,
-      outNum:'',
-      outvalue:'',
-      refund:{},
-      listData:[]
+      dialogFormVisible: false,
+      dialogFormVisible1: false,
+      outNum: '',
+      outvalue: '',
+      refund: {},
+      listData: []
     }
   },
   methods: {
-    showHistory(){
-      historyList().then((res)=>{
+    showHistory() {
+      historyList().then((res) => {
         var list = []
         list = res.data
         this.listData = []
-        for (let i = 0;i < list.length;i++){
-          if (list[i].status === '已提交')
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].status === '已提交') {
             this.listData.push(list[i])
+          }
         }
-        for (let i = 0;i < this.listData.length;i++){
+        for (let i = 0; i < this.listData.length; i++) {
           this.listData.at(i).refundTime = this.getLocalTime(this.listData.at(i).refundTime)
         }
         this.dialogFormVisible1 = true
       })
     },
-    confirmRe(){
-      returnOrder(this.outNum,this.refund).then((res)=>{
+    confirmRe() {
+      returnOrder(this.outNum, this.refund).then((res) => {
         if (res.msg === '退货单提交成功') {
           this.dialogFormVisible = false
           this.$message({
@@ -147,7 +161,7 @@ export default {
       this.reset()
       this.tableData = []
     },
-    toRefund(row){
+    toRefund(row) {
       this.dialogFormVisible = true
       this.outvalue = row.refundCount
       this.outNum = row.refundCount
@@ -155,65 +169,67 @@ export default {
     },
     //时间戳转换
     getLocalTime(nS) {
-      var date = new Date(nS);
-      var Y = date.getFullYear() + '-';
-      var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
-      var D = (date.getDate() < 10 ? '0'+date.getDate() : date.getDate());
-      let strDate = Y+M+D;
+      var date = new Date(nS)
+      var Y = date.getFullYear() + '-'
+      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+      var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate())
+      let strDate = Y + M + D
       return strDate
     },
     //转型时间戳
-    todate(date){
+    todate(date) {
       var d = new Date(date)
-      d=d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      d = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
       var s = new Date(d).getTime()
       return s
     },
     //重置搜索栏
-    reset(){
+    reset() {
       this.goodID = ''
       this.supplierId = ''
       this.datevalue = ''
       this.tableData = []
     },
     //搜索
-    search(){
-      if (this.goodID === '' && this.supplierId === ''){
+    search() {
+      if (this.goodID === '' && this.supplierId === '') {
         this.$message({
           type: 'info',
           message: '请输入搜索信息'
-        });
-      } else if (this.datevalue === ''){
+        })
+      } else if (this.datevalue === '') {
         this.$message({
           type: 'info',
           message: '请选择搜索时间'
-        });
+        })
       } else {
         var flag1 = true
         var flag2 = true
         var numReg = /^[0-9]+$/
         var numTe = new RegExp(numReg)
-        if (this.goodID !== '')
+        if (this.goodID !== '') {
           flag1 = numTe.test(this.goodID)
-        if (this.supplierId !== '')
+        }
+        if (this.supplierId !== '') {
           flag2 = numTe.test(this.supplierId)
-        if (!flag1 || !flag2){
+        }
+        if (!flag1 || !flag2) {
           this.$message({
             type: 'error',
             message: '输入信息不合法'
-          });
+          })
           return
         } else {
-          refurnList(this.supplierId,this.goodID,
+          refurnList(this.supplierId, this.goodID,
             this.getLocalTime(this.datevalue.at(0)),
-            this.getLocalTime(this.datevalue.at(1))).then((res)=>{
-            if (res.msg === '操作成功'){
+            this.getLocalTime(this.datevalue.at(1))).then((res) => {
+            if (res.msg === '操作成功') {
               this.tableData = res.data
             } else {
               this.$message({
                 type: 'error',
                 message: '查询信息不存在'
-              });
+              })
             }
           })
         }
@@ -234,7 +250,7 @@ export default {
     // 分页组件监听页码值改变的事件
     handleCurrentChange1(newPage) {
       this.currentPage1 = newPage
-    },
+    }
   }
 }
 </script>
