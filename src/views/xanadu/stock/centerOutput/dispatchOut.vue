@@ -402,8 +402,10 @@ export default {
       cenDispatchOut().then(res => {
         this.tableData = res.data
         for (let i = 0; i < this.tableData.length; i++) {
-          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+          if (this.tableData.at(i).outputTime!== null)
+            this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+          if (this.tableData.at(i).requireTime!== null)
+            this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
         }
       })
     }
@@ -412,8 +414,10 @@ export default {
     cenDispatchOut().then(res => {
       this.tableData = res.data
       for (let i = 0; i < this.tableData.length; i++) {
-        this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-        this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        if (this.tableData.at(i).outputTime!== null)
+          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+        if (this.tableData.at(i).requireTime!== null)
+          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
       }
     })
   }

@@ -139,8 +139,8 @@ export default {
     },
     confirmOut(id){
       subConfirmDispatchIn(id).then(res=>{
-        console.log(res)
-        if (res.msg === '确认调拨入库成功'){
+        if (res.msg === '商品调拨入库成功'){
+          this.reset()
           this.dialogFormVisible = false
           this.$message({
             message:'入库成功',

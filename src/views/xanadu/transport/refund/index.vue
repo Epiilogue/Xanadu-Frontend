@@ -1,367 +1,244 @@
-<!--缺货检查-->
 <template>
-  <div class="app-container">
-    <div class="filter-container">
-      <el-select v-model="optionalValue" placeholder="请选择" class="filter-item">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-      <el-input v-model="listQuery.name" placeholder="Name" style="width: 200px;" class="filter-item"
-                @keyup.enter.native="handleFilter"
-      />
+  <div>
+    <!--搜索栏-->
+    <el-card style="height: 80px">
+      <el-form :inline="true">
+        <el-form-item label="商品ID:">
+          <el-input type="text" placeholder="请输入你要搜索的商品ID" v-model="goodID" clearable @clear="reset"></el-input>
+        </el-form-item>
+
+        <el-form-item label="供应商ID:">
+          <el-input type="text" placeholder="请输入你要搜索的供应商ID" v-model="supplierId" clearable @clear="reset"></el-input>
+        </el-form-item>
+
+        <!--时间段搜索-->
         <el-date-picker
-          v-model="date"
-          class="filter-item"
+          v-model="datevalue"
           type="daterange"
+          :clearable="false"
+          :editable="false"
           range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期">
+          start-placeholder="创建开始日期"
+          end-placeholder="创建结束日期">
         </el-date-picker>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        搜索
-      </el-button>
-
-    </div>
-    <el-card>
-      <el-table
-        :key="tableKey"
-        v-loading="listLoading"
-        :data="list.slice((currentPage-1)*pageSize,currentPage*pageSize)"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%;"
-      >
-        <el-table-column label="退货单ID" prop="id" align="center" width="80"
-        >
-          <template slot-scope="{row}">
-            <span>{{ row.id }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="商品ID" prop="productId" min-width="80px" align="center">
-          <template slot-scope="{row}">
-            <span >{{ row.productId}}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="供应商ID" prop="supplierId" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.supplierId }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="商品名称" prop="productName" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span >{{ row.productName }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="商品价格" prop="productPrice" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.productPrice }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="进货数量" prop="inputNum" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type">{{ row.inputNum }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="现库存量" prop="nowCount" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type">{{ row.nowCount }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="退货数量" prop="refundCount" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type">{{ row.refundCount }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="缺货状态" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <el-tag :type="row.status ==='已采购'?'success': row.status==='已入库'?'info':row.status ==='已到货'?'':'warning'">{{ row.status }}</el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="退货时间" width="100px" align="center">
-          <template slot-scope="{row}">
-            <span>{{ timestampToTime()(row.refundTime) }}</span>
-          </template>
-        </el-table-column>
-
-        <!--        <el-table-column label="创建客服" min-width="50px" align="center">
-                  <template slot-scope="{row}">
-                    <span class="link-type">{{ row.createBy }}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column label="缺货状态" min-width="50px" align="center">
-                  <template slot-scope="{row}">
-                    <el-tag :type="row.status ==='未提交'?'warning': row.status==='已提交'?'info':row.status ==='已到货'?'':'success'">{{ row.status }}</el-tag>
-                  </template>
-                </el-table-column>-->
-
-        <el-table-column label="操作" align="center" mid-width="230px" class-name="small-padding fixed-width">
-          <template slot-scope="{row,$index}">
-<!--            <el-button type="primary" size="medium" @click="handleUpdate(row)">
-              详情
-            </el-button>
-            <el-button size="medium" type="danger" @click="handleCommit(row.id)">
-              提交
-            </el-button>-->
-            <el-button @click="handleRefund(row.id)">
-              退货
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
 
 
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[10,15,20]"
-        :page-size="15"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
-      </el-pagination>
-
+        <el-form-item style="margin-left: 10px">
+          <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
+          <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
+          <el-button type="primary" size="small" icon="el-icon-s-order" @click="showHistory">查看历史记录</el-button>
+        </el-form-item>
+      </el-form>
     </el-card>
-    <el-dialog title="缺货记录详情" :visible.sync="dialogFormVisible" style="width: 100%;padding-left: 5%">
-      <el-table
-        :key="tableKey"
-        :visible.sync="dialogFormVisible"
-        v-loading="listLoading"
-        :data="singleLackRecord"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%;"
-      >
-        <el-table-column label="缺货记录id" prop="id" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type">{{ row.id }}</span>
-          </template>
-        </el-table-column>
 
-        <el-table-column label="订单ID" prop="orderId" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type">{{ row.orderId }}</span>
-          </template>
-        </el-table-column>
+    <!--空状态-->
+    <el-card style="margin: 10px 0" v-show="this.tableData.length === 0">
+      <el-form :inline="true">
+        <el-empty description="请输入要搜索的内容"></el-empty>
+      </el-form>
+    </el-card>
 
-        <el-table-column label="创建客服" prop="createBy" min-width="50px" align="center">
+    <!--表格-->
+    <el-card style="margin: 10px 0" v-show="this.tableData.length !== 0">
+      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+        <el-table-column label="#" type="index" align="center"></el-table-column>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip>
           <template slot-scope="{row}">
-            <span class="link-type">{{ row.createBy}}</span>
+            <product :id="row.productId"></product>
           </template>
         </el-table-column>
-        <el-table-column label="缺货数量" prop="createBy" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type">{{ row.needNumbers}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" width="100px" align="center">
-          <template slot-scope="{row}">
-            <span>{{ timestampToTime()(row.createTime) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="缺货来源" prop="createBy" min-width="50px" align="center">
-          <template slot-scope="{row}">
-            <span class="link-type">{{ row.source}}</span>
+        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库数量" align="center" prop="inputNum" show-overflow-tooltip></el-table-column>
+        <el-table-column label="现有库存" align="center" prop="nowCount" show-overflow-tooltip></el-table-column>
+        <el-table-column label="退货数量" align="center" prop="refundCount" show-overflow-tooltip></el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" size="default" icon="el-icon-printer" @click="toRefund(scope.row)">生成退货单</el-button>
           </template>
         </el-table-column>
       </el-table>
 
+      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=tableData.length>
+      </el-pagination>
+    </el-card>
+
+    <el-dialog title="确认退货" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" center>
+      <p style="size: A3">请选择退货数量</p>
+      <el-slider v-model="outNum" show-input :max="Math.ceil(this.outvalue)" :min="Math.floor(this.outvalue*0.5)"
+                 :step="1"
+      >
+      </el-slider>
+      <el-button type="primary" round @click="confirmRe()">提交</el-button>
+    </el-dialog>
+
+    <el-dialog title="历史退货安排" v-if="dialogFormVisible1" :visible.sync="dialogFormVisible1" center>
+      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="listData.slice((currentPage1-1)*pagesize1,currentPage1*pagesize1)">
+        <el-table-column label="#" type="index" align="center"></el-table-column>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品价格" align="center" prop="productPrice" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库数量" align="center" prop="inputNum" show-overflow-tooltip></el-table-column>
+        <el-table-column label="现有库存" align="center" prop="nowCount" show-overflow-tooltip></el-table-column>
+        <el-table-column label="退货数量" align="center" prop="refundCount" show-overflow-tooltip></el-table-column>
+        <el-table-column label="退货时间" align="center" prop="refundTime" show-overflow-tooltip></el-table-column>
+      </el-table>
+
+      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange1" @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=listData.length>
+      </el-pagination>
     </el-dialog>
 
   </div>
 </template>
 
 <script>
-import {
-  fetchList,
-  createArticle,
-  updateProduct,
-  deleteProduct,
-  fetchLackRecordList,
-  getRefundList
-} from '@/api/distribution'
-import waves from '@/directive/waves' // waves directive
-import Pagination from '@/components/Pagination/index.vue'
-import axios from 'axios'
-import { timestampToTime } from '@/utils/ruoyi'
-import ImageUpload from '@/components/ImageUpload/index.vue'
-import SingleUpload from '@/components/upload/singleUpload.vue'
-import { arrivalStockOut, commitStockOut, fetchStockOut, updateStockOut } from '@/api/customer'
-import { update } from 'script-ext-html-webpack-plugin/lib/elements'
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
+import {refurnList, returnOrder, historyList} from '@/api/dbc-supplier'
+import { listData } from '../../../../api/system/dict/data'
 export default {
-  name: 'ComplexTable',
-  components: { SingleUpload, Pagination },
-  directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    }
-  },
+  name: 'index',
   data() {
     return {
-      items: [
-        { type: '', label: '已提交' },
-        { type: 'success', label: '已到货' },
-        { type: 'info', label: '已采购' },
-        { type: 'danger', label: '' },
-        { type: 'warning', label: '未提交' }
-      ],
-      category: [],
-      tableKey: 0,
-      list: null,
-      showList: null,
-      total: 0,
-      listLoading: true,
-      /*      pageNum: 5,
-           pageSize: 20,  */
-      defaultParams: {
-        label: 'category',
-        value: 'category',
-        children: 'children'
-      },
-      date:'',
-      currentPage: 1,//默认显示第一页
-      pageSize: 15,//默认每页显示5条
-      totalNum: 100, //总页数
-      listQuery: {
-        pageNum: 1,
-        pageSize: 15,
-        currentPage: 1
-      },
-      //importanceOptions: [false, true],
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
-      temp: {
-        createBy: '',
-        createTime: '',
-        //deleted: '',
-        id: '',
-        needNumbers: '',
-        orderId: '',
-        productId: '',
-        status: ''
-      },
-      imageUrl: '',
-      options: [{
-        value: '商品ID',
-        label: '商品ID'
-      },{
-        value: '供应商ID',
-        label: '供应商ID'
-      }],
-      optionalValue:'',
-      dialogFormVisible: false,
-      dialogStatus: '',
-      downloadLoading: false,
-      singleLackRecord: null
+      supplierId:'',
+      goodID:'',
+      datevalue:'',
+      tableData:[],
+      currentPage: 1,
+      currentPage1: 1,
+      pagesize: 10,
+      pagesize1: 10,
+      dialogFormVisible:false,
+      dialogFormVisible1:false,
+      outNum:'',
+      outvalue:'',
+      refund:{},
+      listData:[]
     }
   },
-  created() {
-    this.getList()
-  },
   methods: {
-    timestampToTime() {
-      return timestampToTime
+    showHistory(){
+      historyList().then((res)=>{
+        var list = []
+        list = res.data
+        this.listData = []
+        for (let i = 0;i < list.length;i++){
+          if (list[i].status === '已提交')
+            this.listData.push(list[i])
+        }
+        for (let i = 0;i < this.listData.length;i++){
+          this.listData.at(i).refundTime = this.getLocalTime(this.listData.at(i).refundTime)
+        }
+        this.dialogFormVisible1 = true
+      })
     },
-
-    //分页组件修改页面容量
+    confirmRe(){
+      returnOrder(this.outNum,this.refund).then((res)=>{
+        if (res.msg === '退货单提交成功') {
+          this.dialogFormVisible = false
+          this.$message({
+            message: '退货单提交成功',
+            type: 'success'
+          })
+        }
+      })
+      this.dialogFormVisible = false
+      this.reset()
+      this.tableData = []
+    },
+    toRefund(row){
+      this.dialogFormVisible = true
+      this.outvalue = row.refundCount
+      this.outNum = row.refundCount
+      this.refund = row
+    },
+    //时间戳转换
+    getLocalTime(nS) {
+      var date = new Date(nS);
+      var Y = date.getFullYear() + '-';
+      var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+      var D = (date.getDate() < 10 ? '0'+date.getDate() : date.getDate());
+      let strDate = Y+M+D;
+      return strDate
+    },
+    //转型时间戳
+    todate(date){
+      var d = new Date(date)
+      d=d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      var s = new Date(d).getTime()
+      return s
+    },
+    //重置搜索栏
+    reset(){
+      this.goodID = ''
+      this.supplierId = ''
+      this.datevalue = ''
+      this.tableData = []
+    },
+    //搜索
+    search(){
+      if (this.goodID === '' && this.supplierId === ''){
+        this.$message({
+          type: 'info',
+          message: '请输入搜索信息'
+        });
+      } else if (this.datevalue === ''){
+        this.$message({
+          type: 'info',
+          message: '请选择搜索时间'
+        });
+      } else {
+        var flag1 = true
+        var flag2 = true
+        var numReg = /^[0-9]+$/
+        var numTe = new RegExp(numReg)
+        if (this.goodID !== '')
+          flag1 = numTe.test(this.goodID)
+        if (this.supplierId !== '')
+          flag2 = numTe.test(this.supplierId)
+        if (!flag1 || !flag2){
+          this.$message({
+            type: 'error',
+            message: '输入信息不合法'
+          });
+          return
+        } else {
+          refurnList(this.supplierId,this.goodID,
+            this.getLocalTime(this.datevalue.at(0)),
+            this.getLocalTime(this.datevalue.at(1))).then((res)=>{
+            if (res.msg === '操作成功'){
+              this.tableData = res.data
+            } else {
+              this.$message({
+                type: 'error',
+                message: '查询信息不存在'
+              });
+            }
+          })
+        }
+      }
+    },
+    //分页
     handleSizeChange(newSize) {
-      this.pageSize = newSize
+      this.pagesize = newSize
     },
     // 分页组件监听页码值改变的事件
     handleCurrentChange(newPage) {
       this.currentPage = newPage
     },
-
-    getList(name) {
-      this.listLoading = true
-      getRefundList().then(response => {
-        this.list = response.data
-        console.log(this.list)
-        this.total = response.data.length
-        setTimeout(() => {
-          this.listLoading = false
-        }, 0.1 * 1000)
-      })
+    //分页
+    handleSizeChange1(newSize) {
+      this.pagesize1 = newSize
     },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange1(newPage) {
+      this.currentPage1 = newPage
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
-      })
-      row.status = status
-    },
-
   }
 }
 </script>
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
 
-.avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
-}
+<style scoped>
 
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
 </style>
