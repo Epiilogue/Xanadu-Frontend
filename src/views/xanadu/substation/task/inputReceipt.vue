@@ -101,7 +101,7 @@ export default {
                 feedback: 0,
                 remark: '',
                 numbers: 0,
-                totalAmount: 0,
+                totalAmount: 0.00,
                 products: [{ productId: undefined, productName: '', number: 0, price: 0, actualNumber: '', refundAble: '' }],
             },
             rule: {},
@@ -184,7 +184,7 @@ export default {
                     this.form.numbers = this.form.products.reduce((sum, p) => sum + p.actualNumber,
                         0)
                     this.form.totalAmount = this.form.products.reduce((sum, p) => sum + p.actualNumber * p.price,
-                        0)
+                        0).toFixed(2)
                     // 禁用输入框
                 
                 this.numDisabled=true
@@ -193,9 +193,9 @@ export default {
                 } else {
                     // 总数和总价置0
                     this.form.numbers = 0
-                    this.form.totalAmount = 0
+                    this.form.totalAmount = Number(0).toFixed(2)
                     // 启用输入框
-                this.numDisabled=false
+                    this.numDisabled=false
                     // 修改confirm
                     this.confirm = '确认'
                 }

@@ -204,6 +204,10 @@ export default {
   mounted() {
     this.subwareId = this.$cache.session.get('subwareProcessing')
     subwareAll().then(res=>{
+      if(!this.subwareId){
+        this.tableData=res.data
+        return
+      }
       for (let i = 0;i < res.data.length;i++){
         if (res.data[i].id == this.subwareId)
           this.tableData.push(res.data[i])
