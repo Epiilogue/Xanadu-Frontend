@@ -2,16 +2,16 @@
   <div>
     <el-card style="margin: 10px 0">
       <el-dropdown @command="handleCommand" split-button type="primary" >
-        <span class="el-dropdown-link">入库方式</span>
+        <span class="el-dropdown-link">{{ this.atitle }}</span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="a">调度入库</el-dropdown-item>
           <el-dropdown-item command="b">退货入库</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
 
-      <el-table v-show="!this.type" ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+      <el-table v-show="!this.atype" ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
-        <el-table-column label="记录ID" align="center"  prop="id" show-overflow-tooltip></el-table-column>
+        <el-table-column label="调拨入库记录ID" align="center"  prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="任务ID" align="center"  prop="taskId" show-overflow-tooltip>
           <template slot-scope="{row}">
             <task :id="row.taskId"></task>
@@ -34,14 +34,13 @@
         </el-table-column>
         <el-table-column label="商品名称" align="center" min-width="300"  prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center"  prop="productPrice" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库时间" align="center"  prop="inputTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="入库数量" align="center"  prop="inputNum" show-overflow-tooltip></el-table-column>
+        <el-table-column label="出库时间" align="center" min-width="200" prop="outputTime" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库数量" align="center"  prop="actualNum" show-overflow-tooltip></el-table-column>
       </el-table>
 
-      <el-table v-show="this.type" ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+      <el-table v-show="this.atype" ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
-        <el-table-column label="记录ID" align="center"  prop="id" show-overflow-tooltip></el-table-column>
-        <el-table-column label="调拨ID" align="center"  prop="dispatchId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="退货入库记录ID" align="center"  prop="id" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品ID" align="center"  prop="productId" show-overflow-tooltip>
           <template slot-scope="{row}">
             <product :id="row.productId"></product>
@@ -57,9 +56,9 @@
             <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center"  prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" min-width="300" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center"  prop="productPrice" show-overflow-tooltip></el-table-column>
-        <el-table-column label="入库时间" align="center"  prop="inputTime" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库时间" align="center" min-width="200" prop="inputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="入库数量" align="center"  prop="inputNum" show-overflow-tooltip></el-table-column>
       </el-table>
 
@@ -72,7 +71,7 @@
 
 <script>
 
-import {subRefundIn} from '@/api/ware'
+import {subRefundIn, subDispatchIn} from '@/api/ware'
 import supplier from '../../../../components/detail/supplier'
 import subware from '../../../../components/detail/subware'
 import product from '../../../../components/detail/product'
@@ -86,38 +85,37 @@ export default {
       currentPage: 1,
       pagesize: 10,
       subwareID:'',
-      type:true, //true退货入库 false调拨入库
+      atype:false, //true退货入库 false调拨入库
+      atitle:'调度入库'
     }
   },
   watch:{
-    type:function(newval){
+    atype:function(newval){
       this.tableData = []
-      subRefundIn(this.subwareID).then(res=>{
-        console.log(res.data)
-        var list = []
-        list = res.data
-        if (newval){
-          for (let i = 0;i < list.length;i++){
-            if (list.at(i).dispatchId !== null)
-              this.tableData.push(list.at(i))
+      if (newval){
+        this.atitle = '退货入库'
+        subRefundIn(this.subwareID).then((res)=>{
+          this.tableData = res.data
+          for (let i = 0;i < this.tableData.length;i++){
+            this.tableData.at(i).inputTime = this.getLocalTime(this.tableData.at(i).inputTime)
           }
-        } else {
-          for (let i = 0;i < list.length;i++){
-            if (list.at(i).dispatchId === null)
-              this.tableData.push(list.at(i))
+        })
+      } else {
+        this.atitle = '调度入库'
+        subDispatchIn(this.subwareID).then((res)=>{
+          this.tableData = res.data
+          for (let i = 0;i < this.tableData.length;i++){
+            this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
           }
-        }
-        for (let i = 0;i < this.tableData.length;i++){
-          this.tableData.at(i).inputTime = this.getLocalTime(this.tableData.at(i).inputTime)
-        }
-      })
+        })
+      }
     }
   },
 
   methods:{
     //切换入库表
     handleCommand(command) {
-      this.type = command === "a";
+      this.atype = command === "b";
     },
 
     //时间戳转换
@@ -152,16 +150,10 @@ export default {
   },
   mounted() {
     this.subwareID = this.$route.query.stockId;
-    subRefundIn(this.subwareID).then(res=>{
-      console.log(res.data)
-      var list = []
-      list = res.data
-      for (let i = 0;i < list.length;i++){
-        if (list.at(i).dispatchId !== null)
-          this.tableData.push(list.at(i))
-      }
+    subDispatchIn(this.subwareID).then((res)=>{
+      this.tableData = res.data
       for (let i = 0;i < this.tableData.length;i++){
-        this.tableData.at(i).inputTime = this.getLocalTime(this.tableData.at(i).inputTime)
+        this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
       }
     })
   }
