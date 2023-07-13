@@ -1,7 +1,12 @@
 <template>
   <div class="app-container">
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+      <el-menu-item index="1">该分站可领用发票</el-menu-item>
+      <el-menu-item index="2">该分站已领用发票</el-menu-item>
+    </el-menu>
     <!--发票列表-->
-    <el-table v-loading="loading" :data="invoiceList" >
+
+    <el-table v-loading="loading" :data="invoiceList.slice((currentPage-1)*pagesize,currentPage*pagesize)" >
       <el-table-column label="开始号码" align="center" prop="startNumber" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_invoice_normal" :value="scope.row.startNumber"/>
@@ -27,10 +32,9 @@
           <span>{{ parseTime()(scope.row.time, '{y}-{m}-{d}-{h}-{m}-{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" >
         <template slot-scope="scope">
-          <el-button :disabled="scope.row.registration === '未登记'"
-                     size="small"
+          <el-button size="small"
                      type="primary"
                      @click="getinvoice(scope.row)"
           >领用</el-button>
@@ -38,8 +42,9 @@
       </el-table-column>
     </el-table>
 
-    <Pagination v-show="total > 0" :total="total" :page.sync="pageInfo.pageNum" :limit.sync="pageInfo.pageSize"
-                @pagination="getPageList" />
+    <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                   :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=this.total>
+    </el-pagination>
   </div>
 </template>
 
@@ -58,13 +63,14 @@ export default {
       loading: true,
       // 发票信息
       invoiceList: [],
+      alinvoiceList: [],
       // 分页数据
       total: 0,
-      pageList: [],   //表格数据
-      pageInfo: {
-        pageNum: 1,
-        pageSize: 10,
-      },
+      currentPage: 1,
+      pagesize: 10,
+      // 选择界面
+      activeIndex: '1',
+      substationId: '暂无信息',
     }
   },
   created() {
@@ -76,9 +82,18 @@ export default {
       return parseTime
     },
     getList() {
+      if(this.activeIndex === '1'){
+          this.substationId = '暂无信息';
+      }else{
+          this.substationId = this.subId;
+      }
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8049/ac/invoice/listByReceipt").then( function(res){
+      axios.get("http://localhost:8010/ac/invoice/listByReceipt",{
+        params: {
+          substationId: that.substationId,
+        }
+      }).then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -90,24 +105,37 @@ export default {
         that.$message.error('发票列表获取失败');
       });
     },
-    getPageList() {
-      this.total = this.queryList.length
-      let pageNum = this.pageInfo.pageNum
-      let pageSize = this.pageInfo.pageSize
-      this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+    handleSizeChange(newSize) {
+      this.pagesize = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage
+    },
+    handleSelect(key, keyPath) {
+      this.activeIndex = key;
+      this.getList();
     },
     getinvoice(row){
       const that = this
-      row.substationId = that.subId;
-      axios.post("http://localhost:8049/ac/invoices/update/",row)
-        .then(function(promise){
-          that.$message.success('领用成功');
-        }).catch( function (err){
-        //代表请求失败之后处理
-        console.log (err);
-        that.$message.error('领用失败');
-      });
-      that.getList();
+      if(this.activeIndex === '2'){
+        that.$message.warning('该分站已领用这批发票');
+      }
+      else {
+        row.substationId = that.subId;
+        console.log(row.substationId)
+        axios.post("http://localhost:8010/ac/invoice/update/",row)
+          .then(function(promise){
+            that.$message.success('领用成功');
+          }).catch( function (err){
+          //代表请求失败之后处理
+          console.log (err);
+          that.$message.error('领用失败');
+        });
+        setTimeout(function() {
+          that.getList();
+        }, 1000)
+      }
     }
   },
 }

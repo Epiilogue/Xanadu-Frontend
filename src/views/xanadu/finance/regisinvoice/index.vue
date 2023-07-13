@@ -232,7 +232,7 @@ export default {
     },
     // 发票号码校验
     validateInvoiceNumber(rule, value, callback){
-      const pattern = /^[A-Z]{2}\d{8}$/;
+      const pattern = /^[A-Z]{2}\d{11}$/;
       if (pattern.test(value)) {
         callback(); // 校验通过
       } else {
