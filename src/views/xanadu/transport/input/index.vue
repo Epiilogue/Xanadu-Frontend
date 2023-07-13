@@ -15,6 +15,13 @@
             clearable
           ></el-input>
         </el-form-item>
+        <el-form-item class="form-item" label="记录状态">
+          <el-select v-model="status" placeholder="记录状态" style="width: 200px; margin-right: 5px" clearable>
+            <el-option label="已采购" value="已采购"/>
+            <el-option label="已到货" value="已到货"/>
+            <el-option label="已结算" value="已结算"/>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
@@ -129,7 +136,9 @@
                style="width: 65%; margin-left:150px;"
       >
         <el-form-item label="输入进货数量" prop="inputCount">
-          <el-slider v-model="inputNum" show-input :max="Math.ceil(this.inputRan*1.2)" :min="Math.floor(this.inputRan*0.8)" :step="1">
+          <el-slider v-model="inputNum" show-input :max="Math.ceil(this.inputRan*1.2)"
+                     :min="Math.floor(this.inputRan*0.8)" :step="1"
+          >
           </el-slider>
         </el-form-item>
       </el-form>
@@ -148,17 +157,11 @@
 </template>
 
 <script>
-import {
-  LackRecordInspect,
-  fetchLackRecordList, generatePurchaseRecord, fetchPurchaseRecordList, confirmPurchase, deletePurchase
-} from '@/api/distribution'
+import { confirmPurchase, deletePurchase, fetchPurchaseRecordList, generatePurchaseRecord } from '@/api/distribution'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
-import axios from 'axios'
 import { timestampToTime } from '@/utils/ruoyi'
-import ImageUpload from '@/components/ImageUpload/index.vue'
 import SingleUpload from '@/components/upload/singleUpload.vue'
-import { arrivalStockOut, commitStockOut, fetchStockOut, updateStockOut } from '@/api/customer'
 import { update } from 'script-ext-html-webpack-plugin/lib/elements'
 import Product from '@/components/detail/product.vue'
 
@@ -194,7 +197,7 @@ export default {
   },
   data() {
     return {
-      productName:'',
+      productName: '',
       category: [],
       tableKey: 0,
       list: null,
@@ -206,9 +209,9 @@ export default {
       currentPage: 1,//默认显示第一页
       pageSize: 15,//默认每页显示5条
       totalNum: 100, //总页数
-      inputNum:0,
-      nowIndex:0,
-      inputRan:0,
+      inputNum: 0,
+      nowIndex: 0,
+      inputRan: 0,
       listQuery: {
         pageNum: 1,
         pageSize: 15,
@@ -235,7 +238,8 @@ export default {
       },
       generateVisible: false,
       inputCount: '',
-      oneAllLackRecord: null
+      oneAllLackRecord: null,
+      status: ''
     }
   },
   created() {
@@ -243,28 +247,47 @@ export default {
   },
   methods: {
     refreshList() {
-      if (this.productName!=='') {
-        this.list = this.list.filter(item => item.productName.indexOf(this.productName) > -1)
-      }else{
-        this.productName=''
-        this.getList()
+      if (this.productName !== '') {
+        fetchPurchaseRecordList().then(response => {
+          this.list = response.data
+          this.total = this.list.length
+        }).then(
+          res => {
+            this.list = this.list.filter(item => item.productName.indexOf(this.productName) > -1)
+            if (this.status !== '') {
+              this.list = this.list.filter(item => item.status === this.status)
+            }
+          }
+        )
+      } else {
+        fetchPurchaseRecordList().then(response => {
+          this.list = response.data
+          this.total = this.list.length
+        }).then(
+          res => {
+            if (this.status !== '') {
+              this.list = this.list.filter(item => item.status === this.status)
+            }
+          }
+        )
       }
     },
     resetSearch() {
-      this.productName=''
+      this.productName = ''
+      this.status = ''
       this.getList()
     },
 
     timestampToTime() {
       return timestampToTime
     },
-    confirmArrival(row){
+    confirmArrival(row) {
       this.nowIndex = row.id
       this.inputRan = row.number
       this.inputNum = row.number
-      this.generateVisible = true;
+      this.generateVisible = true
     },
-    handleUpdate(row){
+    handleUpdate(row) {
       deletePurchase(row.id).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -276,7 +299,7 @@ export default {
       })
     },
     handleArrival(index) {
-      confirmPurchase(this.nowIndex,this.inputNum).then(response => {
+      confirmPurchase(this.nowIndex, this.inputNum).then(response => {
         if (response.code === 200) {
           this.$message({
             message: '成功到货',

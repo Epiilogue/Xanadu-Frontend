@@ -87,8 +87,15 @@
                     prefix-icon="el-icon-paperclip" width="120%"
           ></el-input>
         </el-form-item>
+        <el-form-item class="form-item" label="记录状态">
+          <el-select v-model="status" placeholder="记录状态" style="width: 200px; margin-right: 5px" clearable>
+            <el-option label="未出库" value="未出库"/>
+            <el-option label="已出库" value="已出库"/>
+            <el-option label="分库已入库" value="分库已入库"/>
+          </el-select>
+        </el-form-item>
         <el-button type="primary" size="small" style="margin-right: 40px" @click="refreshList">搜索</el-button>
-
+        <br/>
         <el-form-item label="选择日期" prop="data" label-width="80px">
           <el-col>
             <el-date-picker type="date" placeholder="选择日期" v-model="printData.data" style="width: 100%;"
@@ -201,6 +208,7 @@ export default {
       outvalue: '',
       outNum: '',
       productName: '',
+      status:'',
       printData: {
         data: null,
         productName: '',
@@ -254,6 +262,9 @@ export default {
       }).then(() => {
         if (this.productName !== '') {
           this.tableData = this.tableData.filter(item => item.productName.indexOf(this.productName) > -1)
+        }
+        if (this.status !== '') {
+          this.tableData = this.tableData.filter(item => item.status.indexOf(this.status) > -1)
         }
       })
     },
