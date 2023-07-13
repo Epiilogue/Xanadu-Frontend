@@ -31,16 +31,6 @@ let tableColumns = [
         show: false //表格列是否展示
     },
     {
-        prop: "taskType",
-        label: "任务类型",
-        show: true
-    },
-    {
-        prop: "taskStatus",
-        label: "任务状态",
-        show: true
-    },
-    {
         prop: "courierId",
         label: "快递员编号",
         show: true

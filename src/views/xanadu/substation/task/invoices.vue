@@ -289,34 +289,20 @@ export default {
       });
     },
     printInvoice(row){
-      if(this.printform.number === '暂无信息'){
-        this.$message.success('发票信息加载中');
         const id = row.id || this.ids;
         const that = this;
         axios.get("http://localhost:8010/ac/invoices/printInvoices/"+id).then( function(res){
           //代表请求成功之后处理
           that.printform = res.data.data;
+          setTimeout(function() {
+            that.print()
+          }, 1000)
           console.log(that.printform);
         }).catch( function (err){
           //代表请求失败之后处理
           alert ('进入catch')
           console.log (err);
         });
-      }
-      else{
-        const id = row.id || this.ids;
-        const that = this;
-        axios.get("http://localhost:8010/ac/invoices/printInvoices/"+id).then( function(res){
-          //代表请求成功之后处理
-          that.printform = res.data.data;
-          console.log(that.printform);
-        }).catch( function (err){
-          //代表请求失败之后处理
-          alert ('进入catch')
-          console.log (err);
-        });
-        that.print();
-      }
     },
     print(){
       printJS('printJS-form','html')

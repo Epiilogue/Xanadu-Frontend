@@ -37,7 +37,7 @@
 
       <!--  查询之后显示结算信息列表  -->
     <div v-show="open2">
-      <el-table :data="refundList" ref="refundTableRefs"
+      <el-table :data="refundList.slice((currentPage-1)*pagesize,currentPage*pagesize)" ref="refundTableRefs"
                 border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip>
@@ -89,13 +89,9 @@
         <el-button type="success" size="medium" @click="account" style="margin-top: 25px; margin-left: 40%"> 结算 </el-button>
         <el-button type="primary" size="medium" @click="getToList()" style="margin-top: 25px;">    查看已结算记录    </el-button>
         <div style="margin-left: 44%">
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="queryParams.pageNum"
-            :limit.sync="queryParams.pageSize"
-            @pagination="getList"
-          />
+          <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                         :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=this.total>
+          </el-pagination>
         </div>
       </div>
     <!--合计结算窗口-->
@@ -175,6 +171,7 @@
       </el-table>
 
     </el-dialog>
+
   </div>
 
 </template>
@@ -200,6 +197,9 @@ export default {
         value: '选项2',
         label: '未结算'
       }],
+      // 分页
+      currentPage: 1,
+      pagesize: 10,
       // 显示搜索条件
       showSearch: true,
       // 遮罩层
@@ -316,6 +316,14 @@ export default {
         //代表请求失败之后处理
         console.log (err);
       });
+    },
+    //分页
+    handleSizeChange(newSize) {
+      this.pagesize = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage
     },
     // 取消按钮
     cancel() {

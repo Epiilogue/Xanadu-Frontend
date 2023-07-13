@@ -50,6 +50,17 @@
                             <order :id="row.orderId" v-if="refreshed"></order>
                         </template>
                     </el-table-column>
+                  <el-table-column prop="id" label="任务类型" min-width="80" align="center">
+                    <template slot-scope="{row}">
+                      <task-type :type="row.taskType"/>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column prop="id" label="任务状态" min-width="80" align="center">
+                    <template slot-scope="{row}">
+                      <status :status="row.taskStatus"/>
+                    </template>
+                  </el-table-column>
                     <el-table-column v-for="column in tableColumns" :prop="column.prop" :label="column.label"
                         v-if="column.show" min-width="130" align="center">
                     </el-table-column>

@@ -20,7 +20,7 @@
 
     <!-- 失效原因对话框 -->
     <el-dialog :title="title" :visible.sync="open" height="300px" width="600px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px" >
+      <el-form ref="form" :model="form" label-width="80px" >
         <el-row>
           <el-col :span="24">
             <el-form-item label="失效原因">
@@ -36,7 +36,7 @@
     </el-dialog>
 
     <!--发票列表-->
-      <el-table v-loading="loading" :data="invoiceList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="invoiceList.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="序号" align="center" prop="id" width="50" />
         <el-table-column label="发票号码" align="center" prop="number" class-name="small-padding fixed-width">
           <template slot-scope="scope">
@@ -49,8 +49,13 @@
           </template>
         </el-table-column>
         <el-table-column label="领用分站id" align="center" prop="substationId" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <dict-tag :options="dict.type.sys_regisinvoice_substationId" :value="scope.row.substationId"/>
+          <template slot-scope="{row}" >
+            <div v-if="row.substationId !== '暂无信息'">
+              <substation :id="row.substationId"></substation>
+            </div>
+            <div v-if="row.substationId === '暂无信息'">
+              <dict-tag :options="dict.type.sys_regisinvoice_substationId" value='暂无信息'/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="领用人" align="center" prop="employee" class-name="small-padding fixed-width">
@@ -77,7 +82,7 @@
                        type="primary"
                        @click="changedstate(scope.row)"
             >失效</el-button>
-            <el-button :disabled=" scope.row.dstate === '未失效'"
+            <el-button :disabled=" scope.row.dstate === '生效中'"
                        size="small"
                        type="primary"
                        @click="changedstate1(scope.row)"
@@ -86,13 +91,9 @@
         </el-table-column>
       </el-table>
 
-      <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-      />
+    <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                   :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=this.total>
+    </el-pagination>
   </div>
 </template>
 
@@ -123,6 +124,9 @@ export default {
       form: {},
       // 弹出层标题
       title: "",
+      // 分页
+      currentPage: 1,
+      pagesize: 10,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -167,12 +171,10 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
-      this.reset();
     },
     // 表单重置
     reset() {
-      this.form = undefined;
-      this.resetForm("form");
+      this.getList();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -183,6 +185,14 @@ export default {
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
+    },
+    //分页
+    handleSizeChange(newSize) {
+      this.pagesize = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage
     },
     changedstate(row){
       this.open = true;
@@ -222,19 +232,18 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function(form) {
-      this.open = false;
       const that = this
       that.form.dstate = '已失效';
       that.form.state = '未领用';
       axios.post("http://localhost:8010/ac/invoices/update/",form)
         .then(function(promise){
           that.$message.success('修改成功');
+          that.open = false;
         }).catch( function (err){
         //代表请求失败之后处理
         console.log (err);
         that.$message.error('修改失败');
       });
-      that.open = false;
       that.reset();
     }
   },

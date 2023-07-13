@@ -5,6 +5,8 @@
       <form method="get" action="#" id="printJS-form-output">
         <div>
           <h3>Xanadu出库单</h3>
+          <h3>打印时间：{{ parseTime()(this.printdata, '{y}-{m}-{d}-{h}:{m}:{s}') }}</h3>
+          <h1>------------------------------------------------------------------------------------------------</h1>
           <table class="product-table">
             <thead>
             <tr>
@@ -13,7 +15,7 @@
               <th>总数</th>
               <th>供货商名称</th>
               <th>总价格</th>
-              <th>日期</th>
+              <th>预计出库日期</th>
             </tr>
             </thead>
             <tbody>
@@ -27,7 +29,10 @@
             </tr>
             </tbody>
           </table>
-
+          <h1>------------------------------------------------------------------------------------------------</h1>
+          <div style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
+            <p>Xanadu公司盖章：</p>
+          </div>
         </div>
       </form>
     </div>
@@ -35,7 +40,9 @@
     <div v-show="false">
       <form method="get" action="#" id="printJS-form-list">
         <div>
-          <h3>Xanadu出库单</h3>
+          <h3>Xanadu分发单</h3>
+          <h3>打印时间：{{ parseTime()(this.printdata, '{y}-{m}-{d}-{h}:{m}:{s}') }}</h3>
+          <h1>------------------------------------------------------------------------------------------------</h1>
           <table class="product-table">
             <thead>
             <tr>
@@ -45,7 +52,7 @@
               <th>供货商名称</th>
               <th>分库名</th>
               <th>总价格</th>
-              <th>日期</th>
+              <th>分发日期</th>
             </tr>
             </thead>
             <tbody>
@@ -60,7 +67,13 @@
             </tr>
             </tbody>
           </table>
-
+          <h1>------------------------------------------------------------------------------------------------</h1>
+          <div style=" border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px;">
+            <h1>总金额：{{ this.totalaccount }}</h1>
+            <p>分发员签字：</p>
+            <p>签收人签字：</p>
+            <p>Xanadu公司盖章：</p>
+          </div>
         </div>
       </form>
     </div>
@@ -68,6 +81,21 @@
     <el-card style="margin: 10px 0">
 
       <el-form :model="printData" ref="elForm" :rules="rules" size="small" label-width="68px" :inline="true">
+
+        <el-form-item label="商品名称" prop="productId">
+          <el-input v-model="productName" placeholder="输入商品名称"
+                    prefix-icon="el-icon-paperclip" width="120%"
+          ></el-input>
+        </el-form-item>
+        <el-form-item class="form-item" label="记录状态">
+          <el-select v-model="status" placeholder="记录状态" style="width: 200px; margin-right: 5px" clearable>
+            <el-option label="未出库" value="未出库"/>
+            <el-option label="已出库" value="已出库"/>
+            <el-option label="分库已入库" value="分库已入库"/>
+          </el-select>
+        </el-form-item>
+        <el-button type="primary" size="small" style="margin-right: 40px" @click="refreshList">搜索</el-button>
+        <br/>
         <el-form-item label="选择日期" prop="data" label-width="80px">
           <el-col>
             <el-date-picker type="date" placeholder="选择日期" v-model="printData.data" style="width: 100%;"
@@ -110,10 +138,13 @@
             <subware :id="row.subwareId"></subware>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库时间" align="center" prop="outputTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="预计出库时间" align="center" prop="requireTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="状态" align="center" show-overflow-tooltip>
+        <el-table-column label="商品名称" min-width="300" align="center" prop="productName" show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column label="出库时间" align="center" min-width="200" prop="outputTime" show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column label="预计出库时间" align="center" min-width="150" prop="requireTime" show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column label="状态" align="center" min-width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
             <el-tag type="danger" v-show="scope.row.status === '未出库'">{{ scope.row.status }}</el-tag>
@@ -147,7 +178,7 @@
                  :step="1"
       >
       </el-slider>
-      <el-button type="primary" round @click="confirmOut">提交</el-button>
+      <el-button type="primary" right round @click="confirmOut">提交</el-button>
 
     </el-dialog>
 
@@ -170,6 +201,8 @@ export default {
   components: { subware, product },
   data() {
     return {
+      totalaccount: 0,
+      printdata: '',
       tableData: [],
       currentPage: 1,
       pagesize: 10,
@@ -177,13 +210,15 @@ export default {
       dialogFormVisible: false,
       outvalue: '',
       outNum: '',
+      productName: '',
+      status: '',
       printData: {
         data: null,
         productName: '',
         subwareId: undefined
       },
       printform: {
-        productName: '无',
+        productName: '',
         productPrice: '',
         number: '',
         supplierName: '',
@@ -192,7 +227,7 @@ export default {
         date: ''
       },
       printform1: {
-        productName: '无',
+        productName: '',
         number: '',
         productPrice: '',
         supplierName: '',
@@ -214,12 +249,28 @@ export default {
   },
   watch: {
     dialogFormVisible: {
-      handler() {
+      /*handler() {
         this.reset()
-      }
+      }*/
     }
   },
   methods: {
+    refreshList() {
+      cenDispatchOut().then(res => {
+        this.tableData = res.data
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        }
+      }).then(() => {
+        if (this.productName !== '') {
+          this.tableData = this.tableData.filter(item => item.productName.indexOf(this.productName) > -1)
+        }
+        if (this.status !== '') {
+          this.tableData = this.tableData.filter(item => item.status.indexOf(this.status) > -1)
+        }
+      })
+    },
     parseTime() {
       return parseTime
     },
@@ -238,6 +289,13 @@ export default {
             message: '出库成功',
             type: 'success'
           })
+          //找到list种outId相同的行，并删除
+          for (let i = 0; i < this.tableData.length; i++) {
+            if (this.tableData.at(i).id === this.outId) {
+              this.tableData.splice(i, 1)
+              break
+            }
+          }
         }
       })
     },
@@ -257,15 +315,14 @@ export default {
         }).then(function(res) {
           //代表请求成功之后处理
           that.printform = res.data.data
-          console.log(that.printform)
+          that.printdata = new Date()
           setTimeout(function() {
             that.print()
           }, 1000)
-          that.print()
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({
-            message: '后端请求失败',
+            message: '没有对应的出库记录',
             type: 'error'
           })
           console.log(err)
@@ -295,13 +352,21 @@ export default {
         }).then(function(res) {
           //代表请求成功之后处理
           that.printform1 = res.data.data
+          that.printdata = new Date()
+          console.log(that.printform1)
+          that.totalaccount = 0
+          let i = 0
+          while (i < that.printform1.length) {
+            that.totalaccount += that.printform1[i].totalPrice
+            i = i + 1
+          }
           setTimeout(function() {
             that.print1()
           }, 1000)
         }).catch(function(err) {
           //代表请求失败之后处理
           that.$message({
-            message: '后端请求失败',
+            message: '没有对应的分发记录',
             type: 'error'
           })
         })
@@ -347,8 +412,12 @@ export default {
       cenDispatchOut().then(res => {
         this.tableData = res.data
         for (let i = 0; i < this.tableData.length; i++) {
-          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+          if (this.tableData.at(i).outputTime !== null) {
+            this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+          }
+          if (this.tableData.at(i).requireTime !== null) {
+            this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+          }
         }
       })
     }
@@ -357,8 +426,12 @@ export default {
     cenDispatchOut().then(res => {
       this.tableData = res.data
       for (let i = 0; i < this.tableData.length; i++) {
-        this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-        this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        if (this.tableData.at(i).outputTime !== null) {
+          this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
+        }
+        if (this.tableData.at(i).requireTime !== null) {
+          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        }
       }
     })
   }

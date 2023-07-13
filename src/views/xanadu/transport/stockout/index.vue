@@ -376,7 +376,13 @@ export default {
     //todo 生成进货单后,系统生成缺货单不再显示
     updateData() {
       this.oneAllLackRecord.inputCount = this.inputCount
-      console.log(this.oneAllLackRecord)
+      this.oneAllLackRecord.singleLackRecordVos.forEach(function(item) {
+        if (item.id === -1) {
+          item.createBy = undefined
+          item.id = -1
+          item.orderId = -1
+        }
+      })
       generatePurchaseRecord(this.oneAllLackRecord).then(response => {
         console.log(response)
         if (response.code === 200) {
@@ -387,7 +393,13 @@ export default {
             duration: 2000
           })
           this.generateVisible = false
-          this.getList()
+          //遍历列表找到与oneAllLackRecord productId相同的记录删除
+          for (let i = 0; i < this.list.length; i++) {
+            if (this.list[i].product.id === this.oneAllLackRecord.product.id) {
+              this.list.splice(i, 1)
+              break
+            }
+          }
         }
       })
     }

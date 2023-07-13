@@ -196,7 +196,7 @@ export default {
       list: null,
       showList: null,
       total: 0,
-      listLoading: true,
+      listLoading: false,
       /*      pageNum: 5,
            pageSize: 20,  */
       defaultParams: {
@@ -299,14 +299,10 @@ export default {
 
     },
     getList(name) {
-      this.listLoading = true
       fetchStockOut().then(response => {
         this.list = response.data
         console.log(this.list)
         this.total = response.data.length
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
       })
     },
     handleFilter() {

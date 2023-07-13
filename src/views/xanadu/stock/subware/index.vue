@@ -1,7 +1,20 @@
 <template>
   <div>
+    <el-card style="height: 80px" v-show="this.user == 'admin'">
+      <el-form :inline="true" >
+        <el-form-item label="仓库ID:">
+          <el-input type="text" placeholder="请输入你要搜索的仓库ID" v-model="stockID" clearable @clear="reset"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-left: 10px">
+          <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
+          <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
     <el-card style="margin: 10px 0">
-      <el-button type="primary" size="default" @click="dialogFormVisible = true">添加仓库</el-button>
+      <el-button type="primary" size="default" @click="dialogFormVisible = true" v-show="this.user == 'admin'">添加仓库</el-button>
+      <el-button type="primary" size="default" icon="el-icon-refresh-right" @click="reset">刷  新</el-button>
       <!--出入库查询-->
       <el-switch v-model="inout" active-text="出库查询" inactive-text="入库查询" style="margin-left: 1000px"></el-switch>
 
@@ -30,7 +43,7 @@
         </el-table-column>
       </el-table>
       <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=tableData.length>
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=tableData.length v-show="this.user == 'admin'">
       </el-pagination>
     </el-card>
 
@@ -83,7 +96,8 @@ export default {
       dialogFormVisible: false,
       dialogFormVisible1:false,
       inout: true,
-      subwareId:''
+      subwareId:'',
+      user:''
     }
   },
   watch:{
@@ -134,14 +148,43 @@ export default {
         query:{stockId:row.id}
       }))
     },
+
+    //搜索
+    search() {
+      if (this.stockID === ''){
+        this.$message.error('请输入仓库ID')
+      } else {
+        var flag = true
+        var numReg = /^[0-9]+$/
+        var numTe = new RegExp(numReg)
+        flag = numTe.test(this.stockID)
+        if (!flag){
+          this.$message({
+            type: 'error',
+            message: '输入信息不合法'
+          });
+        } else {
+          subwareByID(this.stockID).then(res=>{
+            var list=[]
+            list.push(res.data)
+            this.tableData=list
+          })
+        }
+      }
+    },
+
     //重置
     reset() {
       this.stockID=""
       this.tableData = []
       subwareAll().then(res=>{
-        for (let i = 0;i < res.data.length;i++){
-          if (res.data[i].id == this.subwareId)
-            this.tableData.push(res.data[i])
+        if (this.user == 'admin'){
+          this.tableData = res.data;
+        } else {
+          for (let i = 0;i < res.data.length;i++){
+            if (res.data[i].id == this.subwareId)
+              this.tableData.push(res.data[i])
+          }
         }
       })
     },
@@ -202,15 +245,16 @@ export default {
     }
   },
   mounted() {
+    this.user = this.$cookies.get('username')
     this.subwareId = this.$cache.session.get('subwareProcessing')
     subwareAll().then(res=>{
-      if(!this.subwareId){
-        this.tableData=res.data
-        return
-      }
-      for (let i = 0;i < res.data.length;i++){
-        if (res.data[i].id == this.subwareId)
-          this.tableData.push(res.data[i])
+      if (this.user == 'admin'){
+        this.tableData = res.data;
+      }else {
+        for (let i = 0;i < res.data.length;i++){
+          if (res.data[i].id == this.subwareId)
+            this.tableData.push(res.data[i])
+        }
       }
     })
   }
