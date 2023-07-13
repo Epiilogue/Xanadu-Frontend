@@ -50,7 +50,7 @@
           <!-- 在此处放置发票信息，例如发票号码、日期等 -->
           <p>发票号码：{{ this.printform.number }}</p>
           <p>打印时间：{{ parseTime()(this.printform.printTime, '{y}-{m}-{d}-{h}:{m}:{s}') }}</p>
-          <p>分站id：{{ this.printform.substationId }}</p>
+          <p>分站id：{{ this.subId }}</p>
         </div>
         <div>------------详细信息-------------</div>
         <div class="content" style=" justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
@@ -114,7 +114,7 @@
       </div>
     </el-dialog>
     <!--  发票信息  -->
-    <el-table v-loading="loading" :data="invoiceList">
+    <el-table v-loading="loading" :data="invoiceList.slice((currentPage-1)*pagesize,currentPage*pagesize)">
       <el-table-column label="发票号码" align="center" prop="number" width="200">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_invoices_normal" :value="scope.row.number"/>
@@ -176,6 +176,9 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination style="margin: 10px 0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                   :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=this.total>
+    </el-pagination>
   </div>
 </template>
 
@@ -205,6 +208,7 @@ export default {
         batch:'0',
       },
       taskmessage: {},
+      total: 0,
       open: false,
       open1: false,
       form: {},
@@ -216,6 +220,8 @@ export default {
       // 发票信息
       invoiceList: [],
       dform: {},
+      currentPage: 1,
+      pagesize: 10,
       queryrules: {
         employee: [{
           required: true,
@@ -269,6 +275,13 @@ export default {
         console.log (err);
       });
     },
+    handleSizeChange(newSize) {
+      this.pagesize = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage
+    },
     getList(){
       this.subId = this.task.subId;
       console.log(this.subId);
@@ -279,6 +292,11 @@ export default {
           //代表请求成功之后处理
           that.total = res2.data.data.length;
           that.invoiceList = res2.data.data;
+          let i = 0;
+          while(i < that.invoiceList.length){
+            that.invoiceList[i].substationId = that.subId;
+            i = i + 1;
+          }
           that.loading = false;
         }).catch( function (err){
           //代表请求失败之后处理
