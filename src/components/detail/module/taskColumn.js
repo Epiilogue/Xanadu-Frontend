@@ -96,11 +96,11 @@ function getColumn(opType) {
             break
     }
     tableColumns.forEach(column => {
-        // 如果选中，则设置列显示
+        // 设置列隐藏
         if (hide.includes(column.prop)) {
             column.show = false;
         } else {
-            // 如果未选中，则设置列隐藏
+            // 设置列显示 
             column.show = true;
         }
     })
@@ -108,7 +108,7 @@ function getColumn(opType) {
 }
 
 // 任务类型和任务状态下拉框
-let taskStatusOption = ['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成']
+let taskStatusOption = ['已调度', '可分配', '已分配', '已领货', '执行完成','已完成', '失败', '部分完成']
 let taskTypeOption = ['收款', '送货', '送货收款', '退货', '换货']
 function getOption(opType) {
     let status = []
@@ -127,8 +127,10 @@ function getOption(opType) {
             type = ['收款', '送货收款']
             break
         case '打印签收单':
-        case '回执录入':
             status = ['已分配', '已领货']
+            type = ['送货', '送货收款']
+        case '回执录入':
+            status = ['执行完成']
             type = taskTypeOption
             break
         default:

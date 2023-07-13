@@ -32,7 +32,7 @@
             <!-- 选中对应分站 -->
             <el-table-column :label=switchTitle min-width="100" align="center">
                 <template slot-scope="{ row }">
-                    <el-switch :value="row.id === selectedSub" @change="handleChange(row)" :disabled="id!==-1">
+                    <el-switch :value="row.id === selectedSub" @change="handleChange(row)" :disabled="!selectAble">
                     </el-switch>
                 </template>
             </el-table-column>
@@ -54,7 +54,7 @@ import Subware from "@/components/detail/subware.vue";
 export default {
     name: 'substation',
   components: {Subware},
-    props: ['switchTitle','searchAble','id'],
+    props: ['switchTitle','searchAble','id','selectAble'],
     directives: { waves },
     data() {
         return {
@@ -116,7 +116,6 @@ export default {
 
         // 获取选中的分站ID
         getSubId() {
-            if(this.id!==-1) return this.id
             return this.selectedSub
         },
 

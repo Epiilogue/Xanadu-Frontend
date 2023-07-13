@@ -133,6 +133,11 @@ export default {
         }
         fun(this.subId).then(res => {
           this.userList = res.data
+          // 分页
+          this.queryList = this.userList
+          this.getPageList()
+          console.log('用户信息', this.userList)
+          this.loading = false;
         })
         // 添加对应用户到分站
       } else if (this.opType.includes('添加')) {
@@ -146,13 +151,13 @@ export default {
         }
         fun().then(res => {
           this.userList = res.data
+          // 分页
+          this.queryList = this.userList
+          this.getPageList()
+          console.log('用户信息', this.userList)
+          this.loading = false;
         })
       }
-      // 分页
-      this.queryList = this.userList
-      this.getPageList()
-      console.log('用户信息', this.userList)
-      this.loading = false;
     },
     // 分页
     getPageList() {

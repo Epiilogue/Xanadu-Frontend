@@ -17,7 +17,7 @@
           </div>
         </el-form-item>
       </el-form>
-      <substation switchTitle="设为任务分站" :searchAble="false" :id="temp.substationId ? temp.substationId:-1" ref="substation" width="50%"></substation>
+      <substation switchTitle="设为任务分站" :searchAble="false" :selectAble="temp.substationId?false:true" :id="temp.substationId ? temp.substationId:-1" ref="substation" width="50%"></substation>
     </el-card>
     <el-card class="box-card" shadow="always">
       <div slot="header" class="clearfix">

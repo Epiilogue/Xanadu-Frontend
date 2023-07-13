@@ -138,7 +138,7 @@
     <Order v-if="this.dialogFormVisible" ref="order" :id="this.form.id" :orderType="this.form.orderType"></Order>
 
     <el-dialog title="选择分站" :visible.sync="subDialogFormVisible" style="padding-left: 5%" width="70%">
-      <substation v-if="subDialogFormVisible" switchTitle="设为订单分站" :searchAble="true" :id="-1" ref="substation"
+      <substation v-if="subDialogFormVisible" switchTitle="设为订单分站" :searchAble="true" :selectAble="true" :id="form.substationId?form.substationId:-1" ref="substation"
         width="50%"></substation>
       <div slot="footer" class="dialog-footer">
         <el-button @click="subDialogFormVisible = false">
@@ -249,7 +249,7 @@ export default {
                 this.$nextTick(() => {
                   this.$refs.order.getAndConvert(res.data.id)
                 })
-                this.onReset()
+                // this.onReset()
               });
             } else {
               this.$modal.alertWarning("请选择要购买的商品");
