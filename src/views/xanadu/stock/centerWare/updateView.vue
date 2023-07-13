@@ -41,11 +41,7 @@
 /* eslint-disable */
 import loadBMap from '@/utils/loadBMap.js'
 
-import { centerware, centerwareupdate, subwareEdit } from '@/api/ware'
-
-import axios from 'axios'
-import subware from './index'
-import { addSubware } from '@/api/ware'
+import { centerware, centerwareupdate } from '@/api/ware'
 
 export default {
   name: 'updateView',
@@ -106,14 +102,12 @@ export default {
         console.log(this.list)
         await loadBMap('zEHMzU0K51Kr5Q9vgPFvV1xHRwYjGlnM') // 加载引入BMap
         this.initMap()
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
     //修改仓库
     addStock() {
-      this.subware.id = 1;
+      this.subware.id = 1
       console.log(this.subware)
       if (!this.subware.name) {
         this.$message.error('请输入仓库名称')

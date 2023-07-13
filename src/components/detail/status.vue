@@ -18,11 +18,11 @@ export default {
         case '可分配':
           return '#67c23a'; // 绿色
         case '缺货':
-          return '#e6a23c'; // 橙色
+          return '#f56c6c'; // 橙色
         case '已完成':
           return '#909399'; // 灰色
         case '已调度':
-          return '#67c23a'; // 绿色
+          return '#e6a23c'; // 绿色
         case '中心库房出库':
           return '#909399'; // 灰色
         case '配送站到货':

@@ -393,7 +393,13 @@ export default {
             duration: 2000
           })
           this.generateVisible = false
-          this.getList()
+          //遍历列表找到与oneAllLackRecord productId相同的记录删除
+          for (let i = 0; i < this.list.length; i++) {
+            if (this.list[i].product.id === this.oneAllLackRecord.product.id) {
+              this.list.splice(i, 1)
+              break
+            }
+          }
         }
       })
     }
