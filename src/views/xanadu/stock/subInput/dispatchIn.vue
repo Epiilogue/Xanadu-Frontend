@@ -43,11 +43,11 @@
           </template>
         </el-table-column>
         <el-table-column label="分站ID" align="center" prop="substationId" width="70" show-overflow-tooltip></el-table-column>
-<!--        <el-table-column label="供应商ID" align="center" prop="supplierId" width="70" show-overflow-tooltip>
+       <el-table-column label="供应商ID" align="center" prop="supplierId" width="70" show-overflow-tooltip>
           <template slot-scope="{row}">
             <supplier :id="row.supplierId"></supplier>
           </template>
-        </el-table-column>-->
+        </el-table-column>
         <el-table-column label="商品名称" align="center" prop="productName" width="300" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" prop="outputTime" width="100" show-overflow-tooltip></el-table-column>
