@@ -12,6 +12,9 @@
         LOGOUT
       </el-button>
 
+      <el-button slot="append" class="avatar-container right-menu-item hover-effect" @click.native="setting = true"  >
+        布局设置
+      </el-button>
     </div>
   </div>
 </template>
