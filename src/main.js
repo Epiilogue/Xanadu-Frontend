@@ -55,6 +55,11 @@ import user from '@/components/detail/user.vue'
 import substation from '@/components/detail/substation.vue'
 import taskvo from '@/components/detail/taskvo.vue'
 import dataV from '@jiaminghi/data-view'
+import iostatus from '@/components/detail/iostatus'
+import taskType from '@/components/detail/taskType'
+import ProductSelect from '@/components/Pop/Product/index.vue'
+import SubwareSelect from '@/components/Pop/Subware/index.vue'
+import SupplierSelect from '@/components/Pop/Supplier/index.vue'
 
 //引入echart
 import * as echarts from 'echarts'
@@ -100,6 +105,12 @@ Vue.component('task', task)
 Vue.component('user', user)
 Vue.component('substation', substation)
 Vue.component('taskvo', taskvo)
+Vue.component('iostatus', iostatus)
+Vue.component('taskType', taskType)
+
+Vue.component('ProductSelect', ProductSelect)
+Vue.component('SubwareSelect', SubwareSelect)
+Vue.component('SupplierSelect', SupplierSelect)
 
 Vue.use(directive)
 Vue.use(plugins)

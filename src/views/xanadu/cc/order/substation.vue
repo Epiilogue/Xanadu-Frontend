@@ -18,7 +18,7 @@
         </div>
         <el-table :key="tableKey" v-loading="listLoading"
             :data="queryList.slice((currentPage - 1) * pageSize, currentPage * pageSize)" border fit highlight-current-row
-            style="width: 100%;" :row-key="(row) => row.id" @select="handleSelect" @select-all="handleSelect">
+            style="width: 100%;" :row-key="(row) => row.id">
             <el-table-column label="ID" prop="id" align="center" width="80"></el-table-column>
             <el-table-column label="名称" prop="name" min-width="80px" align="center"></el-table-column>
             <el-table-column label="地址" prop="address" min-width="50px" align="center"></el-table-column>

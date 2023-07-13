@@ -54,7 +54,7 @@
             <subware :id="row.subwareId"></subware>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" min-width="300" align="center" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" show-overflow-tooltip></el-table-column>
         <el-table-column label="创建时间" align="center" prop="createTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="更新时间" align="center" prop="updateTime" show-overflow-tooltip></el-table-column>

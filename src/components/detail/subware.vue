@@ -32,7 +32,6 @@ export default {
         { label: '库房地址', prop: 'address' },
         { label: '经度', prop: 'x' },
         { label: '纬度', prop: 'y' },
-        { label: '库管员', prop: 'master' },
         { label: '分库城市地址', prop: 'city' }
       ],
     }

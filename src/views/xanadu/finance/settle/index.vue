@@ -276,7 +276,7 @@ export default {
         this.open2 = true;
         const that = this;
         this.loading = true;
-        axios.get("http://localhost:8010/ac/supply/listToSettlement",{
+        axios.get("http://localhost:8049/ac/supply/listToSettlement",{
           params: {
             supplierId: that.form.supplierId,
             startTime: that.form.startTime.toLocaleString(),
@@ -303,7 +303,7 @@ export default {
     getToList() {
       const that = this
       that.open1 = true;
-      axios.get("http://localhost:8010/ac/supply/listSettlement").then( function(res){
+      axios.get("http://localhost:8049/ac/supply/listSettlement").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.loading = false;
@@ -381,7 +381,7 @@ export default {
         let j = 0;
         while(j < this.selectList.length){
           // 向后端发送数据
-          axios.post("http://localhost:8010/ac/supply/postSettlement",that.selectList)
+          axios.post("http://localhost:8049/ac/supply/postSettlement",that.selectList)
             .then(function(){
               console.log(that.selectList);
               that.$message({

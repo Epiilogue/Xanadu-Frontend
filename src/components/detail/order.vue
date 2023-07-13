@@ -70,11 +70,12 @@ export default {
     methods: {
         // 获取数据 格式转换
         getAndConvert(id) {
-            let query = { orderId: id, orderType: this.orderType }
+            let query = { orderId: id}
             getOrder(query).then(res => {
                 this.detail = res.order
                 this.temp = res.origin
                 this.productList = res.productList
+                this.orderType=this.temp.orderType
                 // 获取列
                 this.formFields = getColumn(this.orderType)
                 this.formFields.order.slice(0, 1)  //不显示订单编号

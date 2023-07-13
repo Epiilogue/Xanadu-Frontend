@@ -17,7 +17,7 @@
           </div>
         </el-form-item>
       </el-form>
-      <substation switchTitle="设为任务分站" :searchAble="false" :id="temp.substationId?temp.substationId:-1" ref="substation" width="50%"></substation>
+      <substation switchTitle="设为任务分站" :searchAble="false" :id="temp.substationId ? temp.substationId:-1" ref="substation" width="50%"></substation>
     </el-card>
     <el-card class="box-card" shadow="always">
       <div slot="header" class="clearfix">
@@ -34,7 +34,7 @@
           this.temp.status
         }}</el-descriptions-item>
         <el-descriptions-item label="预计送货日期">{{
-          $moment(new Date(this.temp.deliveryTime)).format("YYYY-MM-DD")
+          this.temp.deliveryTime?$moment(new Date(this.temp.deliveryTime)).format("YYYY-MM-DD"):''
         }}</el-descriptions-item>
         <el-descriptions-item label="操作员编号">{{
           this.temp.userId
@@ -157,15 +157,6 @@ export default {
     }
   },
   methods: {
-    handleChange(row) {
-      if (row.id === this.selectedSub) {
-        // 取消选中
-        this.selectedSub = ""
-      } else {
-        // 选中
-        this.selectedSub = row.id
-      }
-    },
 
     handleSubmit() {
       this.selectedSub=this.$refs.substation.getSubId()

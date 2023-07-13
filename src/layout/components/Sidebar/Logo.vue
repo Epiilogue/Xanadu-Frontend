@@ -36,7 +36,6 @@ export default {
   data() {
     return {
       title: 'Xanadu管理系统',
-      logo: logoImg
     }
   }
 }

@@ -156,7 +156,7 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/ac/invoices/list").then( function(res){
+      axios.get("http://localhost:8049/ac/invoices/list").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -198,7 +198,7 @@ export default {
       this.open = true;
       const id = row.id || this.ids;
       const that = this
-      axios.get("http://localhost:8010/ac/invoice/getinvoice/"+id).then( function(res){
+      axios.get("http://localhost:8049/ac/invoice/getinvoice/"+id).then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.form = res.data.data;
@@ -213,7 +213,7 @@ export default {
       row.dstate = '生效中';
       row.state = '未领用';
       row.details = '无';
-      axios.post("http://localhost:8010/ac/invoices/update/",row)
+      axios.post("http://localhost:8049/ac/invoices/update/",row)
         .then(function(promise){
           that.reset();
           that.$message.success('修改成功');
@@ -235,7 +235,7 @@ export default {
       const that = this
       that.form.dstate = '已失效';
       that.form.state = '未领用';
-      axios.post("http://localhost:8010/ac/invoices/update/",form)
+      axios.post("http://localhost:8049/ac/invoices/update/",form)
         .then(function(promise){
           that.$message.success('修改成功');
           that.open = false;

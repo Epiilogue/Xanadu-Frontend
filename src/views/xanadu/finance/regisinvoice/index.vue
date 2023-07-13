@@ -186,7 +186,7 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/ac/invoice/list").then( function(res){
+      axios.get("http://localhost:8049/ac/invoice/list").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -216,7 +216,7 @@ export default {
     /** 筛选按钮操作 */
     select(){
       const that = this
-      axios.get("http://localhost:8010/ac/invoice/listByState/"+this.selection.status).then( function(res){
+      axios.get("http://localhost:8049/ac/invoice/listByState/"+this.selection.status).then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -249,7 +249,7 @@ export default {
       }
       else {
         row.registration = "未登记";
-        axios.post("http://localhost:8010/ac/invoice/register/",row)
+        axios.post("http://localhost:8049/ac/invoice/register/",row)
           .then(function(promise){
             console.log(promise.data)
             that.reset();
@@ -273,7 +273,7 @@ export default {
       }
       else{
         row.registration = "已登记";
-        axios.post("http://localhost:8010/ac/invoice/register/",row)
+        axios.post("http://localhost:8049/ac/invoice/register/",row)
           .then(function(promise){
             console.log(promise.data)
             that.$message({
@@ -300,7 +300,7 @@ export default {
         if (valid) {
           // 表单校验通过，执行提交操作
           const that = this;
-          axios.post("http://localhost:8010/ac/invoice/addinvoice/",that.formData)
+          axios.post("http://localhost:8049/ac/invoice/addinvoice/",that.formData)
             .then(function(){
               console.log(that.formData)
               that.getList();
