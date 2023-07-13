@@ -138,9 +138,12 @@
             <subware :id="row.subwareId"></subware>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" min-width="300" align="center" prop="productName" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库时间" align="center" min-width="200" prop="outputTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="预计出库时间" align="center" min-width="150" prop="requireTime" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" min-width="300" align="center" prop="productName" show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column label="出库时间" align="center" min-width="200" prop="outputTime" show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column label="预计出库时间" align="center" min-width="150" prop="requireTime" show-overflow-tooltip
+        ></el-table-column>
         <el-table-column label="状态" align="center" min-width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
@@ -175,7 +178,7 @@
                  :step="1"
       >
       </el-slider>
-      <el-button type="primary" round @click="confirmOut">提交</el-button>
+      <el-button type="primary" right round @click="confirmOut">提交</el-button>
 
     </el-dialog>
 
@@ -208,7 +211,7 @@ export default {
       outvalue: '',
       outNum: '',
       productName: '',
-      status:'',
+      status: '',
       printData: {
         data: null,
         productName: '',
@@ -246,9 +249,9 @@ export default {
   },
   watch: {
     dialogFormVisible: {
-      handler() {
+      /*handler() {
         this.reset()
-      }
+      }*/
     }
   },
   methods: {
@@ -286,6 +289,13 @@ export default {
             message: '出库成功',
             type: 'success'
           })
+          //找到list种outId相同的行，并删除
+          for (let i = 0; i < this.tableData.length; i++) {
+            if (this.tableData.at(i).id === this.outId) {
+              this.tableData.splice(i, 1)
+              break
+            }
+          }
         }
       })
     },
@@ -402,10 +412,12 @@ export default {
       cenDispatchOut().then(res => {
         this.tableData = res.data
         for (let i = 0; i < this.tableData.length; i++) {
-          if (this.tableData.at(i).outputTime!== null)
+          if (this.tableData.at(i).outputTime !== null) {
             this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-          if (this.tableData.at(i).requireTime!== null)
+          }
+          if (this.tableData.at(i).requireTime !== null) {
             this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+          }
         }
       })
     }
@@ -414,10 +426,12 @@ export default {
     cenDispatchOut().then(res => {
       this.tableData = res.data
       for (let i = 0; i < this.tableData.length; i++) {
-        if (this.tableData.at(i).outputTime!== null)
+        if (this.tableData.at(i).outputTime !== null) {
           this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-        if (this.tableData.at(i).requireTime!== null)
+        }
+        if (this.tableData.at(i).requireTime !== null) {
           this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
+        }
       }
     })
   }
