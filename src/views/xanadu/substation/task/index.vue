@@ -261,235 +261,233 @@ import Invoice from '@/views/xanadu/substation/task/invoice.vue'
 import axios from 'axios'
 import printJS from 'print-js'
 import { parseTime } from '@/utils/ruoyi'
-import Customer from '@/components/detail/dispatch.vue'
+import Customer from '@/components/detail/customer.vue'
 import Substation from '@/components/detail/substation.vue'
 
 export default {
-  components: { Substation, Customer, Invoices, Pagination, Receipt, UserTable, Task, Invoice },
-  created() {
-    let sub = this.$cache.session.get('subProcessing')
-    if (!sub) {
-      // 未设置分站
-      this.pageList = []
-      this.$message({
-        type: 'error',
-        message: '请先在分站管理处设置要操作的分站',
-        durarion: 1000
-      })
-      return
-    } else {
-      this.subId = Number(this.$cache.session.get('subProcessing'))
-      this.handleOpChange(this.opType)
-    }
-  },
-  data() {
-    return {
-      //路由参数
-      opType: '',   //任务操作类型
-      subId: '',   //分站id
-      //数据
-      task: {},    //当前操作的任务单
-      list: [],   //所有数据
-      queryList: [],  //查询后数据
-      opList: [],  //操作的数据
-      total: 0,   //分页
-      refreshed: true,
-      listLoading: false,
-      //查询
-      listQuery: {
-        deadlineRange: [],
-        taskStatus: '',
-        taskType: '',
-        courierId: '',
-        needInvoice: ''
-      },
-      printform: {
-        substation: {
-          address: '',
-          name: '暂无信息',
-          phone: '',
-          subwareId: ''
+    components: {Substation, Customer, Invoices, Pagination, Receipt, UserTable, Task ,Invoice},
+    created() {
+        let sub = this.$cache.session.get('subProcessing')
+        if (!sub) {
+            // 未设置分站
+            this.pageList = []
+            this.$message({
+                type: 'error',
+                message: '请先在分站管理处设置要操作的分站',
+                durarion: 1000,
+            });
+            return
+        } else {
+            this.subId = Number(this.$cache.session.get('subProcessing'))
+            this.handleOpChange(this.opType);
+        }
+    },
+    data() {
+        return {
+            //路由参数
+            opType: "",   //任务操作类型
+            subId: '',   //分站id
+            //数据
+            task: {},    //当前操作的任务单
+            list: [],   //所有数据
+            queryList: [],  //查询后数据
+            opList: [],  //操作的数据
+            total: 0,   //分页
+            refreshed:true,
+            listLoading: false,
+            //查询
+            listQuery: {
+                deadlineRange: [],
+                taskStatus: "",
+                taskType: "",
+                courierId: "",
+                needInvoice: "",
+            },
+            printform: {
+              substation:{
+                    address: '',
+                    name: '暂无信息',
+                    phone: '',
+                    subwareId: ''
+                },
+                task: {
+                    courierId: '',
+                    createTime: '',
+                    customerId: '',
+                    deadline: '',
+                    deleted: '',
+                    deliveryAddress: '',
+                    needInvoice: '',
+                    receiverName: '',
+                    products: {
+                        productName: '',
+                        number: '',
+                        price: ''
+                    },
+                }
+            },
+            // 分页
+            pageList: [],   //表格数据
+            pageInfo: {
+                pageNum: 1,
+                pageSize: 10,
+            },
+            //下拉选择
+            taskStatusOption: ['已调度', '可分配', '已分配', '已领货', '执行完成','已完成', '失败', '部分完成'],
+            taskTypeOption: ['收款', '送货', '送货收款', '退货', '换货'],
+            opTypeOption: ['分配任务', '取货', '发票领用', '打印签收单', '回执录入'],
+            // dialog
+            courierDialogVisible: false,
+            invoicesDialogVisible: false,
+            invoiceDialogVisible: false,
+            tableColumns: undefined, //表格列
+            receipt: false,  //是否展示回执录入页面
+        }
+    },
+    methods: {
+        parseTime() {
+            return parseTime
         },
-        task: {
-          courierId: '',
-          createTime: '',
-          customerId: '',
-          deadline: '',
-          deleted: '',
-          deliveryAddress: '',
-          needInvoice: '',
-          receiverName: '',
-          products: {
-            productName: '',
-            number: '',
-            price: ''
-          }
-        }
-      },
-      // 分页
-      pageList: [],   //表格数据
-      pageInfo: {
-        pageNum: 1,
-        pageSize: 10
-      },
-      //下拉选择
-      taskStatusOption: ['已调度', '可分配', '已分配', '已领货', '已完成', '失败', '部分完成'],
-      taskTypeOption: ['收款', '送货', '送货收款', '退货', '换货'],
-      opTypeOption: ['分配任务', '取货', '发票领用', '打印签收单', '回执录入'],
-      // dialog
-      courierDialogVisible: false,
-      invoicesDialogVisible: false,
-      invoiceDialogVisible: false,
-      tableColumns: undefined, //表格列
-      receipt: false  //是否展示回执录入页面
-    }
-  },
-  methods: {
-    parseTime() {
-      return parseTime
-    },
-    getList(fun) {
-      // 默认查询所有任务
-      if (!fun) fun = getTaskList
-      // 加载列表
-      return new Promise((resolve, reject) => {
-        fun(this.subId).then((response) => {
-          this.list = response.data
-          resolve('成功')
-        }).catch(err => {
-          reject('失败')
-          this.listLoading = false
-        })
-      })
-    },
-    getPageList() {
-      this.refreshed = false
-      this.total = this.queryList.length
-      let pageNum = this.pageInfo.pageNum
-      let pageSize = this.pageInfo.pageSize
-      this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
-      this.$nextTick(() => {
-        this.refreshed = true
-      })
+        getList(fun) {
+            // 默认查询所有任务
+            if (!fun) fun = getTaskList
+            // 加载列表
+            return new Promise((resolve, reject) => {
+                fun(this.subId).then((response) => {
+                    this.list = response.data;
+                    resolve('成功')
+                }).catch(err => {
+                    reject('失败')
+                    this.listLoading = false
+                });
+            })
+        },
+        getPageList() {
+            this.refreshed=false
+            this.total = this.queryList.length
+            let pageNum = this.pageInfo.pageNum
+            let pageSize = this.pageInfo.pageSize
+            this.pageList = this.queryList.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+            this.$nextTick(()=>{
+                this.refreshed=true
+            })
 
-    },
-    //查询
-    handleFilter(show) {
-      this.listLoading = true
-      this.queryList = this.opList.filter((task) => {
-        // 查询条件
-        let query = this.listQuery
-        // 日期 任务类型 任务状态 配送员
-        let range = query.deadlineRange
-        if (range !== null && (new Date(task.deadline) < new Date(range[0]) || new Date(task.deadline) > new Date(range[1]))) {
-          return false
-        }
-        if (query.taskType !== '' && task.taskType !== query.taskType) {
-          return false
-        }
-        if (query.taskStatus !== '' && task.taskStatus !== query.taskStatus) {
-          console.log(task.taskStatus + query.taskStatus)
-          return false
-        }
-        if (query.courierId != '' && (task.courierId).toString().indexOf(query.courierId) === -1) {
-          return false
-        }
-        return true
-      })
-      // 分页
-      this.getPageList()
-      this.listLoading = false
-      if (!show) return
-      if (this.queryList.length === 0) {
-        this.$message({
-          type: 'error',
-          message: '没有符合条件的任务',
-          durarion: 1000
-        })
-      } else {
-        this.$message({
-          type: 'success',
-          message: '查询成功',
-          durarion: 1000
-        })
-      }
-    },
-    // 获取当前操作类型对应的任务单列表
-    async handleOpChange(newVal) {
-      this.listLoading = true
-      // 修改下拉框选项
-      let option = getOption(newVal)
-      this.taskStatusOption = option.status
-      this.taskTypeOption = option.type
-      // 修改表格列
-      this.tableColumns = getColumn(newVal)
-      // 加载下拉框内容
-      switch (newVal) {
-        // 所有任务
-        case '分配任务':
-          await this.getList()
-          this.opList = this.list.filter(task => task.taskStatus === '可分配')
-          break
-        // list是分站进行中的任务
-        case '取货':
-          await this.getList(listHanding)
-          this.opList = this.list.filter(task => {
-            if (task.taskStatus === '已分配' && ['送货', '送货收款', '换货'].includes(task.taskType)) {
-              return true
+        },
+        //查询
+        handleFilter(show) {
+            this.listLoading = true;
+            this.queryList = this.opList.filter((task) => {
+                // 查询条件
+                let query = this.listQuery
+                // 日期 任务类型 任务状态 配送员
+                let range = query.deadlineRange
+                if (range !== null && (new Date(task.deadline) < new Date(range[0]) || new Date(task.deadline) > new Date(range[1]))) {
+                    return false
+                }
+                if (query.taskType !== '' && task.taskType !== query.taskType) {
+                    return false
+                }
+                if (query.taskStatus !== '' && task.taskStatus !== query.taskStatus) {
+                    console.log(task.taskStatus + query.taskStatus)
+                    return false
+                }
+                if (query.courierId != '' && (task.courierId).toString().indexOf(query.courierId) === -1) {
+                    return false
+                }
+                return true
+            });
+            // 分页
+            this.getPageList()
+            this.listLoading = false;
+            if(!show) return
+            if (this.queryList.length === 0) {
+                this.$message({
+                    type: 'error',
+                    message: '没有符合条件的任务',
+                    durarion: 1000,
+                });
+            } else {
+                this.$message({
+                    type: 'success',
+                    message: '查询成功',
+                    durarion: 1000,
+                });
             }
-          })
-          break
-        // list是分站进行中的任务
-        case '发票领用':
-          await this.getList(listHanding)
-          // 只有新订的收款任务和已分配且未完成的任务需要领用发票
-          this.opList = this.list.filter(task => {
-            if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType)
-              && task.needInvoice === true) {
-              return true
+        },
+        // 获取当前操作类型对应的任务单列表
+        async handleOpChange(newVal) {
+            this.listLoading = true;
+            // 修改下拉框选项
+            let option = getOption(newVal)
+            this.taskStatusOption = option.status
+            this.taskTypeOption = option.type
+            // 修改表格列
+            this.tableColumns = getColumn(newVal)
+            // 加载下拉框内容
+            switch (newVal) {
+                // 所有任务
+                case '分配任务':
+                    await this.getList()
+                    this.opList = this.list.filter(task => task.taskStatus === '可分配')
+                    break
+                // list是分站进行中的任务
+                case '取货':
+                    await this.getList(listHanding)
+                    this.opList = this.list.filter(task => {
+                        if (task.taskStatus === '已分配' && ['送货', '送货收款', '换货'].includes(task.taskType))
+                            return true
+                    })
+                    break
+                // list是分站进行中的任务
+                case '发票领用':
+                    await this.getList(listHanding)
+                    // 只有新订的收款任务和已分配且未完成的任务需要领用发票
+                    this.opList = this.list.filter(task => {
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType)
+                            && task.needInvoice === true)
+                            return true
+                    })
+                    break
+                // list是分站进行中的任务
+                case '打印签收单':
+                    // 已分配且未完成的任务需要打印签收单
+                    await this.getList(listHanding)
+                    this.opList = this.list.filter(task => {
+                        if (['已分配', '已领货'].includes(task.taskStatus) && ['送货', '送货收款'].includes(task.taskType))
+                            return true
+                    })
+                    break
+                // list是分站进行中的任务
+                case '回执录入':
+                    await this.getList(listHanding)
+                    this.opList = this.list.filter(task => {
+                        // if ((task.taskStatus === '已领货' && ['送货', '送货收款', '换货'].includes(task.taskType))
+                        //     || (task.taskStatus === '已分配' && ['收款', '退货'].includes(task.taskType)))
+                        //     return true
+                        if (task.taskStatus === '执行完成')
+                            return true
+                    })
+                    break
+                // 所有任务
+                default:
+                    await this.getList()
+                    this.opList = this.list
+                    break
             }
-          })
-          break
-        // list是分站进行中的任务
-        case '打印签收单':
-          // 已分配且未完成的任务需要打印签收单
-          await this.getList(listHanding)
-          this.opList = this.list.filter(task => {
-            if (['已分配', '已领货'].includes(task.taskStatus) && ['送货', '送货收款'].includes(task.taskType)) {
-              return true
+            // 查询结果
+            this.handleFilter(false)
+            // 分页
+            this.getPageList()
+            this.listLoading = false;
+            // 提示
+            if (this.total === 0 && newVal != '') {
+                this.$message({
+                    type: 'error',
+                    message: '没有需要操作的任务单',
+                    durarion: 1000,
+                });
             }
-          })
-          break
-        // list是分站进行中的任务
-        case '回执录入':
-          await this.getList(listHanding)
-          this.opList = this.list.filter(task => {
-            if ((task.taskStatus === '已领货' && ['送货', '送货收款', '换货'].includes(task.taskType))
-              || (task.taskStatus === '已分配' && ['收款', '退货'].includes(task.taskType))) {
-              return true
-            }
-          })
-          break
-        // 所有任务
-        default:
-          await this.getList()
-          this.opList = this.list
-          break
-      }
-      // 查询结果
-      this.handleFilter(false)
-      // 分页
-      this.getPageList()
-      this.listLoading = false
-      // 提示
-      if (this.total === 0 && newVal != '') {
-        this.$message({
-          type: 'error',
-          message: '没有需要操作的任务单',
-          durarion: 1000
-        })
-      }
-    },
+        },
 
     // 任务单操作
     handleTask(row) {
@@ -651,36 +649,53 @@ export default {
       this.invoicesDialogVisible = true
     },
 
-    // Todo:打印签收单
-    printSign() {
-      const id = this.task.id
-      const that = this
-      axios.get('http://localhost:8019/sub/task/printReceipt/' + id).then(function(res) {
-        //代表请求成功之后处理
-        that.printform = res.data.data
-        setTimeout(function() {
-          that.print()
-        }, 1000)
-        console.log(that.printform)
-      }).catch(function(err) {
-        //代表请求失败之后处理
-        that.$message({
-          message: '后端请求失败',
-          type: 'error'
-        })
-        console.log(err)
-      })
+        // Todo:打印签收单
+        printSign() {
+          if(this.printform.substation.name === '暂无信息'){
+                this.$message.success('发票信息加载中');
+            const id =this.task.id;
+                const that = this;
+            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+                    //代表请求成功之后处理
+                    that.printform = res.data.data;
+                    console.log(that.printform);
+            }).catch( function (err){
+                    //代表请求失败之后处理
+                    that.$message({
+                        message: "后端请求失败",
+                        type: 'error'
+                    });
+              console.log (err);
+                });
+            }
+          else{
+            const id =this.task.id;
+                const that = this;
+            axios.get("http://localhost:8019/sub/task/printReceipt/"+id).then( function(res){
+                    //代表请求成功之后处理
+                    that.printform = res.data.data;
+                    console.log(that.printform);
+            }).catch( function (err){
+                    //代表请求失败之后处理
+                    that.$message({
+                        message: "后端请求失败",
+                        type: 'error'
+                    });
+              console.log (err);
+                });
+                that.print();
+            }
+        },
+        print(){
+          printJS('printJS-form-task','html')
+        },
+        // Todo:分站发票领用
+        // 分站id是 this.subId
+        handleAssignSubInvoice() {
+            this.invoiceDialogVisible = true;
+            console.log('分站发票领用')
+        }
     },
-    print() {
-      printJS('printJS-form-task', 'html')
-    },
-    // Todo:分站发票领用
-    // 分站id是 this.subId
-    handleAssignSubInvoice() {
-      this.invoiceDialogVisible = true
-      console.log('分站发票领用')
-    }
-  }
 }
 </script>
 
@@ -712,22 +727,20 @@ export default {
 }
 
 .receipt {
-  border: 1px solid #ccc;
-  background-color: #fff;
-  font-family: Arial, sans-serif;
-  padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
 }
 
 .receipt-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  margin-top: 10px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 10px;
 }
 
 .receipt-table td:first-child {
-  font-weight: bold;
+    font-weight: bold;
 }
-
-
 </style>

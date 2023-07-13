@@ -93,12 +93,12 @@ const user = {
           // 分站长但不是管理员，缓存分站id
           let auth = Vue.prototype.$auth
           let cache = Vue.prototype.$cache
-          if(auth.hasRole("SUBSTATION_MANAGER") && !auth.hasRole("COURIER")){
+          if(auth.hasRole("SUBSTATION_MANAGER") && !auth.hasRole("admin")){
             fetchSubStation(user.userId).then(res=>{
               cache.session.set('subProcessing', res.id)
             })
           }
-          if(auth.hasRole("WAREHOUSE_MANAGER")){
+          if(auth.hasRole("WAREHOUSE_MANAGER") && !auth.hasRole("admin")){
             fetchSubware(user.userId).then(res=>{
               cache.session.set('subwareProcessing', res.data.id)
             })
