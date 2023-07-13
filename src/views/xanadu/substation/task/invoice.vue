@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-      <el-menu-item index="1">可领用发票</el-menu-item>
-      <el-menu-item index="2">已领用发票</el-menu-item>
+      <el-menu-item index="1">该分站可领用发票</el-menu-item>
+      <el-menu-item index="2">该分站已领用发票</el-menu-item>
     </el-menu>
     <!--发票列表-->
 

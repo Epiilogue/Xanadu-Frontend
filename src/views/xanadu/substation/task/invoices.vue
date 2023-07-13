@@ -323,7 +323,6 @@ export default {
         that.form.orderId = that.task.orderId;
         that.form.productNum = that.task.numbers;
         that.form.productName = that.task.totalAmount;
-        console.log(that.form);
       }).catch(function (err){
         that.$message.error('信息获取失败');
         console.log(err);
@@ -350,6 +349,9 @@ export default {
         .then(function(promise){
           console.log(form);
           that.$message.success('提交成功');
+          setTimeout(function() {
+            that.getList()
+          }, 1000)
           that.open = false;
         }).catch( function (err){
         //代表请求失败之后处理
