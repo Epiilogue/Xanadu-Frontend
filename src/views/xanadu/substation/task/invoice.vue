@@ -78,7 +78,7 @@ export default {
     getList() {
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/ac/invoice/listByReceipt").then( function(res){
+      axios.get("http://localhost:8049/ac/invoice/listByReceipt").then( function(res){
         //代表请求成功之后处理
         console.log(res);
         that.total = res.data.data.length;
@@ -99,7 +99,7 @@ export default {
     getinvoice(row){
       const that = this
       row.substationId = that.subId;
-      axios.post("http://localhost:8010/ac/invoices/update/",row)
+      axios.post("http://localhost:8049/ac/invoices/update/",row)
         .then(function(promise){
           that.$message.success('领用成功');
         }).catch( function (err){
