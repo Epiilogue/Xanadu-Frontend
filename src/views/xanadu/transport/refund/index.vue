@@ -1,4 +1,3 @@
-<!--缺货检查-->
 <template>
   <div>
     <!--搜索栏-->
@@ -27,6 +26,7 @@
         <el-form-item style="margin-left: 10px">
           <el-button type="primary" size="small" icon="el-icon-search" @click="search">搜索</el-button>
           <el-button type="primary" size="small" icon="el-icon-refresh" @click="reset">重置</el-button>
+          <el-button type="primary" size="small" icon="el-icon-s-order" @click="showHistory">查看历史记录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -73,11 +73,30 @@
       <el-button type="primary" round @click="confirmRe()">提交</el-button>
     </el-dialog>
 
+    <el-dialog title="历史退货安排" v-if="dialogFormVisible1" :visible.sync="dialogFormVisible1" center>
+      <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="listData.slice((currentPage1-1)*pagesize1,currentPage1*pagesize1)">
+        <el-table-column label="#" type="index" align="center"></el-table-column>
+        <el-table-column label="供应商ID" align="center" prop="supplierId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品ID" align="center" prop="productId" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品价格" align="center" prop="productPrice" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库数量" align="center" prop="inputNum" show-overflow-tooltip></el-table-column>
+        <el-table-column label="现有库存" align="center" prop="nowCount" show-overflow-tooltip></el-table-column>
+        <el-table-column label="退货数量" align="center" prop="refundCount" show-overflow-tooltip></el-table-column>
+        <el-table-column label="退货时间" align="center" prop="refundTime" show-overflow-tooltip></el-table-column>
+      </el-table>
+
+      <el-pagination style="margin: 10px 0" @size-change="handleSizeChange1" @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
+                     :page-sizes="[5, 7, 10, 15]" :page-size="10" layout="sizes, prev, pager, next" :total=listData.length>
+      </el-pagination>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import {refurnList, returnOrder} from '@/api/dbc-supplier'
+import {refurnList, returnOrder, historyList} from '@/api/dbc-supplier'
+import { listData } from '../../../../api/system/dict/data'
 export default {
   name: 'index',
   data() {
@@ -87,14 +106,33 @@ export default {
       datevalue:'',
       tableData:[],
       currentPage: 1,
+      currentPage1: 1,
       pagesize: 10,
+      pagesize1: 10,
       dialogFormVisible:false,
+      dialogFormVisible1:false,
       outNum:'',
       outvalue:'',
-      refund:{}
+      refund:{},
+      listData:[]
     }
   },
   methods: {
+    showHistory(){
+      historyList().then((res)=>{
+        var list = []
+        list = res.data
+        this.listData = []
+        for (let i = 0;i < list.length;i++){
+          if (list[i].status === '已提交')
+            this.listData.push(list[i])
+        }
+        for (let i = 0;i < this.listData.length;i++){
+          this.listData.at(i).refundTime = this.getLocalTime(this.listData.at(i).refundTime)
+        }
+        this.dialogFormVisible1 = true
+      })
+    },
     confirmRe(){
       returnOrder(this.outNum,this.refund).then((res)=>{
         if (res.msg === '退货单提交成功') {
@@ -113,7 +151,6 @@ export default {
       this.dialogFormVisible = true
       this.outvalue = row.refundCount
       this.outNum = row.refundCount
-      console.log(row)
       this.refund = row
     },
     //时间戳转换
@@ -137,6 +174,7 @@ export default {
       this.goodID = ''
       this.supplierId = ''
       this.datevalue = ''
+      this.tableData = []
     },
     //搜索
     search(){
@@ -188,6 +226,14 @@ export default {
     // 分页组件监听页码值改变的事件
     handleCurrentChange(newPage) {
       this.currentPage = newPage
+    },
+    //分页
+    handleSizeChange1(newSize) {
+      this.pagesize1 = newSize
+    },
+    // 分页组件监听页码值改变的事件
+    handleCurrentChange1(newPage) {
+      this.currentPage1 = newPage
     },
   }
 }

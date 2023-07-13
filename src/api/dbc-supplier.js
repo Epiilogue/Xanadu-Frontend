@@ -79,3 +79,11 @@ export function returnOrder(number,data){
     data
   })
 }
+
+//获取所有记录
+export function historyList(){
+  return request({
+    url:'/dbc/refund/list',
+    method:'get'
+  })
+}
