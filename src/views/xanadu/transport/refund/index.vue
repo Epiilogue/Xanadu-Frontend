@@ -7,9 +7,14 @@
           <el-input type="text" placeholder="请输入你要搜索的商品ID" v-model="goodID" clearable @clear="reset"></el-input>
         </el-form-item>
 
-        <el-form-item label="供应商ID:">
-          <el-input type="text" placeholder="请输入你要搜索的供应商ID" v-model="supplierId" clearable @clear="reset"></el-input>
+        <el-form-item label="供应商ID" prop="supplierId">
+          <SupplierSelect
+            :value="supplierId"
+            :single="true"
+            @getInfo="getSupplierId"
+          />
         </el-form-item>
+
 
         <el-form-item label="进货日期段:">
           <!--时间段搜索-->
@@ -131,6 +136,11 @@ export default {
     }
   },
   methods: {
+    getSupplierId(selections) {
+      if (selections.length > 0) {
+        this.supplierId = selections[0].id + ''
+      }
+    },
     showHistory() {
       historyList().then((res) => {
         var list = []

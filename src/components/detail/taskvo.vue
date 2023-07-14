@@ -3,10 +3,8 @@
     <div class="link-type" @click="getTask(taskId)">
       {{ taskId }}
     </div>
-    <el-dialog title="任务详情查看" :visible.sync="dialogVisible" style="width: 70%;padding-left: 5%">
-      <el-form ref="dataForm" :model="taskVo" label-position="left" label-width="35%"
-               style="width: 85%; margin-left:20%;"
-      >
+    <el-dialog title="任务详情查看" :visible.sync="dialogVisible" style="padding-left: 5%" width="70%">
+      <el-form ref="dataForm" :model="taskVo" tyle="margin-bottom: 15px;" label-width="35%">
         <el-form-item v-for="field in formFields" :key="field.prop" :label="field.label" :prop="field.prop">
           <el-divider direction="vertical"></el-divider>
           <span>{{ taskVo[field.prop] }}</span>

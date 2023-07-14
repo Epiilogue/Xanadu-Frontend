@@ -89,7 +89,7 @@ export default {
       }
       const that = this
       this.loading = true;
-      axios.get("http://localhost:8010/ac/invoice/listByReceipt",{
+      axios.get("http://localhost:8049/ac/invoice/listByReceipt",{
         params: {
           substationId: that.substationId,
         }
@@ -124,7 +124,7 @@ export default {
       else {
         row.substationId = that.subId;
         console.log(row.substationId)
-        axios.post("http://localhost:8010/ac/invoice/update/",row)
+        axios.post("http://localhost:8049/ac/invoice/update/",row)
           .then(function(promise){
             that.$message.success('领用成功');
           }).catch( function (err){

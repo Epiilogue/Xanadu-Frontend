@@ -60,7 +60,7 @@ import taskType from '@/components/detail/taskType'
 import ProductSelect from '@/components/Pop/Product/index.vue'
 import SubwareSelect from '@/components/Pop/Subware/index.vue'
 import SupplierSelect from '@/components/Pop/Supplier/index.vue'
-
+import LocalProductPop from '@/components/Pop/LocalProduct/index'
 //引入echart
 import * as echarts from 'echarts'
 import Axios from 'axios'
@@ -111,7 +111,7 @@ Vue.component('taskType', taskType)
 Vue.component('ProductSelect', ProductSelect)
 Vue.component('SubwareSelect', SubwareSelect)
 Vue.component('SupplierSelect', SupplierSelect)
-
+Vue.component('LocalProductPop', LocalProductPop)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)

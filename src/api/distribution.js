@@ -76,13 +76,10 @@ export function LackRecordInspect(id,isCheck){
 }
 
 //获取商品列表
-export function fetchList(query) {
+export function fetchList() {
   return request({
     url: '/dbc/product/listAll',
     method: 'get',
-    //params: { pageNum, pageSize },
-    //params: query,
-    //baseURL: 'http://localhost:8089/dbc/product'
   })
 }
   export function fetchPage(id) {
