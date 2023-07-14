@@ -18,15 +18,13 @@
               查询
             </el-button>
           </el-form-item>
-          <el-button type="primary" size="default" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
+          <el-button type="primary" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
         </el-form>
       </div>
 
       <el-table ref="multipleTable" style="margin-top: 10px" border stripe :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)">
         <el-table-column label="#" type="index" align="center"></el-table-column>
         <el-table-column label="记录ID" align="center" prop="id" width="80" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作员ID" align="center" prop="operatorId" width="70" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库ID" align="center" prop="outputId" width="70" show-overflow-tooltip></el-table-column>
         <el-table-column label="任务ID" align="center" prop="taskId" width="70" show-overflow-tooltip>
           <template slot-scope="{row}">
             <task :id="row.taskId"></task>
@@ -42,25 +40,18 @@
             <subware :id="row.subwareId"></subware>
           </template>
         </el-table-column>
-        <el-table-column label="分站ID" align="center" prop="substationId" width="70" show-overflow-tooltip></el-table-column>
-       <el-table-column label="供应商ID" align="center" prop="supplierId" width="70" show-overflow-tooltip>
-          <template slot-scope="{row}">
-            <supplier :id="row.supplierId"></supplier>
-          </template>
-        </el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" width="300" show-overflow-tooltip></el-table-column>
-        <el-table-column label="商品价格" align="center" prop="productPrice" width="70" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库时间" align="center" prop="outputTime" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column label="预计入库时间" align="center" prop="requireTime" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column label="状态" align="center" width="140" show-overflow-tooltip>
+        <el-table-column label="商品名称" align="center" prop="productName" min-width="150" show-overflow-tooltip></el-table-column>
+        <el-table-column label="出库时间" align="center" prop="outputTime" min-width="150" show-overflow-tooltip></el-table-column>
+        <el-table-column label="状态" align="center">
           <template slot-scope="scope">
-            <el-tag type="danger" v-show="scope.row.status === '已出库'">中心仓库已出库</el-tag>
+            <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
+            <el-tag type="warning" v-show="scope.row.status === '分库已入库'">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="入库数量" align="center" prop="outputNum" width="50" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库数量" align="center" prop="outputNum" min-width="100" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)">入库</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)" :disabled="scope.row.status === '分库已入库'">入库</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +67,7 @@
 
 <script>
 
-import {subDispatchIn, subConfirmDispatchIn} from '@/api/ware'
+import {subConfirmDispatchIn, cenDispatchOut} from '@/api/ware'
 import supplier from '../../../../components/detail/supplier'
 import subware from '../../../../components/detail/subware'
 import product from '../../../../components/detail/product'
@@ -107,11 +98,16 @@ export default {
   methods:{
     handleFilter() {
       //先拿到新的数据
-      subDispatchIn(this.subwareID).then(res=>{
-        this.tableData = res.data
+      cenDispatchOut().then(res=>{
+        this.tableData = []
+        var list = []
+        list = res.data
+        for (let i = 0;i < list.length;i++){
+          if (list[i].subwareId == this.subwareID)
+            this.tableData.push(list[i])
+        }
         for (let i = 0;i < this.tableData.length;i++){
           this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
         }
       }).then(() => {
         if (this.productName !== '') {
@@ -182,22 +178,32 @@ export default {
 
     reset(){
       this.tableData = []
-      subDispatchIn(this.subwareID).then(res=>{
-        this.tableData = res.data
+      cenDispatchOut().then(res=>{
+        var list = []
+        list = res.data
+        console.log(list)
+        for (let i = 0;i < list.length;i++){
+          if (list[i].subwareId == this.subwareID)
+            this.tableData.push(list[i])
+        }
         for (let i = 0;i < this.tableData.length;i++){
           this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-          this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
         }
       })
     },
   },
   mounted() {
     this.subwareID = this.$route.query.stockId;
-    subDispatchIn(this.subwareID).then(res=>{
-      this.tableData = res.data
+    cenDispatchOut().then(res=>{
+      var list = []
+      list = res.data
+      console.log(list)
+      for (let i = 0;i < list.length;i++){
+        if (list[i].subwareId == this.subwareID)
+          this.tableData.push(list[i])
+      }
       for (let i = 0;i < this.tableData.length;i++){
         this.tableData.at(i).outputTime = this.getLocalTime(this.tableData.at(i).outputTime)
-        this.tableData.at(i).requireTime = this.getLocalTime(this.tableData.at(i).requireTime)
       }
     })
   }

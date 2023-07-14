@@ -61,7 +61,7 @@
     <!--confirm-->
     <el-dialog title="确认出库" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" center>
       <p style="size: A3">请选择退货出库的数量</p>
-      <el-slider v-model="outNum" show-input :max="Math.ceil(this.outValue*1.5)" :min="Math.floor(this.outValue*0.5)" :step="1">
+      <el-slider v-model="outNum" show-input :max="Math.ceil(this.outValue)" :min="Math.floor(this.outValue*0.5)" :step="1">
       </el-slider>
       <el-button type="primary" round @click="confirmOut">提交</el-button>
     </el-dialog>
