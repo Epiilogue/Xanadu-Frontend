@@ -45,10 +45,10 @@
             <supplier :id="row.supplierId"></supplier>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center" prop="productName" width="300" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" prop="productName" min-width="150" show-overflow-tooltip></el-table-column>
         <el-table-column label="商品价格" align="center" prop="productPrice" width="70" show-overflow-tooltip></el-table-column>
-        <el-table-column label="出库时间" align="center" prop="inputTime" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column label="入库数量" align="center" prop="inputNum" width="50" show-overflow-tooltip></el-table-column>
+        <el-table-column label="出库时间" align="center" prop="inputTime" min-width="150" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库数量" align="center" prop="inputNum" min-width="100" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)">入库</el-button>
