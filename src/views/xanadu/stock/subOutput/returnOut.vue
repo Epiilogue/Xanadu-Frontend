@@ -17,7 +17,7 @@
               查询
             </el-button>
           </el-form-item>
-          <el-button type="primary" size="default" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
+          <el-button type="primary" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
         </el-form>
       </div>
 
@@ -35,19 +35,20 @@
             <subware :id="row.subwareId"></subware>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" align="center" width="300" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" align="center" width="200" prop="productName" show-overflow-tooltip></el-table-column>
         <el-table-column label="出库时间" align="center" width="200" prop="outputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center" width="100" show-overflow-tooltip>
-          <template slot-scope="scope">
+          <template slot-scope="scope"  width="100">
             <el-tag type="success" v-show="scope.row.status === '已出库'">{{ scope.row.status }}</el-tag>
             <el-tag type="danger"  v-show="scope.row.status === '未出库'">{{ scope.row.status }}</el-tag>
+            <el-tag type="warning"  v-show="scope.row.status === '中心仓库已入库'">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="出库数量" align="center" width="80" prop="outputNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="实际出库数量" align="center" width="80" prop="actualNum" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)" :disabled="scope.row.status==='已出库'">出库</el-button>
+            <el-button type="primary" size="default" icon="el-icon-printer" @click="toConfirm(scope.row)" :disabled="scope.row.status!=='未出库'">出库</el-button>
             <el-button type="primary" size="default" icon="el-icon-delete" @click="open(scope.row)" style="background-color: red; border: red">删除</el-button>
           </template>
         </el-table-column>

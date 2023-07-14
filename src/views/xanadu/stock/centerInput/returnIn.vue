@@ -18,7 +18,7 @@
               查询
             </el-button>
           </el-form-item>
-          <el-button type="primary" size="default" icon="el-icon-refresh-right" class="form-item"
+          <el-button type="primary" icon="el-icon-refresh-right" class="form-item"
                      style="margin-left: 10px" @click="reset"
           >刷 新
           </el-button>
@@ -42,8 +42,8 @@
             <subware :id="row.subwareId"></subware>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" min-width="300" align="center" prop="productName" show-overflow-tooltip></el-table-column>
-        <el-table-column label="入库时间" align="center" prop="inputTime" show-overflow-tooltip></el-table-column>
+        <el-table-column label="商品名称" min-width="200" align="center" prop="productName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="入库时间" min-width="200" align="center" prop="inputTime" show-overflow-tooltip></el-table-column>
         <el-table-column label="状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag type="success" v-show="scope.row.status === '已入库'">{{ scope.row.status }}</el-tag>
