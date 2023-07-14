@@ -48,7 +48,6 @@
                 class="react-left mr-4"
                 style="width: 6.25rem; background-color: #0f1325; text-align: right;">
                 <span class="react-after"></span>
-                <span class="text" style="margin-right: 125px;font-size: small">版本号:3.5.2</span>
                 <span class="text"> 当前时间:{{ times }}</span>
               </div>
             </div>
@@ -58,7 +57,7 @@
           <div class="body-box">
             <!-- 第三行数据 -->
             <div class="content-box">
-              <!--中间左侧 满意度排行榜-->
+              <!--中间左侧 TOP5排行榜-->
               <div>
                 <dv-border-box-12>
                   <centerLeft />
@@ -66,13 +65,19 @@
               </div>
               <!-- 中间 订单统计-->
               <div>
-                <dv-border-box1 style="margin-left: 10px;width: 8rem">
+                <dv-border-box1 style="margin-left:2px;width: 7.5rem">
                   <center />
                 </dv-border-box1>
               </div>
+              <!--用户满意度排名-->
+              <div>
+                <dv-border-box12 style="margin-left: 2px;width: 5.5rem">
+                  <centerRight1 />
+                </dv-border-box12>
+              </div>
               <!-- 中间右侧 分库出库量比例 -->
               <div>
-                <dv-border-box-13 style="margin-left: 10px">
+                <dv-border-box-13 style="margin-left: 4px">
                   <centerRight />
                 </dv-border-box-13>
               </div>
@@ -85,9 +90,9 @@
                 <bottomLeft />
               </dv-border-box-13>
               <!--地图-->
-              <dv-border-box-12 style="width: 8rem">
+              <dv-border-box-8 style="width: 11rem">
                 <bottomRight />
-              </dv-border-box-12>
+              </dv-border-box-8>
             </div>
           </div>
 
@@ -107,6 +112,7 @@ import center from './xanadu/DataScreen/center'
 import centerRight from './xanadu/DataScreen/centerRight'
 import bottomRight from './xanadu/DataScreen/bottomRight'
 import bottomLeft from './xanadu/DataScreen/bottomLeft'
+import centerRight1 from './xanadu/DataScreen/centerRight1'
 
 // 适配flex
 import '@/common/flexible.js';
@@ -120,6 +126,7 @@ export default {
     };
   },
   components:{
+    centerRight1,
     centerLeft,
     center,
     centerRight,

@@ -6,8 +6,8 @@
         </span>
         <span class="fs-xl text mx-2" style="font-weight: bolder;font-size: x-large">订购排行榜TOP5</span>
       </div>
-      <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 20px">
-        <dv-scroll-ranking-board :config="config" style="width: 6rem;height:3rem" />
+      <div class="d-flex jc-center body-box" style=" margin-top: 5px;margin-left: 20px">
+        <dv-scroll-ranking-board :config="config" style="width: 5rem;height:3rem" />
       </div>
     </div>
   </div>
@@ -48,7 +48,7 @@ export default {
 
 <style scoped>
 .cl{
-  width: 7rem;
+  width: 5.7rem;
   height: 3.7rem;
 }
 </style>

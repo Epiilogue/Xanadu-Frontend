@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <div ref="chart" style="width:7rem;height:3rem;"></div>
+      <div ref="chart" style="width:4.5rem;height:3rem"></div>
     </div>
   </div>
 </template>
@@ -18,8 +18,6 @@ export default {
         value:''
       }
     }
-  },
-  mounted() {
   },
   methods: {
     getEchartData(){
@@ -39,8 +37,8 @@ export default {
             },
             orient: 'vertical',
             type: 'scroll',
-            left: '10',
-            bottom:'5',
+            left: '5',
+            bottom:'0',
             data: this.pieData.name
           },
           series: [
@@ -84,7 +82,6 @@ export default {
       }
       this.getEchartData()
     })
-
   },
 }
 </script>
