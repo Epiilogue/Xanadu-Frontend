@@ -6,8 +6,8 @@
         </span>
         <span class="fs-xl text mx-2" style="font-weight: bolder;font-size: x-large">分站配送信息</span>
       </div>
-      <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 29px">
-        <dv-scroll-board ref="scrollBoard" :config="config" style="width: 7.2rem;height:3rem" />
+      <div class="d-flex jc-center body-box" style=" margin-top: 10px;margin-left: 13px">
+        <dv-scroll-board ref="scrollBoard" :config="config" style="width: 7rem;height:3rem" />
       </div>
     </div>
   </div>
@@ -22,10 +22,10 @@ export default {
       line:[],
       list:[],
       config:{
-        header: ['分库ID', 'delivered', 'deliveryAmount', 'paymentDelivered', 'totalOrders',''],
+        header: ['分库ID', '配送量', '收款金额', '送货付款', '总订单数',''],
         data: [],
         index: true,
-        columnWidth:[50],
+        columnWidth:[25],
         align: ['center']
       }
     }

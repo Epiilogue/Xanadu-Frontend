@@ -1,6 +1,6 @@
 <template>
   <div >
-    <div ref="chart1" style="margin-top: 20px;width:11rem;height:5rem"></div>
+    <div ref="chart1" style="margin-top: 20px;width:11rem;height:5rem;margin-left: 20px"></div>
   </div>
 </template>
 
@@ -15,9 +15,6 @@ export default {
       ex:[],
       ne:[]
     }
-  },
-  mounted() {
-
   },
   methods: {
     getEchartData1() {
@@ -61,9 +58,7 @@ export default {
         }
         myChart.setOption(option)
       }
-
     },
-
   },
   created() {
     MonthlyOrders().then((res)=>{

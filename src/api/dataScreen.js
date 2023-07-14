@@ -26,6 +26,19 @@ export function SubDeliveryInfo(){
   })
 }
 
+//满意度
+export function SubSatisfaction(){
+  return request({
+    url:'/getCustomerSatisfactionAnalysis',
+    method:'get',
+    baseURL:'http://localhost:8019',
+    params: {
+      startTime: '2023-7-1',
+      endTime: '2023-7-31',
+    }
+  })
+}
+
 //各分库出库量
 export function PickOutList(){
   return request({

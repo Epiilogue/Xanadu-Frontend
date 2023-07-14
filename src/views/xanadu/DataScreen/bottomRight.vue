@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="mapChart" style="margin-top: 20px;margin-left:60px;width:6rem;height:5rem"></div>
+    <div ref="mapChart" style="margin-top: 20px;margin-left:100px;width:6rem;height:5rem"></div>
   </div>
 </template>
 
@@ -215,37 +215,6 @@ export default {
     }
   },
   watch: {},
-  created() {
-    let list1 = [
-      {
-        fromName: "深圳",
-        toName: "北京",
-        coords: [
-          [114.271522, 22.753644],
-          [116.24, 39.55],
-          [114.271522, 22.753644],
-        ]
-      },
-      {
-        fromName: "深圳",
-        toName: "浙江",
-        coords: [
-          [114.271522, 22.753644],
-          [120.19, 30.26],
-          [114.271522, 22.753644],
-        ]
-      },
-      {
-        fromName: "深圳",
-        toName: "重庆",
-        coords: [
-          [114.271522, 22.753644],
-          [106.54, 29.59],
-          [114.271522, 22.753644],
-        ]
-      }
-    ]
-  }
 }
 </script>
 
