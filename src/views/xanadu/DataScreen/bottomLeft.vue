@@ -77,13 +77,13 @@ export default {
           name:'退货',
           type:'line',
           stack:'Total',
-          data:this.ex
+          data:this.re
         },
         {
           name:'换货',
           type:'line',
           stack:'Total',
-          data:this.re
+          data:this.ex
         },
         {
           name:'新订',
