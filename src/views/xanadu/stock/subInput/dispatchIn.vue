@@ -103,7 +103,7 @@ export default {
         var list = []
         list = res.data
         for (let i = 0;i < list.length;i++){
-          if (list[i].subwareId == this.subwareID)
+          if (list[i].subwareId == this.subwareID && (list[i].status === '已出库' || list[i].status === '分库已入库'))
             this.tableData.push(list[i])
         }
         for (let i = 0;i < this.tableData.length;i++){
@@ -183,7 +183,7 @@ export default {
         list = res.data
         console.log(list)
         for (let i = 0;i < list.length;i++){
-          if (list[i].subwareId == this.subwareID)
+          if (list[i].subwareId == this.subwareID && (list[i].status === '已出库' || list[i].status === '分库已入库'))
             this.tableData.push(list[i])
         }
         for (let i = 0;i < this.tableData.length;i++){
@@ -199,7 +199,7 @@ export default {
       list = res.data
       console.log(list)
       for (let i = 0;i < list.length;i++){
-        if (list[i].subwareId == this.subwareID)
+        if (list[i].subwareId == this.subwareID && (list[i].status === '已出库' || list[i].status === '分库已入库'))
           this.tableData.push(list[i])
       }
       for (let i = 0;i < this.tableData.length;i++){
