@@ -73,7 +73,7 @@
     <!--confirm-->
     <el-dialog title="确认入库" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" center>
       <p style="size: A3">请选择采购入库的数量</p>
-      <el-slider v-model="inNum" show-input :max="Math.ceil(this.invalue*1.5)" :min="Math.floor(this.invalue*0.5)"
+      <el-slider v-model="inNum" show-input :max="Math.ceil(this.invalue)" :min="Math.floor(this.invalue*0.5)"
                  :step="1"
       >
       </el-slider>
