@@ -20,7 +20,7 @@
               查询
             </el-button>
           </el-form-item>
-          <el-button type="primary" size="default" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
+          <el-button type="primary" icon="el-icon-refresh-right" class="form-item" style="margin-left: 10px"  @click="reset">刷  新</el-button>
         </el-form>
       </div>
 
