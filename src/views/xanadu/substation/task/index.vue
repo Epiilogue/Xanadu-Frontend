@@ -90,8 +90,8 @@
       <div class="alert">
         <p v-if="opType !== ''">正在进行的任务单操作是</p>
         <p v-else>正在查看所有任务单</p>
-        <el-select v-model="opType" class="select" placeholder="选择任务单操作" @change="handleOpChange" clearable
-                   @clear="handleOpChange"
+        <el-select v-model="opType" class="select" placeholder="选择任务单操作" @change="handleOpChange(opType,true)" clearable
+                   @clear="handleOpChange(opType,true)"
         >
           <el-option v-for="item in opTypeOption" :key="item" :label="item" :value="item"/>
         </el-select>
@@ -203,7 +203,7 @@
           >
             <template slot-scope="{ row, $index }">
               <el-button type="primary" plain @click="handleTask(row)">
-                操作任务单
+                {{ opType===''?'操作任务单':opType }}
               </el-button>
               <el-button type="primary" plain @click="deleteTask(row)">
                 删除
@@ -250,7 +250,7 @@
 </template>
 <script>
 
-import { assign, deleteTask, getTaskList, listHanding, takeProducts } from '@/api/sub-task'
+import { assign, deleteTask, getTaskList, listHanding, takeProducts, listInvoiceNeed } from '@/api/sub-task'
 import Pagination from '@/components/Pagination'
 import Receipt from './inputReceipt.vue'
 import { getColumn, getOption } from '@/components/detail/module/taskColumn'
@@ -279,7 +279,7 @@ export default {
             return
         } else {
             this.subId = Number(this.$cache.session.get('subProcessing'))
-            this.handleOpChange(this.opType);
+            this.handleOpChange(this.opType,false);
         }
     },
     data() {
@@ -358,7 +358,7 @@ export default {
                     resolve('成功')
                 }).catch(err => {
                     reject('失败')
-                    this.listLoading = false
+                    this.list = []
                 });
             })
         },
@@ -415,7 +415,7 @@ export default {
             }
         },
         // 获取当前操作类型对应的任务单列表
-        async handleOpChange(newVal) {
+        async handleOpChange(newVal,show) {
             this.listLoading = true;
             // 修改下拉框选项
             let option = getOption(newVal)
@@ -440,7 +440,7 @@ export default {
                     break
                 // list是分站进行中的任务
                 case '发票领用':
-                    await this.getList(listHanding)
+                    await this.getList(listInvoiceNeed)
                     // 只有新订的收款任务和已分配且未完成的任务需要领用发票
                     this.opList = this.list.filter(task => {
                         if (['已分配', '已领货'].includes(task.taskStatus) && ['收款', '送货收款'].includes(task.taskType)
@@ -476,11 +476,9 @@ export default {
             }
             // 查询结果
             this.handleFilter(false)
-            // 分页
-            this.getPageList()
             this.listLoading = false;
             // 提示
-            if (this.total === 0 && newVal != '') {
+            if (this.total === 0 && show) {
                 this.$message({
                     type: 'error',
                     message: '没有需要操作的任务单',
@@ -562,6 +560,8 @@ export default {
       this.courierDialogVisible = false
       this.invoiceDialogVisible = false
       this.invoicesDialogVisible = false
+      //更新表格数据
+      this.handleOpChange(this.opType, false)
     },
 
     // 取货

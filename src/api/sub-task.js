@@ -15,6 +15,14 @@ export function listHanding(subId) {
     method: 'get',
   })
 }
+
+// 查新分站进行中的需要发票的任务
+export function listInvoiceNeed(subId) {
+  return request({
+    url: `/sub/task/listInvoiceNeed/${subId}`,
+    method: 'get',
+  })
+}
   
 // 获取分站快递员
 export function listCouriers(subId) {
