@@ -293,7 +293,6 @@ export default {
           type: 'success',
           duration: 1000
         })
-        this.getList()
       })
     },
 
@@ -301,6 +300,7 @@ export default {
     close() {
       this.temp = []
       this.dialogFormVisible = false
+      this.getList()
     }
 
   }

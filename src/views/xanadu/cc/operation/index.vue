@@ -42,25 +42,25 @@
             <el-table-column label="记录编号" prop="id" align="center" width="100">
             </el-table-column>
 
-            <el-table-column label="操作员编号" min-width="200" align="center">
+            <el-table-column label="操作员编号" min-width="100" align="center">
               <template slot-scope="{ row }">
                 <user :id="row.userId"/>
               </template>
             </el-table-column>
 
-            <el-table-column label="客户编号" min-width="200" align="center">
+            <el-table-column label="客户编号" min-width="100" align="center">
               <template slot-scope="{ row }">
                 <customer :id="row.customerId"/>
               </template>
             </el-table-column>
 
-            <el-table-column label="订单编号" min-width="200" align="center">
+            <el-table-column label="订单编号" min-width="100" align="center">
               <template slot-scope="{ row }">
                 <order :id="row.orderId" :orderType="row.operatorType"/>
               </template>
             </el-table-column>
 
-            <el-table-column label="操作类型" prop="operatorType" width="120" align="center">
+            <el-table-column label="操作类型" prop="operatorType" width="100" align="center">
             </el-table-column>
             <el-table-column label="商品总数" prop="numbers" width="100" align="center">
             </el-table-column>

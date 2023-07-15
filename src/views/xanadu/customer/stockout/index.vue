@@ -193,7 +193,7 @@ export default {
       ],
       category: [],
       tableKey: 0,
-      list: null,
+      list: [],
       showList: null,
       total: 0,
       listLoading: false,

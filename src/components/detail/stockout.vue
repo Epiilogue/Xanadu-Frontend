@@ -48,6 +48,7 @@ export default {
       this.dialogFormVisible = true
       getOneStockOut(id).then(res => {
         this.temp = res.data
+        this.temp.createTime=timestampToTime(this.temp.createTime)
       })
     }
   }

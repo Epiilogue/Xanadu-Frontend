@@ -7,13 +7,13 @@
         <el-dialog title="订单详情" :visible.sync="dialogFormVisible" style="padding-left: 5%" width="70%">
             <!-- 订单信息 -->
             <el-descriptions title="订单概览" :column="3" border style="margin-bottom: 15px;">
-                <el-descriptions-item v-for="field in formFields.order" :label="field.label">{{
+                <el-descriptions-item v-for="field in formFields.order" :key="field.prop" :label="field.label">{{
                     temp[field.prop]
                 }}</el-descriptions-item>
             </el-descriptions>
             <!-- 订购信息 -->
             <el-descriptions :title="orderType + '信息'" :column="3" border style="margin-bottom: 15px;">
-                <el-descriptions-item v-for="field in formFields.detail" :label="field.label">{{
+                <el-descriptions-item v-for="field in formFields.detail" :key="field.prop" :label="field.label">{{
                     detail[field.prop]
                 }}</el-descriptions-item>
             </el-descriptions>
@@ -22,10 +22,10 @@
             </el-descriptions>
             <el-table :key="0" :row-key="(row) => row.productId" :data="this.productList" border fit highlight-current-row
                 style="width: 100%">
-                <el-table-column v-for="field in formFields.product" v-if="field.show" :label="field.label"
+                <el-table-column v-for="field in formFields.product" :key="field.prop" v-if="field.show" :label="field.label"
                     :prop="field.prop" align="center" min-width="100">
                 </el-table-column>
-                <el-table-column label="是否缺货" class-name="status-col" min-width="100">
+                <el-table-column label="是否缺货" class-name="status-col" min-width="100" v-if="this.orderType !== '退订'">
                     <template slot-scope="{ row }">
                         <el-tag :type="!row.islack ? 'success' : 'danger'">
                             {{ row.islack ? "缺货" : "不缺货" }}

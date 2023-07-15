@@ -114,7 +114,7 @@ let productColumns = [
   {
     prop: 'productCategary',
     label: '商品种类',
-    show: true
+    show: false
   },
   {
     prop: 'price',

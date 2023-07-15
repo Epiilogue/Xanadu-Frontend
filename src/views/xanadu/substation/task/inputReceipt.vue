@@ -36,7 +36,7 @@
             </div>
             <div class="product">
                 <el-descriptions :contentStyle="rowCenter" :labelStyle="rowCenter">
-                    <el-descriptions-item label="签收商品总数">{{
+                    <el-descriptions-item :label="`${form.taskType}商品总数`">{{
                         form.numbers
                     }}</el-descriptions-item>
                     <el-descriptions-item label="任务交易金额">{{
@@ -52,9 +52,9 @@
                 <el-table :key="0" :row-key="(row) => row.productId" :data="form.products" border fit highlight-current-row
                     style="width: 100%">
                     <el-table-column label="商品编号" prop="productId" align="center" width="100">
-                      <template slot-scope="{row}">
-                        <product :id="row.productId"></product>
-                      </template>
+                        <template slot-scope="{row}">
+                            <product :id="row.productId"></product>
+                        </template>
                     </el-table-column>
                     <el-table-column label="商品名称" prop="productName" width="100" align="center">
                     </el-table-column>
@@ -62,7 +62,7 @@
                     </el-table-column>
                     <el-table-column label="下单数量" prop="number" width="100" align="center">
                     </el-table-column>
-                    <el-table-column label="签收数量" min-width="200" align="center" fixed="right">
+                    <el-table-column :label="opName+'数量'" min-width="200" align="center" fixed="right">
                         <template slot-scope="{ row }">
                             <el-input-number ref="inputNumber" v-model="row.actualNumber" :min="0" :max="row.number"
                                 width="80" size="small" :disabled="numDisabled"></el-input-number>
@@ -119,113 +119,118 @@ export default {
                 disabledDate(time) {
                     return time.getTime() > Date.now();
                 },
-            }
-            };
-        },
-            created() {
-            let task = this.$cache.local.getJSON("operateTask");
-            console.log(task)
-            this.form.taskId = task.id; // 任务编号
-            this.form.taskType = task.taskType; // 任务类型
-            // this.payment = this.form.taskType === '收款'
-            if (this.payment) return
-            let products = JSON.parse(task.productsJson)    //商品信息
-            products.forEach(p => { //设置签收数量默认值
-                p.actualNumber = p.number
-            });
-            this.form.products = products
-            console.log(products)
-        },
+            },
+            opName:'',
+        };
+    },
+    created() {
+        let task = this.$cache.local.getJSON("operateTask");
+        console.log(task)
+        this.form.taskId = task.id; // 任务编号
+        this.form.taskType = task.taskType; // 任务类型
+        // this.payment = this.form.taskType === '收款'
+        if (this.payment) return
+        if(this.form.taskType.includes('送货'))
+            this.opName="签收"
+        else
+            this.opName=this.form.taskType
+        let products = JSON.parse(task.productsJson)    //商品信息
+        products.forEach(p => { //设置签收数量默认值
+            p.actualNumber = p.number
+        });
+        this.form.products = products
+        console.log(products)
+    },
 
-        methods: {
-            onSubmit() {
-                // 表单校验
-                this.$refs["form"].validate((valid) => {
-                    if (valid) {
-                        // 非收款任务需确认商品签收情况
-                        if (!this.payment && this.confirm === '确认') {
-                            this.$message({
-                                type: 'error',
-                                message: '请确认商品签收情况',
-                                durarion: 1000,
-                            });
-                            return
-                        }
-                        // 根据任务类型确定回执录入接口
-                        let opfun = new Function();
-                        if (this.payment) opfun = fillPaymentReceipt;
-                        else {
-                            opfun = fillReceipt;
-                        }
-                        // 请求服务
-                        opfun(this.form).then((res) => {
-                            this.$message({
-                                type: 'success',
-                                message: res.msg,
-                                durarion: 1000,
-                            });
-                            this.success = true
-                            this.Return()
+    methods: {
+        onSubmit() {
+            // 表单校验
+            this.$refs["form"].validate((valid) => {
+                if (valid) {
+                    // 非收款任务需确认商品签收情况
+                    if (!this.payment && this.confirm === '确认') {
+                        this.$message({
+                            type: 'error',
+                            message: '请确认商品签收情况',
+                            durarion: 1000,
                         });
+                        return
                     }
-                });
-            },
-            // 返回
-            Return() {
-                // 清除缓存 
-                this.$cache.local.remove("selectedProduct")
-                // 回到任务主页
-                this.$emit('close', this.success)
-            },
-            // 确认商品签收情况
-            confirmPro(edit) {
-                if (!edit) {
-                    // 计算总数和总价
-                    this.form.numbers = this.form.products.reduce((sum, p) => sum + p.actualNumber,
-                        0)
-                    this.form.totalAmount = this.form.products.reduce((sum, p) => sum + p.actualNumber * p.price,
-                        0).toFixed(2)
-                    // 禁用输入框
-                
-                this.numDisabled=true
-                    // 修改confirm
-                    this.confirm = '编辑'
-                } else {
-                    // 总数和总价置0
-                    this.form.numbers = 0
-                    this.form.totalAmount = Number(0).toFixed(2)
-                    // 启用输入框
-                    this.numDisabled=false
-                    // 修改confirm
-                    this.confirm = '确认'
+                    // 根据任务类型确定回执录入接口
+                    let opfun = new Function();
+                    if (this.payment) opfun = fillPaymentReceipt;
+                    else {
+                        opfun = fillReceipt;
+                    }
+                    // 请求服务
+                    opfun(this.form).then((res) => {
+                        this.$message({
+                            type: 'success',
+                            message: res.msg,
+                            durarion: 1000,
+                        });
+                        this.success = true
+                        this.Return()
+                    });
                 }
-            },
-            // 根据任务完成状态更新商品数量
-            refreshNum(newVal) {
-                if (this.payment) return
-                switch (newVal) {
-                    case '成功':
-                        this.form.products.forEach(p => { // 签收/退货数量为下单数量
-                            p.actualNumber = p.number
-                        });
-                        this.confirmPro(false)
-                        break
-                    case '部分完成':
-                        this.form.products.forEach(p => { // 签收/退货数量不超过下单数量,可修改
-                            p.actualNumber = p.number
-                        });
-                        this.confirmPro(true)
-                        break
-                    case '失败':
-                        this.form.products.forEach(p => { // 签收/退货数量为0
-                            p.actualNumber = 0
-                        });
-                        this.confirmPro(false)
-                        break
-                }
+            });
+        },
+        // 返回
+        Return() {
+            // 清除缓存 
+            this.$cache.local.remove("selectedProduct")
+            // 回到任务主页
+            this.$emit('close', this.success)
+        },
+        // 确认商品签收情况
+        confirmPro(edit) {
+            if (!edit) {
+                // 计算总数和总价
+                this.form.numbers = this.form.products.reduce((sum, p) => sum + p.actualNumber,
+                    0)
+                this.form.totalAmount = this.form.products.reduce((sum, p) => sum + p.actualNumber * p.price,
+                    0).toFixed(2)
+                // 禁用输入框
+
+                this.numDisabled = true
+                // 修改confirm
+                this.confirm = '编辑'
+            } else {
+                // 总数和总价置0
+                this.form.numbers = 0
+                this.form.totalAmount = Number(0).toFixed(2)
+                // 启用输入框
+                this.numDisabled = false
+                // 修改confirm
+                this.confirm = '确认'
             }
         },
-    };
+        // 根据任务完成状态更新商品数量
+        refreshNum(newVal) {
+            if (this.payment) return
+            switch (newVal) {
+                case '成功':
+                    this.form.products.forEach(p => { // 签收/退货数量为下单数量
+                        p.actualNumber = p.number
+                    });
+                    this.confirmPro(false)
+                    break
+                case '部分完成':
+                    this.form.products.forEach(p => { // 签收/退货数量不超过下单数量,可修改
+                        p.actualNumber = p.number
+                    });
+                    this.confirmPro(true)
+                    break
+                case '失败':
+                    this.form.products.forEach(p => { // 签收/退货数量为0
+                        p.actualNumber = 0
+                    });
+                    this.confirmPro(false)
+                    break
+            }
+        }
+    },
+};
 </script>
 
 <style scoped>

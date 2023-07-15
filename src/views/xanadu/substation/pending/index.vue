@@ -29,25 +29,25 @@
                 <el-table-column label="任务编号" prop="taskId" min-width="50px" align="center"></el-table-column>
                 <el-table-column label="分库编号" min-width="50px" prop="subwareId" align="center">
                     <template slot-scope="{row}">
-                            <subware :id="row.id"></subware>
+                            <subware :id="row.subwareId"></subware>
                         </template>
                 </el-table-column>
                 <el-table-column label="商品编号" prop="productId" min-width="50px" align="center">
                     <template slot-scope="{row}">
-                            <product :id="row.id"></product>
+                            <product :id="row.productId"></product>
                         </template>
                 </el-table-column>
                 <el-table-column label="商品名称" prop="productName" min-width="50px" align="center"></el-table-column>
                 <el-table-column label="商品单价" min-width="50px" prop="productPrice" align="center"></el-table-column>
                 <el-table-column label="待处理数量" min-width="50px" prop="dealNumber" align="center"></el-table-column>
-                <el-table-column label="来源" min-width="50px" prop="source" align="center"></el-table-column>
+                <!-- <el-table-column label="来源" min-width="50px" prop="source" align="center"></el-table-column> -->
 
 
                 <el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
                     <template slot-scope="{row,$index}">
-                        <el-button type="primary" @click="handleRefund(row, $event)">退货出库</el-button>
-                        <el-button type="primary" @click="handleRefund(row, $event)">重新入库</el-button>
-                        <el-button @click="handleDelete(row, $index)">
+                        <el-button type="primary" @click="handleRefund(row, $event)" :disabled="row.dealNumber===0">退货出库</el-button>
+                        <el-button type="primary" @click="handleRefund(row, $event)" :disabled="row.dealNumber===0">重新入库</el-button>
+                        <el-button @click="handleDelete(row, $index)" :disabled="row.dealNumber!==0">
                             删除
                         </el-button>
                     </template>

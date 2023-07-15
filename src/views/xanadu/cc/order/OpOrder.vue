@@ -76,11 +76,11 @@
               <span>{{ row.productName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品大类" min-width="100" align="center">
+          <!-- <el-table-column label="商品大类" min-width="100" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productCategary }}</span>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column label="单价" width="100" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.price }}</span>
@@ -166,11 +166,11 @@ export default {
     this.form.operationType = this.$route.query.opType; // 操作类型
     // this.form.status = this.form.opType === "换货" ? "换货" : "退货"; //退换货状态
 
-    let order = this.$cache.local.getJSON("operateOrder");
+    let order = this.$cache.session.getJSON("operateOrder");
     this.form.customerId = order.customerId
     this.form.orderType = order.orderType
-    this.form.createTime = order.createTime
-    this.form.deadline = order.deadline
+    // this.form.createTime = order.createTime
+    // this.form.deadline = order.deadline
     this.form.status = order.status
     getCustomer(order.customerId).then((res) => {
       this.form.customerName = res.data.name;
@@ -183,8 +183,6 @@ export default {
       // 表单校验
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          // 客户确认订单信息
-
           // 是否选择商品
           if (form.products.length !== 0) {
             form.numbers = form.products.reduce(
@@ -213,27 +211,34 @@ export default {
               opfun(form).then((res) => {
                 // 如果缺货，查询缺货商品列表
                 if (res.data && res.data.status === "缺货") {
-                  this.$modal
-                    .confirm("订单商品缺货")
-                    .then(() => {})
-                    .then(() => {})
-                    .catch(() => {});
                 } else {
-                  this.$modal.alertSuccess("操作成功");
+                  this.$message({
+                    type: 'success',
+                    message: res.msg,
+                    durarion: 1000,
+                  });
                 }
                 // 清除缓存 重置表单
-                (this.form.reason = ""),
-                  (this.form.deadline = ""),
-                  (this.form.products = []),
-                  this.$cache.local.remove("selectedProduct");
+                this.form.reason = ""
+                this.form.deadline = ""
+                this.form.products = []
+                this.form.createTime = ''
+                this.form.deadline = ''
+                this.$cache.session.remove("selectedProduct");
               });
             } else {
-              this.$modal.alertError(
-                `请选择要${this.form.operationType}的商品`
-              );
+              this.$message({
+                type: 'error',
+                message: `请选择要${this.form.operationType}的商品`,
+                durarion: 1000,
+              });
             }
           } else {
-            this.$modal.alertError(`请选择要${this.form.operationType}的商品`);
+            this.$message({
+                type: 'error',
+                message: `请选择要${this.form.operationType}的商品`,
+                durarion: 1000,
+              });
           }
         }
       });
@@ -243,7 +248,7 @@ export default {
       this.form.reason = ""
       this.form.deadline = ""
       this.form.products = []
-      this.$cache.local.remove("selectedProduct")
+      this.$cache.session.remove("selectedProduct")
       this.$message({
         message: "reset!",
         type: "warning",
@@ -252,7 +257,7 @@ export default {
     handleSelectProduct() {
       this.$router.push({
         path: "/cc/product",
-        query: { orderId: this.form.orderId, opType: this.form.operationType ,orderType:this.form.orderType},
+        query: { orderId: this.form.orderId, opType: this.form.operationType, orderType: this.form.orderType },
       });
     },
   },
@@ -260,7 +265,7 @@ export default {
     proChanged() {
       // 更新商品列表
       this.form.products = this.$cache
-        ? this.$cache.local.getJSON("selectedProduct")
+        ? this.$cache.session.getJSON("selectedProduct")
         : [];
       for (var index in this.form.products) {
         let item = this.form.products[index];

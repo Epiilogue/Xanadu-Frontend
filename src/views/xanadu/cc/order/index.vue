@@ -207,7 +207,7 @@ export default {
         this.list = response.data;
         this.handleOpChange(this.opType)
         this.listLoading = false;
-      })
+      }).catch(this.listLoading = false)
     },
 
     // 加载对应操作的订单列表
@@ -266,8 +266,8 @@ export default {
         });
         return
       }
-      this.$cache.local.remove("selectedProduct");
-      this.$cache.local.setJSON("operateOrder", row);
+      this.$cache.session.remove("selectedProduct");
+      this.$cache.session.setJSON("operateOrder", row);
       this.$router.push({
         path: "/cc/order/operateOrder",
         query: { orderId: row.id, opType: this.opType },

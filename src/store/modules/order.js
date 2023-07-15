@@ -10,11 +10,11 @@ const order = {
 
   mutations: {
     SET_PROCHANGED: (state, selectedPro) => {
-      Vue.prototype.$cache.local.setJSON('selectedProduct', selectedPro)
+      Vue.prototype.$cache.session.setJSON('selectedProduct', selectedPro)
       state.proChanged=(state.proChanged+1)%2
     },
     SET_CUSCHANGED: (state, selectedCustomer) => {
-      Vue.prototype.$cache.local.setJSON('selectedCustomer', selectedCustomer)
+      Vue.prototype.$cache.session.setJSON('selectedCustomer', selectedCustomer)
       state.cusChanged=(state.cusChanged+1)%2
     }
   },

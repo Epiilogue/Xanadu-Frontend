@@ -159,7 +159,7 @@ export default {
   methods: {
 
     handleSubmit() {
-      this.selectedSub=this.$refs.substation.getSubId()
+      this.selectedSub=this.$refs.substation.getSub().id
       if (this.selectedSub && this.outDate) {
         console.log(this.outDate)
         this.outDate=this.$moment(new Date(this.outDate)).format("YYYY-MM-DD HH:mm:ss")

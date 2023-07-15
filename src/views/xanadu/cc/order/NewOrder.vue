@@ -102,7 +102,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="投递分站">
-          <el-input placeholder="请选择分站" v-model="form.substationId" class="input-with-select">
+          <el-input placeholder="请选择分站" v-model="form.substationName" class="input-with-select">
             <el-button slot="append" icon="el-icon-search" @click="selectSub"></el-button>
           </el-input>
         </el-form-item>
@@ -111,7 +111,7 @@
                           placeholder="Pick a date" style="width: 100%" />
         </el-form-item>
 
-        <el-form-item label="要求到货日期">
+        <el-form-item label="要求完成日期">
           <el-date-picker v-model="form.deadline" :picker-options="deadlinePickerOptions" type="date" placeholder="Pick a date" style="width: 100%" />
         </el-form-item>
         <el-form-item label="付款方式">
@@ -173,7 +173,7 @@ export default {
 
         products: [],
         numbers: 0,
-        totalAmount: 0,
+        totalAmount: 0.00,
 
         orderType: "新订",
         substationId: undefined,
@@ -210,16 +210,20 @@ export default {
       // 到货和送货日期校验
       delieverPickerOptions: {
         disabledDate:(time) => { // 此处改为箭头函数
+          // 不能早于当前日期
+          let now=time.getTime() < new Date(new Date().toDateString()).getTime()
+          // 不能晚于完成日期
           if(this.form.deadline)
-            return time.getTime() > this.form.deadline;
-          return false
+            return time.getTime() > this.form.deadline || now;
+          return now
         }
       },
       deadlinePickerOptions: {
         disabledDate:(time) => { // 此处改为箭头函数
+          let now=time.getTime() < new Date(new Date().toDateString()).getTime()
           if(this.form.deliveryTime)
-            return time.getTime() < this.form.deliveryTime;
-          return false
+            return time.getTime() < this.form.deliveryTime || now;
+          return now
         }
       }
     };
@@ -249,7 +253,7 @@ export default {
                 this.$nextTick(() => {
                   this.$refs.order.getAndConvert(res.data.id)
                 })
-                // this.onReset()
+                this.onReset()
               });
             } else {
               this.$modal.alertWarning("请选择要购买的商品");
@@ -263,8 +267,8 @@ export default {
     // 删除缓存 重置表单
     onReset() {
       this.form = this.$options.data().form;
-      this.$cache.local.remove("selectedProduct");
-      this.$cache.local.remove("selectedCustomer");
+      this.$cache.session.remove("selectedProduct");
+      this.$cache.session.remove("selectedCustomer");
     },
     handleSelectCustomer() {
       this.$router.push({ path: "/cc/customer" });
@@ -278,9 +282,10 @@ export default {
     },
     // 设置订单分站
     setSub() {
-      let subId = this.$refs.substation.getSubId()
-      if (subId) {
-        this.form.substationId = subId
+      let sub = this.$refs.substation.getSub()
+      if (sub.id) {
+        this.form.substationId = sub.id
+        this.form.substationName = sub.name
         this.subDialogFormVisible = false
       } else {
         this.$message({
@@ -295,7 +300,7 @@ export default {
     proChanged() {
       // 更新商品列表
       this.form.products = this.$cache
-        ? this.$cache.local.getJSON("selectedProduct")
+        ? this.$cache.session.getJSON("selectedProduct")
         : [];
       // 计算数量和总价
       if (this.form.products && this.form.products.length !== 0) {
@@ -306,7 +311,7 @@ export default {
         this.form.totalAmount = this.form.products.reduce(
           (sum, e) => sum + Number(e.number * e.price || 0),
           0
-        );
+        ).toFixed(2);
       }
       // 刷新DOM
       this.ifShow = false;
@@ -320,7 +325,7 @@ export default {
     },
     cusChanged() {
       // 更新客户列表
-      let cus = this.$cache.local.getJSON("selectedCustomer");
+      let cus = this.$cache.session.getJSON("selectedCustomer");
       if (cus) {
         this.form.customerId = cus.customerId;
         this.form.receiverName = cus.receiverName;

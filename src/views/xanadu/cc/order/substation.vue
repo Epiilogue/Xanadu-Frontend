@@ -32,7 +32,7 @@
             <!-- 选中对应分站 -->
             <el-table-column :label=switchTitle min-width="100" align="center">
                 <template slot-scope="{ row }">
-                    <el-switch :value="row.id === selectedSub" @change="handleChange(row)" :disabled="!selectAble">
+                    <el-switch :value="row.id === selectedSub.id" @change="handleChange(row)" :disabled="!selectAble">
                     </el-switch>
                 </template>
             </el-table-column>
@@ -59,8 +59,8 @@ export default {
     data() {
         return {
 
-            // 是否已确定处理事务的分站id,未设置为''
-            selectedSub: '',
+            // 选中的分站
+            selectedSub: {},
 
             tableKey: 0,
             list: [],
@@ -98,24 +98,15 @@ export default {
         }
     },
     created() {
-        // 获取正在处理的分站id
-        // let subId = this.$cache.session.get('subProcessing')
+        // 获取传入的分站id
         let subId=this.id
-        this.selectedSub = subId ? Number(subId) : ''
+        this.selectedSub.id = subId ? Number(subId) : ''
         this.getList()
-    },
-    // 缓存处理事务的分站id
-    beforeDestroy() {
-        if (this.selectedSub) {
-            this.$cache.session.set('subProcessing', this.selectedSub)
-        } else if (this.$cache.session.get('subProcessing')) {
-            this.$cache.session.remove('subProcessing')
-        }
     },
     methods: {
 
-        // 获取选中的分站ID
-        getSubId() {
+        // 获取选中的分站
+        getSub() {
             return this.selectedSub
         },
 
@@ -128,14 +119,14 @@ export default {
             this.currentPage = newPage
         },
 
-        // 设置处理事务的分站id
+        // 设置处理事务的分站
         handleChange(row) {
-            if (row.id === this.selectedSub) {
+            if (row.id === this.selectedSub.id) {
                 // 取消选中
-                this.selectedSub = ''
+                this.selectedSub = {}
             } else {
                 // 选中
-                this.selectedSub = row.id
+                this.selectedSub = row
             }
         },
 
