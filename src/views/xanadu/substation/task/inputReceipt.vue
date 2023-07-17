@@ -21,7 +21,7 @@
                         :picker-options="pickerOptions" />
                 </el-form-item>
                 <el-form-item label="客户满意度">
-                    <el-rate v-model="form.feedback" allow-half :max="10" show-score style="padding-top: 8px;"></el-rate>
+                    <el-rate v-model="form.feedback" :max="10" show-score style="padding-top: 8px;"></el-rate>
                 </el-form-item>
                 <el-form-item label="备注">
                     <el-input v-model="form.remark" type="textarea" />

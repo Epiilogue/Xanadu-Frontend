@@ -20,6 +20,7 @@ import LocalProductPop from './LocalProductPop'
 import { getOneProduct } from '@/api/distribution'
 
 export default {
+  name:'LocalProduct',
   data() {
     return {
       selectData: [],

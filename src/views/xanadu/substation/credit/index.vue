@@ -5,9 +5,9 @@
         <!-- 查询：商品种类编号-二级，回执录入时间，商品名称-->
         <div class="filter-container">
             <el-form :inline="true" ref="dataForm" :rules="rules" :model="listQuery">
-                <el-form-item class="form-item" prop='categaryId' label="商品种类编号">
-                    <el-input v-model.number="listQuery.categaryId" placeholder="商品种类编号"
-                        style="width: 200px; margin-right: 5px" />
+                <el-form-item class="form-item" prop='categaryId' label="商品种类">
+                    <el-cascader v-model="listQuery.categaryId" :options="category"
+                        :props="{ expandTrigger: 'hover', value: 'id', label: 'category', emitPath: false }"></el-cascader>
                 </el-form-item>
                 <el-form-item class="form-item" prop='createRange' label="回执录入时间">
                     <el-date-picker v-model="listQuery.createRange" type="daterange" align="right" style="width: 240px"
@@ -16,8 +16,9 @@
                     </el-date-picker>
                 </el-form-item>
                 <!-- 选填 -->
-                <el-form-item class="form-item" prop='productName' label="商品名称">
-                    <el-input v-model="listQuery.productName" placeholder="商品名称" style="width: 200px; margin-right: 5px" />
+                <el-form-item class="form-item" prop='productName' label="商品编号">
+                    <LocalProduct :single="true" :propName='name' @getInfo="selectData =>listQuery.productName=selectData[0].name"></LocalProduct>
+                    <!-- <el-input placeholder="商品名称" v-model="listQuery.productName" class="input-with-select" /> -->
                 </el-form-item>
                 <el-form-item class="form-item">
                     <el-button type="primary" icon="el-icon-search" @click="getList(true)">
@@ -51,7 +52,7 @@
         </el-table>
 
         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="1"
-            :page-sizes="[10,15,20]" :page-size="15" layout="total, sizes, prev, pager, next, jumper" :total="total">
+            :page-sizes="[10, 15, 20]" :page-size="15" layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
     </div>
 </template>
@@ -60,9 +61,11 @@
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination/index.vue'
 import { getPaymentByCategoryAndTime } from '@/api/sub-finance'
+import axios from 'axios'
+import LocalProduct from '@/components/Pop/LocalProduct/index'
 
 export default {
-    components: { Pagination },
+    components: { Pagination,LocalProduct },
     directives: { waves },
     data() {
         return {
@@ -81,9 +84,10 @@ export default {
                 createRange: [],
             },
             rules: {
-                categaryId: [{ required: true, message: '请输入商品种类编号', trigger: 'blur' }, { type: 'number', message: '请输入数字' }],
+                categaryId: [{ required: true, message: '请选择商品种类', trigger: 'blur' }],
                 createRange: [{ type: 'array', required: true, message: '请选择回执创建日期', trigger: 'blurchange' }],
             },
+            category: [],
             // 日期选择的快捷设置
             pickerOptions: {
                 shortcuts: [{
@@ -128,8 +132,10 @@ export default {
         } else {
             this.subId = Number(sub)
             this.listQuery.subId = this.subId
-            this.getList(false)
+            // this.getList(false)
+            this.getCategory()
         }
+
     },
 
     methods: {
@@ -141,6 +147,18 @@ export default {
         // 分页组件监听页码值改变的事件
         handleCurrentChange(newPage) {
             this.currentPage = newPage
+        },
+
+        // 查询商品分类
+        getCategory() {
+            let cate = []
+            const that = this
+            axios.get('dbc/categary/listAll')
+                .then(function (res) {
+                    //that.category.push(res.data.data)
+                    that.category = res.data.data
+                })
+            //this.category = cate
         },
 
         getList(show) {

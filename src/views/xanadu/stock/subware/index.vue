@@ -246,6 +246,7 @@ export default {
   },
   mounted() {
     this.user = this.$cookies.get('username')
+    this.user = this.$store.getters.name
     this.subwareId = this.$cache.session.get('subwareProcessing')
     subwareAll().then(res=>{
       if (this.user == 'admin'){

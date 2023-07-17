@@ -114,8 +114,8 @@ export default {
                 this.total = response.data.length
                 this.queryList = this.list
                 this.listLoading = false
+                this.handleFilter(false)
             })
-            this.handleFilter(false)
         },
         // 查询
         handleFilter(show) {
@@ -157,7 +157,7 @@ export default {
                     message: res.msg,
                     durarion: 1000,
                 });
-                this.list.splice(index, 1)
+                this.getList()
             }
             )
         },

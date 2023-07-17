@@ -66,12 +66,12 @@
           highlight-current-row
           style="width: 100%"
         >
-          <el-table-column label="ID" prop="id" align="center" width="100">
+          <el-table-column label="ID" prop="id" align="center" min-width="100">
             <template slot-scope="{ row }">
               <span>{{ row.productId }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="商品名称" width="100" align="center">
+          <el-table-column label="商品名称" min-width="200" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.productName }}</span>
             </template>
@@ -81,7 +81,7 @@
               <span>{{ row.productCategary }}</span>
             </template>
           </el-table-column> -->
-          <el-table-column label="单价" width="100" align="center">
+          <el-table-column label="单价" min-width="100" align="center">
             <template slot-scope="{ row }">
               <span>{{ row.price }}</span>
             </template>
@@ -98,21 +98,21 @@
           </el-table-column>
           <el-table-column
             :label="`${this.form.operationType}数量`"
-            width="100"
+            min-width="100"
             align="center"
           >
             <template slot-scope="{ row }">
               <span>{{ row.opNumber }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="能否退货" class-name="status-col" width="100">
+          <el-table-column label="能否退货" class-name="status-col" min-width="100">
             <template slot-scope="{ row }">
               <el-tag :type="row.refundAble ? 'success' : 'danger'">
                 {{ row.refundAble ? "可退货" : "不可退货" }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="能否换货" class-name="status-col" width="100">
+          <el-table-column label="能否换货" class-name="status-col" min-width="100">
             <template slot-scope="{ row }">
               <el-tag :type="row.changeAble ? 'success' : 'danger'">
                 {{ row.changeAble ? "可换货" : "不可换货" }}

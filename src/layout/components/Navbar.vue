@@ -14,7 +14,7 @@
         LOGOUT
       </el-button>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+      <!-- <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <i class="el-icon-setting"/>
         </div>
@@ -23,7 +23,7 @@
             <span>布局设置</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
     </div>
   </div>
 </template>
